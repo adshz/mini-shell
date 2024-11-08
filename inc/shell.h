@@ -12,7 +12,15 @@
 #ifndef SHELL_H
 # define SHELL_H
 
-int	test_drive(char *s);
+// TODO
+typedefenum {
+    ERR_NONE,
+    ERR_FILE,      // For file operations
+    ERR_MEMORY     // For malloc fails
+} t_error_type;
+
+// TODO
+//void  handle_error(t_error_type type, const char *msg);
 
 
 #endif
