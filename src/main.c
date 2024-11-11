@@ -6,17 +6,30 @@
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:42:19 by szhong            #+#    #+#             */
-/*   Updated: 2024/11/08 14:45:55 by szhong           ###   ########.fr       */
+/*   Updated: 2024/11/11 15:37:54 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libft.h"
 #include "shell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
 
 int	main(void)
 {
-	char	*str = "Hello world";
-	int		len = test_drive(str);
+	char	*usrin;
 
-	ft_printf("works if it is %d", len);
+	while (1)
+	{
+		usrin = readline(">>minishell$: ");
+		if (usrin[0] == '\0')
+			add_history(usrin);
+		if (ft_strcmp(usrin, "exit") == 0)
+		{
+			free(usrin);
+			break;
+		}
+		free(usrin);
+	}
+	rl_clear_history();
 	return (0);
 }

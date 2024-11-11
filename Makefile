@@ -6,7 +6,7 @@
 #    By: szhong <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/08 12:46:50 by szhong            #+#    #+#              #
-#    Updated: 2024/11/08 15:39:45 by szhong           ###   ########.fr        #
+#    Updated: 2024/11/11 14:04:20 by szhong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,30 +22,31 @@ SRCS		:=	\
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
-ALL_LIBS	:=	-L$(LIBFT_PATH) -lft
+ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -lreadline
 MKFL		:=	--no-print-directory
 
-all: $(NAME)
+all: $(NAME) 
 
-$(NAME): $(OBJS) libft
-	@$(cc) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
+$(NAME): LIBFT $(OBJS)
+	@$(CC) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
 	@echo "[MINISHELL] Build Completed"
+
+LIBFT:
+	@make $(MKFL) -C $(LIBFT_PATH) all
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 
-libft:
-	@make $(MKFL) -C ./libft all
 
 clean:
-	@make $(MKFL) -C ./libft clean
+	@make $(MKFL) -C $(LIBFT_PATH) clean
 	@rm -rf $(OBJ_DIR)
 	@echo "[MINISHELL] Objects Removed"
 
 fclean: clean
-	@make $(MKFL) -C ./libft fclean
+	@make $(MKFL) -C $(LIBFT_PATH) fclean
 	@rm -rf $(NAME)
 	@echo "[MINISHELL] Everything Removed"
 	@echo "======== PROJECT RESET ========"
