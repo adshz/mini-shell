@@ -21,6 +21,6 @@
 
 // TODO
 //void  handle_error(t_error_type type, const char *msg);
-
+char*	ft_pwd(void);
 
 #endif

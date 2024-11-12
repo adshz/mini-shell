@@ -6,7 +6,7 @@
 #    By: szhong <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/08 12:46:50 by szhong            #+#    #+#              #
-#    Updated: 2024/11/11 14:04:20 by szhong           ###   ########.fr        #
+#    Updated: 2024/11/12 19:28:10 by szhong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ OBJ_DIR		:=	./obj
 
 SRCS		:=	\
 				main.c \
+				builtins/pwd.c
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
@@ -52,5 +53,10 @@ fclean: clean
 	@echo "======== PROJECT RESET ========"
 
 re:	fclean all
+
+test:
+	@echo "Running some tests"
+	@make $(MKFL) -C tests run || exit 1
+	@echo "Tests completed."
 
 .PHONY: all clean fclean re

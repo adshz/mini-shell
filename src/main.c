@@ -21,12 +21,21 @@ int	main(void)
 	while (1)
 	{
 		usrin = readline(">>minishell$: ");
-		if (usrin[0] == '\0')
+		if (usrin[0] != '\0')
 			add_history(usrin);
 		if (ft_strcmp(usrin, "exit") == 0)
 		{
 			free(usrin);
-			break;
+			break ;
+		}
+		else if (ft_strcmp(usrin, "pwd") == 0)
+		{
+			if (ft_pwd() != 0)
+			{
+				ft_putstr_fd("Error: ft_pwd", 2);
+				break ;
+			}
+
 		}
 		free(usrin);
 	}
