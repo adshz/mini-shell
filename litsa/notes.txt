@@ -1,0 +1,1 @@
+cc -Wall -Wextra -Werror main.c echo.c -o minishell  -L./libft -lft -I./libft -lreadline
