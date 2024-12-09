@@ -6,9 +6,20 @@
 #    By: szhong <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/08 12:46:50 by szhong            #+#    #+#              #
-#    Updated: 2024/11/12 19:28:10 by szhong           ###   ########.fr        #
+#    Updated: 2024/12/09 15:06:20 by szhong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+#Define colour
+DF = \033[0;39m
+GRAY = \033[0;90m
+RED = \033[0;91m
+GREEN = \033[0;92m
+MAGENTA = \033[0;95m
+YELLOW = \033[0;93m
+CYAN =\033[0;96m
+WHITE = \033[0;97m
+BOLD = \033[91m
+ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
 CC			:=	cc
@@ -30,7 +41,7 @@ all: $(NAME)
 
 $(NAME): LIBFT $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
-	@echo "[MINISHELL] Build Completed"
+	@echo "${YELLOW}[MINISHELL] ${GREEN}Build Completed${DF}"
 
 LIBFT:
 	@make $(MKFL) -C $(LIBFT_PATH) all
@@ -44,19 +55,19 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 clean:
 	@make $(MKFL) -C $(LIBFT_PATH) clean
 	@rm -rf $(OBJ_DIR)
-	@echo "[MINISHELL] Objects Removed"
+	@echo "${CYAN}[MINISHELL] Objects Removed${CYAN}"
 
 fclean: clean
 	@make $(MKFL) -C $(LIBFT_PATH) fclean
 	@rm -rf $(NAME)
-	@echo "[MINISHELL] Everything Removed"
-	@echo "======== PROJECT RESET ========"
+	@echo "${CYAN}[MINISHELL] Everything Removed${CYAN}"
+	@echo "${BOLD}${ORANGE}======== PROJECT RESET ========${DF}"
 
 re:	fclean all
 
 test:
-	@echo "Running some tests"
+	@echo "${YELLO}Running some tests${DF}"
 	@make $(MKFL) -C tests run || exit 1
-	@echo "Tests completed."
+	@echo "${GREEN}Tests completed.${GREEN}"
 
 .PHONY: all clean fclean re
