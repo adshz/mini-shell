@@ -12,6 +12,7 @@
 #include "shell.h"
 
 int	g_signal
+
 void	handle_signint(int sig)
 {
 	sig = g_signal;
@@ -65,7 +66,7 @@ void	init_shell(t_shell *shell, char **envp)
 		if (equals)
 		{
 			*equals = '\0'; // split the string
-			hashmao_insert(shell->env, *envp, equals + 1);
+			hashmap_insert(shell->env, *envp, equals + 1);
 			*equals = '='; // Restore string
 		}
 		envp++;
@@ -172,7 +173,6 @@ void	execute_command(t_shell *shell, t_command *cmd)
 }
 
 // prompt.c
-
 char	*display_prompt(t_shell *shell)
 {
 	char	*input;
@@ -264,25 +264,27 @@ void	add_to_history(t_shell *shell, const char *input)
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_command	*cmd;
-	t_shell		shell;
+	t_shell		*shell;
 	char		*input;
 
-	init_shell(&shell, envp);
+	if (argc != 1)
+		return (1);
+	init_shell(shell, envp);
 	setup_signals();
-	while (shell.running)
+	while (shell->running)
 	{
-		input = display_prompt(&shell); //display_prompt is handling Ctrl + D
+		input = display_prompt(shell); //display_prompt is handling Ctrl + D
 		if (!input)
 			break ;
 		cmd = parse_command(input);
 		if (cmd)
 		{
-			execute_command(&shell, cmd);
+			execute_command(shell, cmd);
 			free_cmd(cmd);
 		}
-		add_to_history(&shell, input);
+		add_to_history(shell, input);
 		free(input);
 	}
-	cleanup_shell(&shell);
-	return (shell.last_status);
+	cleanup_shell(shell);
+	return (shell->last_status);
 }
