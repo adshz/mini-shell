@@ -9,5 +9,6 @@
 #include <string.h>
 
 void	echo(char *input);
+void    pwd(void);
 
 #endif

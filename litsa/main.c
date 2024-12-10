@@ -16,6 +16,8 @@ int	main(int argc, char **argv)
 		add_history(input); // Add the input to the history
 		if (ft_strncmp(input, "echo", 4) == 0) // If the user types "echo", the program will print the input
 	  		echo(input);
+		else if (ft_strncmp(input, "pwd", 3) == 0) // If the user types "pwd", the program will print the current working directory
+			pwd();
 	}
 	if (ft_strncmp(input, "exit", 4) == 0) // If the user types "exit", the program will exit
 	{
