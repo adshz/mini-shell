@@ -12,5 +12,6 @@
 void	echo(char *input);
 void    pwd(void);
 void    cd(char *input);
+void	env(void);
 
 #endif

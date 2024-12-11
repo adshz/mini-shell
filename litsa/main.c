@@ -20,13 +20,15 @@ int	main(int argc, char **argv)
 			pwd();
 		else if (ft_strncmp(input, "cd", 2) == 0) // If the user types "cd", the program will change the current working directory
 			cd(input);
+		else if (ft_strncmp(input, "env", 3) == 0) // If the user types "env", the program will print the environment variables
+			env();
+		else if (ft_strncmp(input, "exit", 4) == 0) // If the user types "exit", the program will exit
+		{
+			free(input);
+			break;
+		}
 		else
 			printf("Command not found: %s\n", input); // If the user types anything else, the program will print an error message
-	}
-	if (ft_strncmp(input, "exit", 4) == 0) // If the user types "exit", the program will exit
-	{
-	  free(input);
-	  break;
 	}
 	free(input);
   }
