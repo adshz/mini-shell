@@ -7,8 +7,10 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <string.h>
+#include <sys/_types/_pid_t.h>
 
 void	echo(char *input);
 void    pwd(void);
+void    cd(char *input);
 
 #endif

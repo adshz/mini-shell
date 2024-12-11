@@ -18,6 +18,10 @@ int	main(int argc, char **argv)
 	  		echo(input);
 		else if (ft_strncmp(input, "pwd", 3) == 0) // If the user types "pwd", the program will print the current working directory
 			pwd();
+		else if (ft_strncmp(input, "cd", 2) == 0) // If the user types "cd", the program will change the current working directory
+			cd(input);
+		else
+			printf("Command not found: %s\n", input); // If the user types anything else, the program will print an error message
 	}
 	if (ft_strncmp(input, "exit", 4) == 0) // If the user types "exit", the program will exit
 	{
