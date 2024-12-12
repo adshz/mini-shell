@@ -2,7 +2,7 @@
 
 void	env(void)
 {
-	extern char **environ;
+	extern char **environ; // Global variable that contains all environment variables
 	int i;
 
 	i = 0;
