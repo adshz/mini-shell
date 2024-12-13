@@ -16,6 +16,10 @@ void	execute_command(char *input)
 		show_var(input);
 	else if (ft_strncmp(input, "unset", 5) == 0) // If the user types "unset", the program will remove an environment variable
 		unset(input);
+	else if (ft_strncmp(input, "exit", 4) == 0) // If the user types "exit", the program will exit
+		exit_shell(input);
+	else if (ft_strncmp(input, "cat", 3) == 0) // If the user types "cat", the program will print the contents of a file
+		cat(input);
 	else
 		printf("Command not found: %s\n", input); // If the user types anything else, the program will print an error message
 }

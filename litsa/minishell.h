@@ -9,6 +9,9 @@
 #include <string.h>
 #include <sys/_types/_pid_t.h>
 #include <fcntl.h>
+#include <unistd.h>
+
+# define BUFFER_SIZE 4096
 
 void	echo(char *input);
 void    pwd(void);
@@ -19,5 +22,8 @@ void	show_var(char *inut);
 void	unset(char *input);
 void	redirect_output(char *input);
 void	execute_command(char *input);
+void	exit_shell(char *input);
+void	cat(char *input);
+void	redirect_input(char *input);
 
 #endif
