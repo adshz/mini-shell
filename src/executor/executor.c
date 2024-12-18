@@ -88,10 +88,12 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 	return (1);
 }
 
-int	execute_command(t_shell *shell, t_ast_node *node)
+static int	execute_single_command(t_shell *shell, t_ast_node *node)
 {
 	char	*cmd_path;
 
+	if (!node || !node->value)
+		return (0);
 	if (is_builtin(node->value))
 		return (execute_builtin(shell, node));
 	cmd_path = find_command(shell, node->value);
@@ -123,7 +125,7 @@ static int	execute_command_node(t_shell *shell, t_ast_node *node)
 	if (pid == 0)
 	{
 		handle_redirections(shell, node);
-		exit(execute_command(shell, node));
+		exit(execute_single_command(shell, node));
 	}
 	else if (pid > 0)
 	{
@@ -131,6 +133,19 @@ static int	execute_command_node(t_shell *shell, t_ast_node *node)
 		return (WEXITSTATUS(status));
 	}
 	return (1);
+}
+
+int	execute_command(t_shell *shell, t_ast_node *node)
+{
+	if (!node)
+		return (0);
+	if (node->type == AST_COMMAND)
+		return (execute_command_node(shell, node));
+	else if (node->type == AST_PIPE)
+		return (handle_pipe(shell, node));
+	else if (node->left)
+		return (execute_command(shell, node->left));
+	return (0);
 }
 
 int	execute_ast(t_shell *shell, t_ast_node *node)

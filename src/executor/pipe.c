@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "executor.h"
 #include <unistd.h>
 
 int handle_pipe(t_shell *shell, t_ast_node *node)
