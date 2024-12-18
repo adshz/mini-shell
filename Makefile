@@ -36,7 +36,7 @@ SRCS		:=	\
 				signals/ft_signals.c \
 				hashtable/ft_hashtable.c \
 				executor/executor.c \
-				utils/errors.c \
+				utils/ft_errors.c \
 				utils/string_utils.c \
 				utils/cleanup.c \
 				utils/utils.c \
