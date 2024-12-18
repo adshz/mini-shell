@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
+#include "errors.h"
 
 static char	*create_env_string(const char *key, const char *value)
 {
@@ -95,11 +96,7 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 		return (execute_builtin(shell, node));
 	cmd_path = find_command(shell, node->value);
 	if (!cmd_path)
-	{
-		ft_putstr_fd("command not found: ", STDERR_FILENO);
-		ft_putendl_fd(node->value, STDERR_FILENO);
-		return (127);
-	}
+		return (print_error(node->value, MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
 	return (execute_external_command(shell, node, cmd_path));
 }
 
