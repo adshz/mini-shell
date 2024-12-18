@@ -36,14 +36,20 @@ SRCS		:=	\
 				signals/ft_signals.c \
 				hashtable/ft_hashtable.c \
 				executor/executor.c \
+				executor/pipe_handler.c \
+				executor/redirections.c \
 				utils/ft_errors.c \
 				utils/string_utils.c \
 				utils/cleanup.c \
 				utils/utils.c \
-				executor/pipe.c \
-				executor/redirections.c \
-				executor/pipe_handler.c \
-				executor/executor.c
+				builtins/builtins.c \
+				builtins/ft_pwd.c \
+				builtins/ft_echo.c \
+				builtins/ft_cd.c \
+				builtins/ft_export.c \
+				builtins/ft_unset.c \
+				builtins/ft_env.c \
+				builtins/ft_exit.c
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft

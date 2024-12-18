@@ -15,6 +15,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+int g_signal;
+
 static void	handle_sigint(int signum)
 {
 	g_signal = signum;
