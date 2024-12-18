@@ -1,6 +1,7 @@
 NAME = minishell
 SRC = main.c echo.c env.c cd.c pwd.c export.c show_var.c unset.c \
-		redirect.c exit_shell.c execute_command.c cat.c
+		redirect.c exit_shell.c execute_command.c cat.c redirect_append.c \
+		
 OBJ = $(SRC:.c=.o)
 CC = gcc
 FLAGS = -Wall -Wextra -Werror

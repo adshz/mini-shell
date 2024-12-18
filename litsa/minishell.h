@@ -25,5 +25,7 @@ void	execute_command(char *input);
 void	exit_shell(char *input);
 void	cat(char *input);
 void	redirect_input(char *input);
+void	redirect_output_append(char *input);
+void	redirect_input_heredoc(char *input);
 
 #endif

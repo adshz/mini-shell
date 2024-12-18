@@ -15,7 +15,19 @@ void	echo(char *input)
 		string_to_print += 2; // Skip past "-n"
 		while (*string_to_print == ' ' || *string_to_print == '\t') // Skip past any spaces or tabs	
 			string_to_print++;
-		printf("%s", string_to_print); // Print the input
+	}
+	while (*string_to_print)
+	{
+		if (*string_to_print == ' ' || *string_to_print == '\t') // If the character is a space or tab
+		{
+			// only print space if there is non-space content after it
+			while (*string_to_print == ' ' || *string_to_print == '\t') // Skip past any spaces or tabs
+				string_to_print++; // Skip past any spaces or tabs
+			if (*string_to_print && *string_to_print != '\0') // 
+				write(1, " ", 1); // Print a space	
+		}
+		else
+			write(1, string_to_print++, 1);
 	}
 	if (!n_flag)
 		printf("%s\n", string_to_print); // Print the input
