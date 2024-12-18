@@ -28,10 +28,10 @@
 # include <stdbool.h>
 # include "lexer.h"
 # include "parser.h"
-# include "executor.h"
 # include "hashtable.h"
 # include "signals.h"
 # include "errors.h"
+# include "utils.h"
 
 # define PROMPT ">>minishell$ "
 /* Configure Return values for readability */
@@ -56,13 +56,13 @@ typedef struct s_minishell
 	int				exit_status;
 	int				stdin_backup;
 	int				stdout_backup;
-	struct termios	term_settings
+	struct termios	term_settings;
 	bool			heredoc_sigint;
 	bool			signint_child;
 }	t_shell;
 
 /* Core functions */
-void	init_minishell(t_minishell *shell, char *argv[], char *envp[]);
-void	cleanup_minishell(t_minishell *shell);
+void	init_shell(t_shell *shell, char *argv[], char *envp[]);
+void	cleanup_shell(t_shell *shell);
 
 #endif

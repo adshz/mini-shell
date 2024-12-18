@@ -9,5 +9,10 @@
 /*   Updated: 2024/12/18 15:50:46 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
+void init_signals(void);
+
+#endif
 

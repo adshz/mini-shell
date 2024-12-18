@@ -14,7 +14,8 @@
 #include "libft.h"
 
 /* Import test function declarations */
-void	register_builtin_tests(t_test_case **suite);
+//void	register_builtin_tests(t_test_case **suite);
+void	register_hashtable_tests(t_test_case **suite);
 // Add other test registrations as needed
 
 int	main(void)
@@ -25,7 +26,8 @@ int	main(void)
 	ft_printf("Test runner starting..\n");
 	ft_printf("Registering tests...\n");
 	/* Register all test categories */
-	register_builtin_tests(&suite);
+	//register_builtin_tests(&suite);
+	register_hashtable_tests(&suite);
 	// Register other test categories
 	
 	if (!suite)

@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "shell.h"
+#include "errors.h"
+#include "libft.h"
 
 static void		get_shell_pid(t_shell *shell)
 {
@@ -17,9 +19,9 @@ static void		get_shell_pid(t_shell *shell)
 
 	pid = fork();
 	if (pid < 0)
-		handle_exit(shell, NULL, FORK_ERR, IS_EXIT);
+		exit(ERROR);
 	if (pid == 0)
-		handle_exit(shell, NULL, FAILURE, IS_EXIT);
+		exit(SUCCESS);
 	waitpid(pid, NULL, 0);
 	shell->pid = pid - 1;
 }
@@ -29,7 +31,7 @@ static	void	check_env(t_shell *shell, char *argv[])
 	char	*tmp;
 	int		shlvl;
 
-	if (!hashmap_search(shell->env, "PWD")
+	if (!hashmap_search(shell->env, "PWD"))
 	{
 		tmp = getcwd(NULL, 0);
 		hashmap_insert(shell->env, "PWD", tmp, 0);
@@ -54,10 +56,23 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 	ft_memset(shell, 0, sizeof(t_shell));
 	shell->exit_status = 0;
 	shell->cmds = NULL;
-	shell->env = env_to_hash(envp);
+	
+	// Create empty environment if envp is NULL
+	if (!envp)
+	{
+		shell->env = hashmap_create();
+		if (shell->env)
+		{
+			hashmap_insert(shell->env, "PATH", "/usr/local/bin:/usr/bin:/bin", 0);
+			hashmap_insert(shell->env, "SHLVL", "1", 0);
+			// Add any other essential environment variables
+		}
+	}
+	else
+		shell->env = env_to_hash(envp);
+	
 	shell->pids = NULL;
 	shell->old_pwd = NULL;
-	shell->uid = 0;
 	shell->history = NULL;
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);

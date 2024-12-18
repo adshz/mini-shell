@@ -10,107 +10,105 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	:= test_runner
-CC		:= cc
-CFLAGS	:= -Wall -Wextra -Werror -g
-RM		:= rm -rf
+# Colors and formatting
+GREEN = \033[0;32m
+RED = \033[0;31m
+YELLOW = \033[0;33m
+BLUE = \033[0;34m
+MAGENTA = \033[0;35m
+CYAN = \033[0;36m
+RESET = \033[0m
+BOLD = \033[1m
 
-# Path to Prjects
-PROJECT_ROOT	:=	..
-PROJECT_INC		:= -I$(PROJECT_ROOT)/inc -I$(PROJECT_ROOT)/libft/inc
-PROJECT_SRC		:=  $(PROJECT_ROOT)/src
-
-# Libft paths
-LIBFT_PATH	:= $(PROJECT_ROOT)/libft
-LIBFT		:= $(LIBFT_PATH)/libft.a
-
-# Test Library Paths
-TEST_LIB_PATH	:=	ft_test
-TEST_LIB		:=	$(TEST_LIB_PATH)/libtest.a
-TEST_INC		:=	-I$(TEST_LIB_PATH)/inc
-
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -I../inc -I../external/Unity/src -I../libft/inc -I.
 
 # Source files
-SRC_DIR			:=	./
-TEST_CASES_DIR	:=	test_cases
+SRC_DIR = ../src
+TEST_DIR = .
+UNITY_DIR = ../external/Unity/src
+LIBFT = ../libft/libft.a
 
-# Project source files needed for tests
-# Find all project source files (excluding main.c)
-#PROJECT_SRCS	:=	$(shell find $(PROJECT_SRCS) -type f -name "*.c" ! -name "main.c" -printf "%P\n")
-PROJECT_SRCS	:=	builtins/pwd.c
+SRC_FILES = \
+			$(SRC_DIR)/hashtable/ft_hashtable.c \
+			$(SRC_DIR)/init/init.c \
+			$(SRC_DIR)/lexer/tokeniser.c \
+			$(SRC_DIR)/parser/parser.c \
+			$(SRC_DIR)/executor/executor.c \
+			$(SRC_DIR)/executor/pipe_handler.c \
+			$(SRC_DIR)/executor/redirections.c \
+			$(SRC_DIR)/utils/cleanup.c \
+			$(SRC_DIR)/builtins/builtins.c \
+			$(SRC_DIR)/utils/string_utils.c \
+			$(SRC_DIR)/builtins/ft_pwd.c \
+			$(SRC_DIR)/builtins/ft_echo.c \
+			$(SRC_DIR)/builtins/ft_cd.c \
+			$(SRC_DIR)/builtins/ft_export.c \
+			$(SRC_DIR)/builtins/ft_unset.c \
+			$(SRC_DIR)/builtins/ft_env.c \
+			$(SRC_DIR)/builtins/ft_exit.c
 
-# Find all test source files
-TEST_SRCS		:=	test_main.c \
-					$(TEST_CASES_DIR)/test_builtins.c
-#					$(shell find $(TEST_CASES_DIR) -type f -name "*.c" -printf "%P\n")
+# Unity source
+UNITY_SRC = $(UNITY_DIR)/unity.c
 
-# Object files
-OBJ_DIR			:=	obj
-PROJECT_OBJS	:=	$(addprefix $(OBJ_DIR)/, $(PROJECT_SRCS:.c=.o))
-TEST_OBJS		:=	$(addprefix $(OBJ_DIR)/, $(TEST_SRCS:.c=.o))
+# Test executables
+TEST_INIT = test_init_runner
+TEST_HASH = test_hash_runner
+TEST_TOKEN = test_token_runner
+TEST_PARSE = test_parse_runner
+TEST_EXEC = test_executor_runner
+TEST_BUILTINS = test_builtins_runner
 
-VPATH			:=	$(PROJECT_SRC):test_cases:.
+$(TEST_INIT): test_init_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
-# Colors for output
-GREEN			:=	\033[0;32m
-YELLOW			:=	\033[0;33m
-RESET			:=	\033[0m
+$(TEST_HASH): test_hashtable_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
-MKFLAGS			:= --no-print-directory
+$(TEST_TOKEN): test_tokenizer_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
-all: print_files $(NAME)
+$(TEST_PARSE): test_parser_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
-# Debug target to print found files
-print_files:
-	@echo "$(YELLOW)Project source files:$(RESET)"
-	@echo "$(PROJECT_SRCS)"
-	@echo "$(YELLOW)Test source files:$(RESET)"
-	@echo "$(TEST_SRCS)"
+$(TEST_EXEC): test_executor_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
-
-
-$(NAME): $(TEST_LIB) $(PROJECT_OBJS) $(TEST_OBJS)
-	@$(CC) $(CFLAGS) $(PROJECT_OBJS) $(TEST_OBJS) \
-		-L$(LIBFT_PATH) -lft \
-		-L$(TEST_LIB_PATH) -ltest \
-		-o $(NAME)
-	@echo "$(GREEN)Test runner built successfully!$(RESET)"
-
-$(TEST_LIB):
-	@make $(MKFLAGS) -C $(TEST_LIB_PATH)
-
-# Compile project source files
-$(OBJ_DIR)/builtins/%.o: $(PROJECT_SRC)/builtins/%.c
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) $(PROJECT_INC) -c $< -o $@
-	@echo "$(GREEN)Compiling: $<$(RESET)"
-
-# Compile test source files
-$(OBJ_DIR)/%.o: %.c
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) $(PROJECT_INC) $(TEST_INC) -c $< -o $@
-	@echo "$(GREEN)Compiling: $<$(RESET)"
+$(TEST_BUILTINS): test_builtins_unity.c $(SRC_FILES) $(UNITY_SRC)
+	@echo "$(CYAN)Building $(BOLD)$@$(RESET)..."
+	@$(CC) $(CFLAGS) $(UNITY_SRC) $< $(SRC_FILES) $(LIBFT) -o $@
 
 clean:
-	@$(RM) $(OBJ_DIR)
-	@make $(MKFLAGS) -C $(TEST_LIB_PATH) clean
+	@echo "$(YELLOW)Cleaning up test executables...$(RESET)"
+	rm -f $(TEST_INIT) $(TEST_HASH) $(TEST_TOKEN) $(TEST_PARSE) $(TEST_EXEC) $(TEST_BUILTINS)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@make $(MKFLAGS) -C $(TEST_LIB_PATH) fclean
 
 re: fclean all
 
-run: all
-	@./$(NAME)
+all: $(TEST_INIT) $(TEST_HASH) $(TEST_TOKEN) $(TEST_PARSE) $(TEST_EXEC) $(TEST_BUILTINS)
 
-.PHONY: all clean fclean re run print_files
+test: all
+	@echo "\n$(MAGENTA)$(BOLD)========== Running Tests ===========$(RESET)\n"
+	@echo "$(BLUE)$(BOLD)Running Init Tests:$(RESET)"
+	@./$(TEST_INIT)
+	@echo "\n$(BLUE)$(BOLD)Running Hashtable Tests:$(RESET)"
+	@./$(TEST_HASH)
+	@echo "\n$(BLUE)$(BOLD)Running Parser Tests:$(RESET)"
+	@./$(TEST_PARSE)
+	@echo "\n$(BLUE)$(BOLD)Running Executor Tests:$(RESET)"
+	@./$(TEST_EXEC)
+	@echo "\n$(BLUE)$(BOLD)Running Builtins Tests:$(RESET)"
+	@./$(TEST_BUILTINS)
+	@if [ $$? -eq 0 ]; then \
+		echo "$(GREEN)$(BOLD)All tests completed successfully!$(RESET)"; \
+	else \
+		echo "$(RED)$(BOLD)Some tests failed!$(RESET)"; \
+	fi
 
-# Debug target
-debug:
-	@echo "PROJECT_ROOT: $(PROJECT_ROOT)"
-	@echo "PROJECT_SRC: $(PROJECT_SRC)"
-	@echo "PROJECT_OBJS: $(PROJECT_OBJS)"
-	@echo "TEST_OBJS: $(TEST_OBJS)"
-	@echo "LIBFT: $(LIBFT)"
-	@echo "TEST_LIB: $(TEST_LIB)"
+.PHONY: all clean fclean re test

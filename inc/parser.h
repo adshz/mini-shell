@@ -10,4 +10,39 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef PARSER_H
+# define PARSER_H
 
+# include <stdlib.h>
+# include "lexer.h"
+
+typedef enum e_ast_type
+{
+    AST_COMMAND,     // Simple command
+    AST_PIPE,        // Pipeline
+    AST_REDIR_IN,    // Input redirection (<)
+    AST_REDIR_OUT,   // Output redirection (>)
+    AST_REDIR_APPEND,// Append redirection (>>)
+    AST_HEREDOC,     // Here document (<<)
+    AST_AND,         // AND operator (&&)
+    AST_OR          // OR operator (||)
+} t_ast_type;
+
+typedef struct s_ast_node
+{
+    t_ast_type          type;
+    char                *value;      // For commands and file names
+    char                **args;      // For command arguments
+    struct s_ast_node   *left;
+    struct s_ast_node   *right;
+} t_ast_node;
+
+// Parser functions
+t_ast_node  *parse(t_token *tokens);
+t_ast_node  *create_ast_node(t_ast_type type, char *value);
+void        free_ast(t_ast_node *node);
+t_ast_node  *parse_command(t_token **tokens);
+t_ast_node  *parse_pipeline(t_token **tokens);
+t_ast_node  *parse_expression(t_token **tokens);
+
+#endif

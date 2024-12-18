@@ -23,18 +23,31 @@ ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
 CC			:=	cc
-CFLAGS		:=	-Wall -Werror -Wextra -g3
-INCLUDE		:= -I./inc -I./libft/inc
+CFLAGS		:=	-Wall -Werror -Wextra -g3 -D_GNU_SOURCE
+INCLUDE		:= -I./inc -I./libft/inc -I/usr/local/opt/readline/include
 SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
 				main.c \
-				builtins/pwd.c
+				init/init.c \
+				lexer/tokeniser.c \
+				parser/parser.c \
+				signals/ft_signals.c \
+				hashtable/ft_hashtable.c \
+				executor/executor.c \
+				utils/errors.c \
+				utils/string_utils.c \
+				utils/cleanup.c \
+				utils/utils.c \
+				executor/pipe.c \
+				executor/redirections.c \
+				executor/pipe_handler.c \
+				executor/executor.c
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
-ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -lreadline
+ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
 MKFL		:=	--no-print-directory
 
 all: $(NAME) 
@@ -65,9 +78,9 @@ fclean: clean
 
 re:	fclean all
 
-test:
-	@echo "${YELLO}Running some tests${DF}"
-	@make $(MKFL) -C tests run || exit 1
-	@echo "${GREEN}Tests completed.${GREEN}"
+test: LIBFT
+	@echo "${YELLOW}Running some tests${DF}"
+	@make $(MKFL) -C tests test || exit 1
+	@echo "${GREEN}Tests completed.${DF}"
 
 .PHONY: all clean fclean re

@@ -10,4 +10,36 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef LEXER_H
+# define LEXER_H
 
+# include <stdlib.h>
+
+typedef enum e_token_type
+{
+    TOKEN_WORD,           // Words and command names
+    TOKEN_PIPE,           // |
+    TOKEN_REDIRECT_IN,    // <
+    TOKEN_REDIRECT_OUT,   // >
+    TOKEN_APPEND,         // >>
+    TOKEN_HEREDOC,        // <<
+    TOKEN_AND,           // &&
+    TOKEN_OR,            // ||
+    TOKEN_SEMICOLON,     // ;
+    TOKEN_NEWLINE,       // \n
+    TOKEN_EOF            // End of input
+}   t_token_type;
+
+typedef struct s_token
+{
+    char            *value;
+    t_token_type    type;
+    struct s_token  *next;
+}   t_token;
+
+// Function prototypes
+t_token     *tokenise(const char *input);
+void        free_tokens(t_token *tokens);
+t_token *create_token(t_token_type type, const char *value);
+
+#endif
