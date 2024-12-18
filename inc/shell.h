@@ -6,68 +6,63 @@
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:44:07 by szhong            #+#    #+#             */
-/*   Updated: 2024/11/11 13:48:06 by szhong           ###   ########.fr       */
+/*   Updated: 2024/12/18 15:51:03 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef SHELL_H
 # define SHELL_H
+# include "libft.h"
 # include <readline/readline.h>
 # include <readline/history.h>
-# include <unistd.h>
 # include <sys/wait.h>
 # include <sys/types.h>
 # include "libft.h"
 # include <signal.h>
 # include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <limits.h>
+# include <termios.h>
+# include <stdbool.h>
+# include "lexer.h"
+# include "parser.h"
+# include "executor.h"
+# include "hashtable.h"
+# include "signals.h"
+# include "errors.h"
 
-typedef struct s_command
-{
-	char	*name;	//Command name
-	char	**args; //Command arguments
-	int		pipe_in; // Input pipe
-	int		pipe_out; // Output pipe
-	int		type; // BUILDIN, EXTERNAL, OR INVALID
-	t_builtin_table	*builtins; //builtin commands table
-}	t_command;
+# define PROMPT ">>minishell$ "
+/* Configure Return values for readability */
+# define SUCCESS 0
+# define ERROR 1
+# define SYNTAX_ERROR 2
 
-typedef struct s_shell
+/* Global signal variable */
+extern int	g_signal;
+
+typedef struct s_minishell
 {
-	t_hashmap	*env; // Environment variable using hash table as DS
-	t_list		*history; // linked list for command history
-	int			last_status; // Last command's exit status
-	int			running; // whether shell is running
-	pid_t		shell_pid  // Shell's process ID
+	char			*line;
+	t_token			*tokens;
+	t_ast_node		*ast;
+	t_hashmap		*env;
+	t_list			*cmds;
+	pid_t			pid;
+	pid_t			*pids;
+	char			*old_pwd;
+	char			**history;
+	int				exit_status;
+	int				stdin_backup;
+	int				stdout_backup;
+	struct termios	term_settings
+	bool			heredoc_sigint;
+	bool			signint_child;
 }	t_shell;
 
-typedef struct s_builtin_table
-{
-	t_hashmap	*commands;
-	int			count;
-}	t_builtin_table;
-
-typedef struct s_hash_item
-{
-	char	*key; // key string
-	void	*value; // generic value pointer (can store function pointers)
-	struct	s_hash_item	*next; // for chainning
-}	t_hash_item;
-
-typedef struct s_hashmap
-{
-	t_hash_item	**item; // array of hash item pointers
-	unsigned int	size;
-	unsigned int	count;
-}	t_hashmap;
-
-// TODO
-//typedefenum {
-//    ERR_NONE,
-//    ERR_FILE,      // For file operations
-//    ERR_MEMORY     // For malloc fails
-//} t_error_type;
-
-// TODO
-//void  handle_error(t_error_type type, const char *msg);
-char*	ft_pwd(void);
+/* Core functions */
+void	init_minishell(t_minishell *shell, char *argv[], char *envp[]);
+void	cleanup_minishell(t_minishell *shell);
 
 #endif
