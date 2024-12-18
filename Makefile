@@ -41,7 +41,6 @@ SRCS		:=	\
 				utils/ft_errors.c \
 				utils/string_utils.c \
 				utils/cleanup.c \
-				utils/utils.c \
 				builtins/builtins.c \
 				builtins/ft_pwd.c \
 				builtins/ft_echo.c \
