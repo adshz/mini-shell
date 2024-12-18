@@ -23,7 +23,7 @@
 
 // Function prototypes
 int     execute_ast(t_shell *shell, t_ast_node *ast);
-int     execute_command(t_shell *shell, t_ast_node *node);
+int     execute_command(char **args, t_env *env);
 int     execute_pipe(t_shell *shell, t_ast_node *node);
 int     execute_redirection(t_shell *shell, t_ast_node *node);
 void    handle_redirections(t_shell *shell, t_ast_node *node);

@@ -88,16 +88,75 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 	return (1);
 }
 
-int	execute_command(t_shell *shell, t_ast_node *node)
+int	execute_command(char **args, t_env *env)
 {
 	char	*cmd_path;
+	int		status;
+	pid_t	pid;
 
-	if (is_builtin(node->value))
-		return (execute_builtin(shell, node));
-	cmd_path = find_command(shell, node->value);
+	if (!args || !args[0])
+		return (1);
+	
+	// First check if it's a builtin
+	if (is_builtin(args[0]))
+		return (execute_builtin(args, env));
+
+	// Get the full path of the command
+	cmd_path = get_command_path(args[0], env);
 	if (!cmd_path)
-		return (print_error(node->value, MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
-	return (execute_external_command(shell, node, cmd_path));
+	{
+		ft_error("command not found", args[0]);
+		return (127);  // Command not found error code
+	}
+
+	pid = fork();
+	if (pid == -1)
+	{
+		free(cmd_path);
+		return (ft_error("fork failed", NULL));
+	}
+	if (pid == 0)
+	{
+		execve(cmd_path, args, env_to_array(env));
+		// If execve returns, there was an error
+		ft_error("execve failed", args[0]);
+		exit(126);  // Execution permission denied or similar
+	}
+	free(cmd_path);
+	waitpid(pid, &status, 0);
+	return (WEXITSTATUS(status));
+}
+
+// Helper function to find the full path of a command
+static char	*get_command_path(char *cmd, t_env *env)
+{
+	char	**paths;
+	char	*path_var;
+	char	*full_path;
+	int		i;
+
+	if (ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
+	path_var = get_env_value(env, "PATH");
+	if (!path_var)
+		return (NULL);
+	paths = ft_split(path_var, ':');
+	if (!paths)
+		return (NULL);
+	i = 0;
+	while (paths[i])
+	{
+		full_path = ft_strjoin3(paths[i], "/", cmd);
+		if (access(full_path, X_OK) == 0)
+		{
+			ft_free_array(paths);
+			return (full_path);
+		}
+		free(full_path);
+		i++;
+	}
+	ft_free_array(paths);
+	return (NULL);
 }
 
 pid_t	create_process(t_shell *shell)
@@ -123,7 +182,7 @@ static int	execute_command_node(t_shell *shell, t_ast_node *node)
 	if (pid == 0)
 	{
 		handle_redirections(shell, node);
-		exit(execute_command(shell, node));
+		exit(execute_command(node->args, shell->env));
 	}
 	else if (pid > 0)
 	{
