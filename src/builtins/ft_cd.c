@@ -15,52 +15,94 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static void update_pwd_vars(t_shell *shell, char *old_pwd)
+static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 {
-    char cwd[PATH_MAX];
+	char	cwd[PATH_MAX];
 
-    if (old_pwd)
+	if (old_pwd)
+		hashmap_set(shell->env, "OLDPWD", old_pwd);
+	if (getcwd(cwd, PATH_MAX))
+	{
         hashmap_set(shell->env, "OLDPWD", old_pwd);
-    if (getcwd(cwd, PATH_MAX))
         hashmap_set(shell->env, "PWD", cwd);
+				// Debug prints to verify values
+		printf("OLDPWD set to: %s\n", old_pwd);
+		printf("PWD set to: %s\n", cwd);
+    }
 }
 
-int builtin_cd(t_shell *shell, t_ast_node *node)
+static char	*get_home_path(t_shell *shell)
 {
-    char *path;
-    char cwd[PATH_MAX];
-    char *old_pwd;
+	char	*path;
 
-    if (!node->args[1])
-    {
-        path = hashmap_get(shell->env, "HOME");
-        if (!path)
-        {
-            ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
-            return 1;
-        }
-    }
-    else if (ft_strcmp(node->args[1], "-") == 0)
-    {
-        path = hashmap_get(shell->env, "OLDPWD");
-        if (!path)
-        {
-            ft_putendl_fd("cd: OLDPWD not set", STDERR_FILENO);
-            return 1;
-        }
-        ft_putendl_fd(path, STDOUT_FILENO);
-    }
-    else
-        path = node->args[1];
+	path = hashmap_get(shell->env, "HOME");
+	if (!path)
+	{
+		ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
+		return (NULL);
+	}
+	return (path);
+}
 
-    old_pwd = getcwd(cwd, PATH_MAX);
-    if (chdir(path) != 0)
-    {
-        perror("cd");
-        return 1;
-    }
-    update_pwd_vars(shell, old_pwd);
-    return 0;
+static char	*get_oldpwd_path(t_shell *shell)
+{
+	char	*path;
+
+	path = hashmap_get(shell->env, "OLDPWD");
+	if (!path)
+	{
+		ft_putendl_fd("cd: OLDPWD not set", STDERR_FILENO);
+		return (NULL);
+	}
+	ft_putendl_fd(path, STDOUT_FILENO);
+	return (path);
+}
+
+static char	*handle_path(char *arg)
+{
+	if (!ft_strcmp(arg, ".") || !ft_strcmp(arg, "..") || 
+		arg[0] == '/' || ft_strncmp(arg, "./", 2) == 0 || 
+		ft_strncmp(arg, "../", 3) == 0)
+		return (arg);
+	return (ft_strjoin("./", arg));
+}
+
+int	builtin_cd(t_shell *shell, t_ast_node *node)
+{
+	char	*path;
+	char	cwd[PATH_MAX];
+	char	*old_pwd;
+
+	// Get current directory first
+	old_pwd = getcwd(cwd, PATH_MAX);
+	if (!old_pwd)
+	{
+		perror("cd: getcwd");
+		return (1);
+	}
+
+	//
+	if (!node->args[1])
+		path = get_home_path(shell);
+	else if (ft_strcmp(node->args[1], "-") == 0)
+		path = get_oldpwd_path(shell);
+	else
+		path = handle_path(node->args[1]);
+	if (!path)
+		return (1);
+	old_pwd = getcwd(cwd, PATH_MAX);
+	if (chdir(path) != 0)
+	{
+		if (path != node->args[1])
+			free(path);
+		perror("cd");
+		return (1);
+	}
+	if (path != node->args[1] && path != hashmap_get(shell->env, "HOME") 
+		&& path != hashmap_get(shell->env, "OLDPWD"))
+		free(path);
+	update_pwd_vars(shell, old_pwd);
+	return (0);
 }
 
 

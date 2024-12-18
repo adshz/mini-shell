@@ -23,8 +23,8 @@ ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
 CC			:=	cc
-CFLAGS		:=	-Wall -Werror -Wextra -g3 -D_GNU_SOURCE
-INCLUDE		:= -I./inc -I./libft/inc -I/usr/local/opt/readline/include
+CFLAGS		:=	-Wall -Werror -Wextra -g3
+INCLUDE		:= -I./inc -I./libft/inc
 SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
@@ -55,7 +55,16 @@ LIBFT_PATH	:=	./libft
 ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
 MKFL		:=	--no-print-directory
 
-all: $(NAME) 
+all: banner $(NAME) 
+
+banner:
+	@echo "$(CYAN)"
+	@echo "    ____       _____ __  __________    __ "
+	@echo "   / __ \     / ___// / / / ____/ /   / / "
+	@echo "  / / / /_____\__ \/ /_/ / __/ / /   / /  "
+	@echo " / /_/ /_____/__/ / __  / /___/ /___/ /___"
+	@echo "/_____/     /____/_/ /_/_____/_____/_____/"
+	@echo "$(DF)"
 
 $(NAME): LIBFT $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
