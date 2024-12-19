@@ -25,6 +25,45 @@ static void	valid_args(int argc, char **argv)
 	}
 }
 
+static void	process_line(t_shell *shell)
+{
+	if (shell->line[0])
+		add_history(shell->line);
+	shell->tokens = tokenise(shell->line);
+	if (!shell->tokens)
+	{
+		free(shell->line);
+		return ;
+	}
+	shell->ast = parse(shell->tokens);
+	if (!shell->ast)
+	{
+		free(shell->line);
+		free_tokens(shell->tokens);
+		return ;
+	}
+}
+
+static void	cleanup_iteration(t_shell *shell)
+{
+	free_tokens(shell->tokens);
+	free_ast(shell->ast);
+	free(shell->line);
+	shell->tokens = NULL;
+	shell->ast = NULL;
+	shell->line = NULL;
+}
+
+static void	execute_command(t_shell *shell)
+{
+	process_line(shell);
+	if (shell->ast && shell->tokens)
+	{
+		shell->exit_status = execute_ast(shell, shell->ast);
+		cleanup_iteration(shell);
+	}
+}
+
 int	main(int argc, char *argv[], char **envp)
 {
 	t_shell	shell;
@@ -36,23 +75,13 @@ int	main(int argc, char *argv[], char **envp)
 		init_signals();
 		shell.line = readline(PROMPT);
 		if (!shell.line)
-			break ;
-		if (shell.line[0])
-			add_history(shell.line);
-		shell.tokens = tokenise(shell.line);
-		if (!shell.tokens)
-			continue ;
-		shell.ast = parse(shell.tokens);
-		if (!shell.ast)
 		{
-			free_tokens(shell.tokens);
-			continue ;
+			ft_putendl_fd("exit", STDOUT_FILENO);
+			break ;
 		}
-		shell.exit_status = execute_ast(&shell, shell.ast);
-		free_tokens(shell.tokens);
-		free_ast(shell.ast);
-		free(shell.line);
+		execute_command(&shell);
 	}
+	rl_clear_history();
 	cleanup_shell(&shell);
 	return (shell.exit_status);
 }
