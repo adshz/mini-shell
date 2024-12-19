@@ -46,5 +46,6 @@ extern int	g_signal;
 /* Core functions */
 void	init_shell(t_shell *shell, char *argv[], char *envp[]);
 void	cleanup_shell(t_shell *shell);
+void	free_history(char **history);
 
 #endif

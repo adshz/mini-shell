@@ -39,16 +39,12 @@ static bool	parse_and_build_ast(t_shell *shell)
 {
 	size_t	i;
 
-	// Skip spaces and tabs
 	i = 0;
 	while (shell->line[i] && (shell->line[i] == ' ' || shell->line[i] == '\t'))
 		i++;
-	
-	// If line is empty or only whitespace
 	if (!shell->line[i])
 		return (false);
-
-	if (shell->line[0])
+	if (shell->line[i])
 		add_history(shell->line);
 	shell->tokens = tokenise(shell->line);
 	if (!shell->tokens)
@@ -77,6 +73,14 @@ static void	interactive_loop(t_shell *shell)
 			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
+
+		// Skip empty lines
+		if (shell->line[0] == '\0')
+		{
+			free(shell->line);
+			continue;
+		}
+
 		if (parse_and_build_ast(shell))
 		{
 			shell->exit_status = execute_ast(shell, shell->ast);
