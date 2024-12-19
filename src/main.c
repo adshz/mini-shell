@@ -54,7 +54,7 @@ static void	cleanup_iteration(t_shell *shell)
 	shell->line = NULL;
 }
 
-static void	execute_command(t_shell *shell)
+static void	process_command(t_shell *shell)
 {
 	process_line(shell);
 	if (shell->ast && shell->tokens)
@@ -79,7 +79,7 @@ int	main(int argc, char *argv[], char **envp)
 			ft_putendl_fd("exit", STDOUT_FILENO);
 			break ;
 		}
-		execute_command(&shell);
+		process_command(&shell);
 	}
 	rl_clear_history();
 	cleanup_shell(&shell);
