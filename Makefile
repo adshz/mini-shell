@@ -34,7 +34,6 @@ SRCS		:=	\
 				lexer/tokeniser.c \
 				parser/parser.c \
 				signals/ft_signals.c \
-				hashtable/ft_hashtable.c \
 				executor/executor.c \
 				executor/pipe_handler.c \
 				executor/redirections.c \
@@ -48,7 +47,18 @@ SRCS		:=	\
 				builtins/ft_export.c \
 				builtins/ft_unset.c \
 				builtins/ft_env.c \
-				builtins/ft_exit.c
+				builtins/ft_exit.c \
+				hashtable/hashtable_create.c \
+				hashtable/hashtable_destroy.c \
+				hashtable/hashtable_env_conversion.c \
+				hashtable/hashtable_get.c \
+				hashtable/hashtable_insert.c \
+				hashtable/hashtable_iterate.c \
+				hashtable/hashtable_murmurhash2.c \
+				hashtable/hashtable_remove.c \
+				hashtable/hashtable_search.c \
+				hashtable/hashtable_set.c \
+				hashtable/hashtable_size.c
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft

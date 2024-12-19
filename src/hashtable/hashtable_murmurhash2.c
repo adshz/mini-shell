@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hashtable_murmurhash2.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/19 16:44:15 by szhong            #+#    #+#             */
+/*   Updated: 2024/12/19 16:45:14 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
 #include "hashtable.h"
 #include "libft.h"
 
-static size_t hash_function(const char *key, size_t table_size)
+size_t hash_function(const char *key, size_t table_size)
 {
     const unsigned int m;
     const unsigned int seed;

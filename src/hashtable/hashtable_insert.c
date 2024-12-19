@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hashtable_insert.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/19 16:44:07 by szhong            #+#    #+#             */
+/*   Updated: 2024/12/19 16:44:08 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "hashtable.h"
 
 static int update_existing_item(t_hash_item *item, char *value, int free_old)

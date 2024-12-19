@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hastable.h                                         :+:      :+:    :+:   */
+/*   hashtable.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 15:50:40 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:50:40 by szhong           ###   ########.fr       */
+/*   Updated: 2024/12/19 16:45:46 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef HASHTABLE_H
@@ -29,6 +29,7 @@ typedef struct s_hashmap
     size_t count;
 } t_hashmap;
 
+size_t		hash_function(const char *key, size_t table_size);
 t_hashmap    *hashmap_create_table(size_t size);
 t_hashmap    *env_to_hash(char **envp);
 void        hashmap_destroy(t_hashmap *table);
