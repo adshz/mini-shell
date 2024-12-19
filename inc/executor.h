@@ -24,9 +24,6 @@
 # define EXIT_FAILURE 1
 # define EXIT_CMD_NOT_FOUND 127
 
-// Forward declarations
-typedef struct s_minishell t_shell;
-
 // Function prototypes
 int     execute_ast(t_shell *shell, t_ast_node *ast);
 int     execute_command(t_ast_node *node, t_hashmap *env);
