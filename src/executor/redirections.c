@@ -12,6 +12,7 @@
 #include "executor.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 int execute_redirection(t_shell *shell, t_ast_node *node)
 {
