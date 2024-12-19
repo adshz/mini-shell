@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "executor.h"
+#include "errors.h"
 #include "utils.h"
 #include <unistd.h>
 #include <sys/wait.h>

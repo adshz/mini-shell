@@ -30,7 +30,6 @@ int     execute_command(t_ast_node *node, t_hashmap *env);
 int     execute_pipe(t_shell *shell, t_ast_node *node);
 int     execute_redirection(t_shell *shell, t_ast_node *node);
 void    handle_redirections(t_shell *shell, t_ast_node *node);
-pid_t   create_process(t_shell *shell);
 
 // Pipe handling
 void    setup_pipes(int old_pipe[2], int new_pipe[2], int is_first, int is_last);
