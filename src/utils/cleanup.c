@@ -96,8 +96,11 @@ void cleanup_shell(t_shell *shell)
     if (!shell)
         return;
     tcgetattr(STDIN_FILENO, &shell->term_settings);
-    cleanup_ast(shell);
-    cleanup_line_and_tokens(shell);
+    
+    // Skip AST and tokens cleanup if already done by cleanup_current_command
+    if (shell->ast || shell->tokens || shell->line)
+        cleanup_current_command(shell);
+        
     cleanup_env_and_cmds(shell);
     cleanup_pids_and_pwd(shell);
     cleanup_history(shell);

@@ -27,6 +27,11 @@ static void	validate_args(int argc, char **argv)
 
 static void	cleanup_current_command(t_shell *shell)
 {
+	if (shell->ast)
+	{
+		free_ast(shell->ast);
+		shell->ast = NULL;
+	}
 	if (shell->tokens)
 	{
 		free_tokens(shell->tokens);
@@ -36,11 +41,6 @@ static void	cleanup_current_command(t_shell *shell)
 	{
 		free(shell->line);
 		shell->line = NULL;
-	}
-	if (shell->ast)
-	{
-		free_ast(shell->ast);
-		shell->ast = NULL;
 	}
 }
 
