@@ -10,7 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "executor.h"
+#include "utils.h"
 #include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
 
 int execute_pipe(t_shell *shell, t_ast_node *node)
 {
@@ -93,14 +96,14 @@ int handle_pipe(t_shell *shell, t_ast_node *node)
         close(pipefd[0]);
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
-        exit(execute_command(shell, node->left));
+        exit(execute_command(node->left, shell->env));
     }
     else
     {
         close(pipefd[1]);
         dup2(pipefd[0], STDIN_FILENO);
         close(pipefd[0]);
-        status = execute_command(shell, node->right);
+        status = execute_command(node->right, shell->env);
         waitpid(pid, NULL, 0);
         return (status);
     }
