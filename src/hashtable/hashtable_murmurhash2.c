@@ -16,9 +16,9 @@
 
 size_t hash_function(const char *key, size_t table_size)
 {
-    const unsigned int m;
-    const unsigned int seed;
-    const int r;
+    unsigned int m;
+    unsigned int seed;
+    int r;
     unsigned int h;
     const unsigned char *data = (const unsigned char *)key;
 
