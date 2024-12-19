@@ -21,10 +21,7 @@
 
 static char	*create_env_string(const char *key, const char *value)
 {
-	char	*env_str;
-
-	env_str = ft_strjoin3(key, "=", value);
-	return (env_str);
+	return (ft_strjoin3(key, "=", value));
 }
 
 static int	fill_env_array(t_hashmap *env, char **env_array)
@@ -72,10 +69,16 @@ char	**create_env_array(t_hashmap *env)
 	return (env_array);
 }
 
-static int	execute_external_command(t_shell *shell, t_ast_node *node,
-		char *cmd_path)
+static int	execute_external_command(t_shell *shell, t_ast_node *node)
 {
+	char	*cmd_path;
 	char	**env_array;
+	pid_t	pid;
+	int		status;
+
+	cmd_path = get_command_path(node->args[0], shell->env);
+	if (!cmd_path)
+		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
@@ -84,62 +87,45 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
 
-	execve(cmd_path, node->args, env_array);
-	
-	// If execve returns, there was an error
-	print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
-	
+	shell->signint_child = true;
+	pid = fork();
+	if (pid == 0)
+	{
+		execve(cmd_path, node->args, env_array);
+		print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
+		exit(ERR_NOT_EXECUTABLE);
+	}
+	else if (pid > 0)
+	{
+		waitpid(pid, &status, 0);
+		shell->signint_child = false;
+		free(cmd_path);
+		ft_free_array(env_array);
+		if (WIFSIGNALED(status))
+			return (128 + WTERMSIG(status));
+		return (WEXITSTATUS(status));
+	}
+
 	free(cmd_path);
 	ft_free_array(env_array);
-	return (ERR_NOT_EXECUTABLE);
+	return (print_error(NULL, "fork failed", ERR_GENERAL));
 }
 
 int	execute_command(t_ast_node *node, t_hashmap *env)
 {
-	char	*cmd_path;
-	int		status;
-	pid_t	pid;
 	t_shell	shell;
 
 	if (!node->args || !node->args[0])
 		return (1);
 	
-	// Initialize shell structure
 	shell.env = env;
 	shell.signint_child = false;
 	
-	// First check if it's a builtin
 	if (is_builtin(node->args[0]))
 		return (execute_builtin(&shell, node));
-
-	// Get the full path of the command
-	cmd_path = get_command_path(node->args[0], env);
-	if (!cmd_path)
-		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
-
-	shell.signint_child = true;  // Mark that we're running a child process
-	pid = fork();
-	if (pid == -1)
-	{
-		free(cmd_path);
-		return (print_error(NULL, "fork failed", ERR_GENERAL));
-	}
-	if (pid == 0)
-	{
-		status = execute_external_command(&shell, node, cmd_path);
-		exit(status);
-	}
-	
-	free(cmd_path);
-	waitpid(pid, &status, 0);
-	shell.signint_child = false;  // Reset the child process flag
-	
-	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	return (WEXITSTATUS(status));
+	return (execute_external_command(&shell, node));
 }
 
-// Update get_command_path to match the header declaration
 char	*get_command_path(const char *cmd, t_hashmap *env)
 {
 	char	**paths;
@@ -147,10 +133,11 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 	char	*full_path;
 	int		i;
 
+	if (!cmd || !*cmd)
+		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
 	
-	// Use hashmap_get directly instead of converting to env list
 	path_var = hashmap_get(env, "PATH");
 	if (!path_var)
 		return (NULL);
@@ -158,6 +145,7 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 	paths = ft_split(path_var, ':');
 	if (!paths)
 		return (NULL);
+	
 	i = 0;
 	while (paths[i])
 	{
@@ -174,55 +162,19 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 	return (NULL);
 }
 
-pid_t	create_process(t_shell *shell)
-{
-	pid_t	pid;
-
-	(void)shell;
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork");
-		return (-1);
-	}
-	return (pid);
-}
-
-static int	execute_command_node(t_shell *shell, t_ast_node *node)
-{
-	pid_t	pid;
-	int		status;
-	char	cwd[PATH_MAX];
-
-	// Update PWD in parent process
-	if (getcwd(cwd, PATH_MAX))
-		hashmap_set(shell->env, "PWD", cwd);
-
-	pid = create_process(shell);
-	if (pid == 0)
-	{
-		handle_redirections(shell, node);
-		exit(execute_command(node, shell->env));
-	}
-	else if (pid > 0)
-	{
-		waitpid(pid, &status, 0);
-		return (WEXITSTATUS(status));
-	}
-	return (1);
-}
-
 int	execute_ast(t_shell *shell, t_ast_node *node)
 {
 	if (!node)
 		return (0);
+
 	if (node->type == AST_COMMAND)
-		return (execute_command_node(shell, node));
+		return (execute_command(node, shell->env));
 	else if (node->type == AST_PIPE)
 		return (execute_pipe(shell, node));
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
 			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
 		return (execute_redirection(shell, node));
+
 	return (1);
 }
 
