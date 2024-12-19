@@ -15,7 +15,6 @@
 t_hashmap *hashmap_create_table(size_t size)
 {
     t_hashmap *table;
-    size_t i;
 
     table = malloc(sizeof(t_hashmap));
     if (!table)

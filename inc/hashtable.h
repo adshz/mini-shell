@@ -29,6 +29,8 @@ typedef struct s_hashmap
     size_t count;
 } t_hashmap;
 
+void        hashmap_handle_collision(t_hashmap *table, size_t index, 
+                            t_hash_item *new_item);
 size_t		hash_function(const char *key, size_t table_size);
 t_hashmap    *hashmap_create_table(size_t size);
 t_hashmap    *env_to_hash(char **envp);
@@ -44,7 +46,6 @@ void        hashmap_iterate(t_hashmap *table, void (*f)(const char *, const char
 size_t      hashmap_size(t_hashmap *table);
 char        *ft_strjoin3(const char *s1, const char *s2, const char *s3);
 void        ft_free_array(char **array);
-void        hashmap_handle_collision(t_hashmap *table, size_t index, 
-                            t_hash_item *new_item);
+
 
 #endif

@@ -58,7 +58,8 @@ SRCS		:=	\
 				hashtable/hashtable_remove.c \
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
-				hashtable/hashtable_size.c
+				hashtable/hashtable_size.c \
+				hashtable/hashtable_handle_collision.c
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
