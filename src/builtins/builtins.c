@@ -60,33 +60,40 @@ int execute_builtin(t_shell *shell, t_ast_node *node)
 
 char *find_command(t_shell *shell, const char *cmd)
 {
-    char *path;
-    char **paths;
-    char *full_path;
-    int i;
+	char	*path;
+	char	**paths;
+	char	*full_path;
+	int		i;
 
-    if (!cmd || !shell)
-        return NULL;
-    if (cmd[0] == '/' || cmd[0] == '.')
-        return ft_strdup(cmd);
-    path = hashmap_get(shell->env, "PATH");
-    if (!path)
-        return NULL;
-    paths = ft_split(path, ':');
-    if (!paths)
-        return NULL;
-    i = 0;
-    while (paths[i])
-    {
-        full_path = ft_strjoin3(paths[i], "/", cmd);
-        if (full_path && access(full_path, X_OK) == 0)
-        {
-            ft_free_array(paths);
-            return full_path;
-        }
-        free(full_path);
-        i++;
-    }
-    ft_free_array(paths);
-    return NULL;
+	if (!cmd || !shell)
+		return (NULL);
+	if (cmd[0] == '/' || cmd[0] == '.')
+		return (ft_strdup(cmd));
+	path = hashmap_get(shell->env, "PATH");
+	if (!path)
+	{
+		handle_error(shell, ERR_FILE_NOT_FOUND, "PATH");
+		return (NULL);
+	}
+	paths = ft_split(path, ':');
+	if (!paths)
+	{
+		handle_error(shell, ERR_MALLOC, NULL);
+		return (NULL);
+	}
+	i = 0;
+	while (paths[i])
+	{
+		full_path = ft_strjoin3(paths[i], "/", cmd);
+		if (full_path && access(full_path, X_OK) == 0)
+		{
+			ft_free_array(paths);
+			return (full_path);
+		}
+		free(full_path);
+		i++;
+	}
+	ft_free_array(paths);
+	handle_error(shell, ERR_CMD_NOT_FOUND, cmd);
+	return (NULL);
 } 

@@ -9,6 +9,7 @@
 /*   Updated: 2024/12/18 15:51:59 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include <stdlib.h>
 #include "parser.h"
 #include "libft.h"
 
@@ -23,34 +24,46 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 	node->args = NULL;
 	node->left = NULL;
 	node->right = NULL;
+	node->value = NULL;
 	if (value)
-		node->value = ft_strdup(value);
-	else
-		node->value = NULL;
-	if (value && !node->value)
 	{
-		free(node);
-		return (NULL);
+		node->value = ft_strdup(value);
+		if (!node->value)
+		{
+			free(node);
+			return (NULL);
+		}
 	}
 	return (node);
 }
 
+static void	free_args(char **args)
+{
+	int	i;
+
+	if (!args)
+		return ;
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
+}
+
 void	free_ast(t_ast_node *node)
 {
-	char	**tmp;
-
 	if (!node)
 		return ;
-	free_ast(node->left);
-	free_ast(node->right);
-	free(node->value);
+	if (node->left)
+		free_ast(node->left);
+	if (node->right)
+		free_ast(node->right);
+	if (node->value)
+		free(node->value);
 	if (node->args)
-	{
-		tmp = node->args;
-		while (*tmp)
-			free(*tmp++);
-		free(node->args);
-	}
+		free_args(node->args);
 	free(node);
 }
 
