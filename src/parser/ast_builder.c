@@ -54,7 +54,7 @@ static void	free_args(char **args)
 
 void	free_ast(t_ast_node *node)
 {
-	if (!node)
+	if (!node || node == (void *)-1)
 		return ;
 	if (node->left)
 		free_ast(node->left);
