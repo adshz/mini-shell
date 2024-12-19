@@ -21,18 +21,17 @@
 static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 {
 	char	cwd[PATH_MAX];
-	char	*new_pwd;
 
 	if (old_pwd)
 		hashmap_set(shell->env, "OLDPWD", old_pwd);
 	
-	new_pwd = getcwd(cwd, PATH_MAX);
-	if (new_pwd)
+	if (getcwd(cwd, PATH_MAX))
 	{
-		hashmap_set(shell->env, "PWD", new_pwd);
-		if (chdir(new_pwd) != 0)
-			perror("cd");
+		hashmap_set(shell->env, "PWD", cwd);
+		printf("PWD set to: %s\n", cwd);  // Debug print
 	}
+	else
+		perror("getcwd");
 }
 
 static char	*get_home_path(t_shell *shell)

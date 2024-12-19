@@ -76,7 +76,6 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 		char *cmd_path)
 {
 	char	**env_array;
-	char	cwd[PATH_MAX];
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
@@ -84,17 +83,6 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 		free(cmd_path);
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
-
-	// Get current working directory
-	if (!getcwd(cwd, PATH_MAX))
-	{
-		free(cmd_path);
-		ft_free_array(env_array);
-		return (print_error("getcwd", strerror(errno), 1));
-	}
-
-	// Update PWD in environment
-	hashmap_set(shell->env, "PWD", cwd);
 
 	execve(cmd_path, node->args, env_array);
 	
@@ -202,36 +190,25 @@ pid_t	create_process(t_shell *shell)
 
 static int	execute_command_node(t_shell *shell, t_ast_node *node)
 {
-	pid_t pid;
-	int status;
-	char *current_pwd;
+	pid_t	pid;
+	int		status;
+	char	cwd[PATH_MAX];
 
-	// Get current PWD before forking
-	current_pwd = hashmap_get(shell->env, "PWD");
-	if (!current_pwd)
-		current_pwd = getcwd(NULL, 0);
+	// Update PWD in parent process
+	if (getcwd(cwd, PATH_MAX))
+		hashmap_set(shell->env, "PWD", cwd);
 
 	pid = create_process(shell);
 	if (pid == 0)
 	{
-		// Child process
-		if (current_pwd && chdir(current_pwd) != 0)
-		{
-			perror("cd");
-			exit(1);
-		}
 		handle_redirections(shell, node);
 		exit(execute_command(node, shell->env));
 	}
 	else if (pid > 0)
 	{
-		if (current_pwd && current_pwd != hashmap_get(shell->env, "PWD"))
-			free(current_pwd);
 		waitpid(pid, &status, 0);
 		return (WEXITSTATUS(status));
 	}
-	if (current_pwd && current_pwd != hashmap_get(shell->env, "PWD"))
-		free(current_pwd);
 	return (1);
 }
 
