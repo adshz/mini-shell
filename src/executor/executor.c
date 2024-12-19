@@ -77,7 +77,6 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 {
 	char	**env_array;
 	char	*current_dir;
-	char	cwd[PATH_MAX];
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
@@ -88,11 +87,16 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 
 	// Get current working directory from shell's env
 	current_dir = hashmap_get(shell->env, "PWD");
-	if (current_dir && getcwd(cwd, sizeof(cwd)))
+	if (current_dir)
 	{
-		// If current directory differs from shell's PWD, change to it
-		if (ft_strcmp(current_dir, cwd) != 0)
-			chdir(current_dir);
+		// Change to the current working directory before executing command
+		if (chdir(current_dir) != 0)
+		{
+			ft_putstr_fd("cd: Failed to change directory\n", STDERR_FILENO);
+			free(cmd_path);
+			ft_free_array(env_array);
+			return (1);
+		}
 	}
 
 	execve(cmd_path, node->args, env_array);

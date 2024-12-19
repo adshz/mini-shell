@@ -28,9 +28,6 @@ static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 	{
 		hashmap_set(shell->env, "OLDPWD", old_pwd);
 		hashmap_set(shell->env, "PWD", cwd);
-		// Debug prints to verify values
-		printf("OLDPWD set to: %s\n", old_pwd);
-		printf("PWD set to: %s\n", cwd);
 	}
 }
 
