@@ -61,6 +61,11 @@ void hashmap_set(t_hashmap *table, const char *key, const char *value)
     new_item = create_item(key, value);
     if (!new_item)
         return;
-    new_item->next = table->items[index];
-    table->items[index] = new_item;
+    if (table->items[index] == NULL)
+    {
+        table->items[index] = new_item;
+        table->count++;
+    }
+    else
+        hashmap_handle_collision(table, index, new_item);
 }
