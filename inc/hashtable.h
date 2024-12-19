@@ -44,7 +44,7 @@ void        hashmap_iterate(t_hashmap *table, void (*f)(const char *, const char
 size_t      hashmap_size(t_hashmap *table);
 char        *ft_strjoin3(const char *s1, const char *s2, const char *s3);
 void        ft_free_array(char **array);
-void hashmap_handle_collision(t_hashmap *table, size_t index, 
+void        hashmap_handle_collision(t_hashmap *table, size_t index, 
                             t_hash_item *new_item);
 
 #endif
