@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 #include "shell.h"
 #include "errors.h"
+#include "utils.h"
+#include <stdio.h>
+#include <errno.h>
 
 int	print_error(char *cmd, char *msg, int error_code)
 {

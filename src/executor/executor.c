@@ -109,16 +109,13 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	// Get the full path of the command
 	cmd_path = get_command_path(node->args[0], env);
 	if (!cmd_path)
-	{
-		ft_error("command not found", node->args[0]);
-		return (127);  // Command not found error code
-	}
+		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
 
 	pid = fork();
 	if (pid == -1)
 	{
 		free(cmd_path);
-		return (ft_error("fork failed", NULL));
+		return (print_error(NULL, "fork failed", 1));
 	}
 	if (pid == 0)
 	{
@@ -137,18 +134,15 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 	char	*path_var;
 	char	*full_path;
 	int		i;
-	t_env	*env_list;
 
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
 	
-	// Convert hashmap to env list for get_env_value
-	env_list = hashmap_to_env(env);
-	path_var = get_env_value(env_list, "PATH");
-	free(env_list);
-	
+	// Use hashmap_get directly instead of converting to env list
+	path_var = hashmap_get(env, "PATH");
 	if (!path_var)
 		return (NULL);
+	
 	paths = ft_split(path_var, ':');
 	if (!paths)
 		return (NULL);
