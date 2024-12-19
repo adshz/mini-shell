@@ -6,7 +6,7 @@
 #    By: szhong <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/08 12:46:50 by szhong            #+#    #+#              #
-#    Updated: 2024/12/19 13:53:29 by szhong           ###   ########.fr        #
+#    Updated: 2024/12/19 17:59:23 by szhong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 #Define colour
@@ -43,7 +43,6 @@ SRCS		:=	\
 				executor/executor.c \
 				executor/pipe_handler.c \
 				executor/redirections.c \
-				utils/ft_errors.c \
 				utils/string_utils.c \
 				utils/cleanup.c \
 				builtins/builtins.c \

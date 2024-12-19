@@ -14,24 +14,6 @@
 #include "builtins.h"
 #include "libft.h"
 
-static void	cleanup_shell(t_shell *shell)
-{
-	if (shell->env)
-		hashmap_destroy(shell->env);
-	if (shell->cmds)
-		free_ast(shell->cmds);
-	if (shell->pids)
-		free(shell->pids);
-	if (shell->old_pwd)
-		free(shell->old_pwd);
-	if (shell->history)
-		free_history(shell->history);
-	if (shell->stdin_backup > 2)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup > 2)
-		close(shell->stdout_backup);
-}
-
 int	builtin_exit(t_shell *shell, t_ast_node *node)
 {
 	int	exit_code;

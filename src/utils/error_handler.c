@@ -6,7 +6,7 @@
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 15:51:23 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:23 by szhong           ###   ########.fr       */
+/*   Updated: 2024/12/19 17:59:49 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -50,7 +50,7 @@ void	print_error_new(t_error_type error, const char *detail)
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (detail)
 	{
-		ft_putstr_fd(detail, STDERR_FILENO);
+		ft_putstr_fd((char *)detail, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 	}
 	ft_putendl_fd((char *)get_error_message(error), STDERR_FILENO);
