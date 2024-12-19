@@ -10,57 +10,98 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "executor.h"
+#include "errors.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
-int execute_redirection(t_shell *shell, t_ast_node *node)
+static int	handle_input_redirection(t_ast_node *node)
 {
-    pid_t pid;
-    int status;
+	int	fd;
 
-    pid = create_process(shell);
-    if (pid == 0)
-    {
-        // Child process
-        handle_redirections(shell, node);
-        exit(execute_ast(shell, node->left));
-    }
-    else if (pid < 0)
-        return EXIT_FAILURE;
-
-    // Parent process
-    waitpid(pid, &status, 0);
-    return WEXITSTATUS(status);
+	fd = open(node->right->value, O_RDONLY);
+	if (fd == -1)
+		return (print_error(node->right->value, "No such file or directory", 1));
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+	return (0);
 }
 
-void handle_redirections(t_shell *shell, t_ast_node *node)
+static int	handle_output_redirection(t_ast_node *node)
 {
-    (void)shell;
+	int	fd;
 
-    if (!node)
-        return;
+	fd = open(node->right->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return (print_error(node->right->value, "Cannot create file", 1));
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (0);
+}
 
-    if (node->type == AST_REDIR_IN)
-    {
-        // ... handle input redirection
-    }
-    else if (node->type == AST_REDIR_OUT)
-    {
-        // ... handle output redirection
-    }
-    else if (node->type == AST_REDIR_APPEND)
-    {
-        // ... handle append redirection
-    }
-    else if (node->type == AST_COMMAND || 
-             node->type == AST_PIPE || 
-             node->type == AST_AND || 
-             node->type == AST_OR)
-    {
-        // Add these cases to handle all enum values
-    }
-    // ... other cases ...
+static int	handle_append_redirection(t_ast_node *node)
+{
+	int	fd;
+
+	fd = open(node->right->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd == -1)
+		return (print_error(node->right->value, "Cannot create file", 1));
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+	return (0);
+}
+
+void	handle_redirections(t_shell *shell, t_ast_node *node)
+{
+	int	status;
+
+	if (!node)
+		return;
+
+	if (node->type == AST_REDIR_IN)
+	{
+		status = handle_input_redirection(node);
+		if (status != 0)
+			exit(status);
+	}
+	else if (node->type == AST_REDIR_OUT)
+	{
+		status = handle_output_redirection(node);
+		if (status != 0)
+			exit(status);
+	}
+	else if (node->type == AST_REDIR_APPEND)
+	{
+		status = handle_append_redirection(node);
+		if (status != 0)
+			exit(status);
+	}
+	else if (node->type == AST_HEREDOC)
+	{
+		// TODO: Implement heredoc handling
+		(void)shell;
+	}
+}
+
+int	execute_redirection(t_shell *shell, t_ast_node *node)
+{
+	pid_t	pid;
+	int		status;
+
+	shell->signint_child = true;
+	pid = fork();
+	if (pid == -1)
+		return (print_error(NULL, "fork failed", 1));
+
+	if (pid == 0)
+	{
+		handle_redirections(shell, node);
+		exit(execute_ast(shell, node->left));
+	}
+
+	waitpid(pid, &status, 0);
+	shell->signint_child = false;
+	return (WEXITSTATUS(status));
 }
 
 

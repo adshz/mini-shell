@@ -101,8 +101,6 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 		shell->signint_child = false;
 		free(cmd_path);
 		ft_free_array(env_array);
-		if (WIFSIGNALED(status))
-			return (128 + WTERMSIG(status));
 		return (WEXITSTATUS(status));
 	}
 
