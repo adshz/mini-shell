@@ -3,7 +3,7 @@
 
 # include "types.h"
 # include "hashtable.h"
-
+# include "parser.h"
 // Error handling
 int     ft_error(const char *msg, const char *arg);
 
