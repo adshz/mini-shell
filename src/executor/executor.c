@@ -94,26 +94,20 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	char	*cmd_path;
 	int		status;
 	pid_t	pid;
-	t_env	*env_list;
+	t_shell	shell;
 
 	if (!node->args || !node->args[0])
 		return (1);
 	
-	// Convert hashmap to env list for builtins
-	env_list = hashmap_to_env(env);
+	// Initialize shell structure for builtin commands
+	shell.env = env;
 	
 	// First check if it's a builtin
 	if (is_builtin(node->args[0]))
-	{
-		status = execute_builtin(node, env_list);
-		free(env_list);
-		return (status);
-	}
+		return (execute_builtin(&shell, node));
 
 	// Get the full path of the command
 	cmd_path = get_command_path(node->args[0], env);
-	free(env_list);
-	
 	if (!cmd_path)
 	{
 		ft_error("command not found", node->args[0]);
@@ -128,7 +122,7 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	}
 	if (pid == 0)
 	{
-		status = execute_external_command(shell, node, cmd_path);
+		status = execute_external_command(&shell, node, cmd_path);
 		exit(status);
 	}
 	free(cmd_path);
@@ -136,17 +130,23 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	return (WEXITSTATUS(status));
 }
 
-// Helper function to find the full path of a command
-static char	*get_command_path(char *cmd, t_hashmap *env)
+// Update get_command_path to match the header declaration
+char	*get_command_path(const char *cmd, t_hashmap *env)
 {
 	char	**paths;
 	char	*path_var;
 	char	*full_path;
 	int		i;
+	t_env	*env_list;
 
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
-	path_var = get_env_value(env, "PATH");
+	
+	// Convert hashmap to env list for get_env_value
+	env_list = hashmap_to_env(env);
+	path_var = get_env_value(env_list, "PATH");
+	free(env_list);
+	
 	if (!path_var)
 		return (NULL);
 	paths = ft_split(path_var, ':');
