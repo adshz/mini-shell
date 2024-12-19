@@ -14,7 +14,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-static void	valid_args(int argc, char **argv)
+static void	validate_args(int argc, char **argv)
 {
 	if (argc > 1)
 	{
@@ -25,26 +25,7 @@ static void	valid_args(int argc, char **argv)
 	}
 }
 
-static void	process_line(t_shell *shell)
-{
-	if (shell->line[0])
-		add_history(shell->line);
-	shell->tokens = tokenise(shell->line);
-	if (!shell->tokens)
-	{
-		free(shell->line);
-		return ;
-	}
-	shell->ast = parse(shell->tokens);
-	if (!shell->ast)
-	{
-		free(shell->line);
-		free_tokens(shell->tokens);
-		return ;
-	}
-}
-
-static void	cleanup_iteration(t_shell *shell)
+static void	cleanup_current_command(t_shell *shell)
 {
 	free_tokens(shell->tokens);
 	free_ast(shell->ast);
@@ -54,34 +35,55 @@ static void	cleanup_iteration(t_shell *shell)
 	shell->line = NULL;
 }
 
-static void	process_command(t_shell *shell)
+static bool	parse_and_build_ast(t_shell *shell)
 {
-	process_line(shell);
-	if (shell->ast && shell->tokens)
+	if (shell->line[0])
+		add_history(shell->line);
+	shell->tokens = tokenise(shell->line);
+	if (!shell->tokens)
 	{
-		shell->exit_status = execute_ast(shell, shell->ast);
-		cleanup_iteration(shell);
+		free(shell->line);
+		return (false);
+	}
+	shell->ast = parse(shell->tokens);
+	if (!shell->ast)
+	{
+		free(shell->line);
+		free_tokens(shell->tokens);
+		return (false);
+	}
+	return (true);
+}
+
+static void	interactive_loop(t_shell *shell)
+{
+	while (1)
+	{
+		init_signals();
+		shell->line = readline(PROMPT);
+		if (!shell->line)
+		{
+			ft_putendl_fd("exit", STDOUT_FILENO);
+			break ;
+		}
+		if (parse_and_build_ast(shell))
+		{
+			shell->exit_status = execute_ast(shell, shell->ast);
+			cleanup_current_command(shell);
+		}
 	}
 }
 
 int	main(int argc, char *argv[], char **envp)
 {
 	t_shell	shell;
+	int		exit_status;
 
-	valid_args(argc, argv);
+	validate_args(argc, argv);
 	init_shell(&shell, argv, envp);
-	while (1)
-	{
-		init_signals();
-		shell.line = readline(PROMPT);
-		if (!shell.line)
-		{
-			ft_putendl_fd("exit", STDOUT_FILENO);
-			break ;
-		}
-		process_command(&shell);
-	}
+	interactive_loop(&shell);
+	exit_status = shell.exit_status;
 	rl_clear_history();
 	cleanup_shell(&shell);
-	return (shell.exit_status);
+	return (exit_status);
 }
