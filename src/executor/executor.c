@@ -205,20 +205,36 @@ pid_t	create_process(t_shell *shell)
 
 static int	execute_command_node(t_shell *shell, t_ast_node *node)
 {
-	pid_t	pid;
-	int		status;
+	pid_t pid;
+	int status;
+	char *current_pwd;
+
+	// Get current PWD before forking
+	current_pwd = hashmap_get(shell->env, "PWD");
+	if (!current_pwd)
+		current_pwd = getcwd(NULL, 0);
 
 	pid = create_process(shell);
 	if (pid == 0)
 	{
+		// Child process
+		if (current_pwd && chdir(current_pwd) != 0)
+		{
+			perror("cd");
+			exit(1);
+		}
 		handle_redirections(shell, node);
 		exit(execute_command(node, shell->env));
 	}
 	else if (pid > 0)
 	{
+		if (current_pwd && current_pwd != hashmap_get(shell->env, "PWD"))
+			free(current_pwd);
 		waitpid(pid, &status, 0);
 		return (WEXITSTATUS(status));
 	}
+	if (current_pwd && current_pwd != hashmap_get(shell->env, "PWD"))
+		free(current_pwd);
 	return (1);
 }
 
