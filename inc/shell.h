@@ -43,25 +43,6 @@
 /* Global signal variable */
 extern int	g_signal;
 
-typedef struct s_minishell
-{
-	char			*line;
-	t_token			*tokens;
-	t_ast_node		*ast;
-	t_hashmap		*env;
-	t_list			*cmds;
-	pid_t			pid;
-	pid_t			*pids;
-	char			*old_pwd;
-	char			**history;
-	int				exit_status;
-	int				stdin_backup;
-	int				stdout_backup;
-	struct termios	term_settings;
-	bool			heredoc_sigint;
-	bool			signint_child;
-}	t_shell;
-
 /* Core functions */
 void	init_shell(t_shell *shell, char *argv[], char *envp[]);
 void	cleanup_shell(t_shell *shell);
