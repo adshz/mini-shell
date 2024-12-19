@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
+#include <errno.h>
 #include "errors.h"
 
 static char	*create_env_string(const char *key, const char *value)

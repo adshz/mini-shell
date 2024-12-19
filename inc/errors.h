@@ -16,6 +16,7 @@
 # include "shell.h"
 
 /* Error codes */
+# define ERR_GENERAL 1
 # define ERR_MALLOC 1
 # define ERR_SYNTAX 2
 # define ERR_CMD_NOT_FOUND 127
