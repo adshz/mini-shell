@@ -22,12 +22,22 @@ int	builtin_exit(t_shell *shell, t_ast_node *node)
 	if (!node->args || !node->args[1])
 	{
 		exit_code = shell->exit_status;
+		if (shell->ast)
+		{
+			free_ast(shell->ast);
+			shell->ast = NULL;
+		}
 		cleanup_shell(shell);
 		exit(exit_code);
 	}
 	if (!ft_isnumber(node->args[1]))
 	{
 		print_error(node->args[1], "numeric argument required", 2);
+		if (shell->ast)
+		{
+			free_ast(shell->ast);
+			shell->ast = NULL;
+		}
 		cleanup_shell(shell);
 		exit(2);
 	}
@@ -37,6 +47,11 @@ int	builtin_exit(t_shell *shell, t_ast_node *node)
 		return (1);
 	}
 	exit_code = ft_atoi(node->args[1]) % 256;
+	if (shell->ast)
+	{
+		free_ast(shell->ast);
+		shell->ast = NULL;
+	}
 	cleanup_shell(shell);
 	exit(exit_code);
 }

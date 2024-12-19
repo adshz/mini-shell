@@ -27,12 +27,21 @@ static void	validate_args(int argc, char **argv)
 
 static void	cleanup_current_command(t_shell *shell)
 {
-	free_tokens(shell->tokens);
-	free_ast(shell->ast);
-	free(shell->line);
-	shell->tokens = NULL;
-	shell->ast = (void *)-1;
-	shell->line = NULL;
+	if (shell->ast)
+	{
+		free_ast(shell->ast);
+		shell->ast = NULL;
+	}
+	if (shell->tokens)
+	{
+		free_tokens(shell->tokens);
+		shell->tokens = NULL;
+	}
+	if (shell->line)
+	{
+		free(shell->line);
+		shell->line = NULL;
+	}
 }
 
 static bool	parse_and_build_ast(t_shell *shell)
