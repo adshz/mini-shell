@@ -14,6 +14,7 @@
 # define EXECUTOR_H
 
 # include "types.h"
+# include "parser.h"
 # include <unistd.h>
 
 // Exit status codes
@@ -22,7 +23,7 @@
 # define EXIT_CMD_NOT_FOUND 127
 
 // Forward declarations
-typedef struct s_shell t_shell;
+typedef struct s_minishell t_shell;
 
 // Function prototypes
 int     execute_ast(t_shell *shell, t_ast_node *ast);

@@ -10,12 +10,4 @@ typedef struct s_env
     struct s_env *next;
 } t_env;
 
-typedef struct s_ast_node
-{
-    int type;
-    struct s_ast_node *left;
-    struct s_ast_node *right;
-    // Add other AST node specific fields here
-} t_ast_node;
-
 #endif 
