@@ -24,12 +24,8 @@ static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 
 	if (old_pwd)
 		hashmap_set(shell->env, "OLDPWD", old_pwd);
-	
 	if (getcwd(cwd, PATH_MAX))
-	{
 		hashmap_set(shell->env, "PWD", cwd);
-		printf("PWD set to: %s\n", cwd);  // Debug print
-	}
 	else
 		perror("getcwd");
 }

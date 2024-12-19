@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   redirection_parser.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,48 +12,45 @@
 #include "parser.h"
 #include "libft.h"
 
-static t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens)
+static t_ast_node	*create_redir_node(t_token_type type, const char *target)
 {
-	t_token	*current;
+	t_ast_node	*redir_node;
+	t_ast_node	*target_node;
 
+	redir_node = create_ast_node(get_ast_type(type), NULL);
+	if (!redir_node)
+		return (NULL);
+	target_node = create_ast_node(AST_COMMAND, target);
+	if (!target_node)
+	{
+		free_ast(redir_node);
+		return (NULL);
+	}
+	redir_node->right = target_node;
+	return (redir_node);
+}
+
+t_ast_node	*handle_redirection(t_ast_node *left, t_token **tokens)
+{
+	t_token_type	redir_type;
+	t_ast_node		*redir_node;
+	t_token			*current;
+
+	redir_type = (*tokens)->type;
+	*tokens = (*tokens)->next;
 	current = *tokens;
-	while (current && is_redirection_token(current->type))
+	if (!current || current->type != TOKEN_WORD)
 	{
-		node = handle_redirection(node, tokens);
-		if (!node)
-			return (NULL);
-		current = *tokens;
-	}
-	return (node);
-}
-
-t_ast_node	*parse_expression(t_token **tokens)
-{
-	t_ast_node	*node;
-
-	if (!tokens || !*tokens)
-		return (NULL);
-	node = parse_pipeline(tokens);
-	if (!node)
-		return (NULL);
-	return (handle_redirections(node, tokens));
-}
-
-t_ast_node	*parse(t_token *tokens)
-{
-	t_ast_node	*ast;
-	t_token		*current;
-
-	if (!tokens)
-		return (NULL);
-	current = tokens;
-	ast = parse_expression(&current);
-	if (!ast)
-		return (NULL);
-	if (current != NULL)
-	{
-		free_ast(ast);
+		free_ast(left);
 		return (NULL);
 	}
-	return (ast);
-}
+	redir_node = create_redir_node(redir_type, current->value);
+	if (!redir_node)
+	{
+		free_ast(left);
+		return (NULL);
+	}
+	redir_node->left = left;
+	*tokens = current->next;
+	return (redir_node);
+} 

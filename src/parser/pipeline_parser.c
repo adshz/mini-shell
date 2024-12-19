@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   pipeline_parser.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,48 +12,42 @@
 #include "parser.h"
 #include "libft.h"
 
-static t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens)
+static t_ast_node	*create_pipe_node(t_ast_node *left, t_ast_node *right)
 {
-	t_token	*current;
+	t_ast_node	*pipe_node;
 
-	current = *tokens;
-	while (current && is_redirection_token(current->type))
+	pipe_node = create_ast_node(AST_PIPE, NULL);
+	if (!pipe_node)
 	{
-		node = handle_redirection(node, tokens);
-		if (!node)
-			return (NULL);
-		current = *tokens;
+		free_ast(left);
+		free_ast(right);
+		return (NULL);
 	}
-	return (node);
+	pipe_node->left = left;
+	pipe_node->right = right;
+	return (pipe_node);
 }
 
-t_ast_node	*parse_expression(t_token **tokens)
+t_ast_node	*parse_pipeline(t_token **tokens)
 {
-	t_ast_node	*node;
+	t_ast_node	*left;
+	t_ast_node	*right;
+	t_token		*current;
 
 	if (!tokens || !*tokens)
 		return (NULL);
-	node = parse_pipeline(tokens);
-	if (!node)
+	left = parse_command(tokens);
+	if (!left)
 		return (NULL);
-	return (handle_redirections(node, tokens));
-}
-
-t_ast_node	*parse(t_token *tokens)
-{
-	t_ast_node	*ast;
-	t_token		*current;
-
-	if (!tokens)
-		return (NULL);
-	current = tokens;
-	ast = parse_expression(&current);
-	if (!ast)
-		return (NULL);
-	if (current != NULL)
+	current = *tokens;
+	if (!current || current->type != TOKEN_PIPE)
+		return (left);
+	*tokens = current->next;
+	right = parse_pipeline(tokens);
+	if (!right)
 	{
-		free_ast(ast);
+		free_ast(left);
 		return (NULL);
 	}
-	return (ast);
-}
+	return (create_pipe_node(left, right));
+} 
