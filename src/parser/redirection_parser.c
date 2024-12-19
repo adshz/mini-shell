@@ -20,7 +20,7 @@ static t_ast_node	*create_redir_node(t_token_type type, const char *target)
 	redir_node = create_ast_node(get_ast_type(type), NULL);
 	if (!redir_node)
 		return (NULL);
-	target_node = create_ast_node(AST_COMMAND, target);
+	target_node = create_ast_node(AST_COMMAND, (char *)target);
 	if (!target_node)
 	{
 		free_ast(redir_node);

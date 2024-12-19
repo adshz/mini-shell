@@ -14,12 +14,7 @@
 #include "lexer.h"
 #include "libft.h"
 
-static int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-static int	is_special_char(char c)
+int	is_special_char(char c)
 {
 	return (c == '|' || c == '<' || c == '>' || c == ';' || c == '&');
 }
@@ -71,7 +66,7 @@ t_token	*tokenise(const char *input)
 	current = NULL;
 	while (input && *input)
 	{
-		while (*input && is_whitespace(*input))
+		while (*input && ft_isspace(*input))
 			input++;
 		if (!*input)
 			break ;

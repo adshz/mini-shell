@@ -38,8 +38,10 @@ typedef struct s_token
 }   t_token;
 
 // Function prototypes
-t_token     *tokenise(const char *input);
-void        free_tokens(t_token *tokens);
-t_token *create_token(t_token_type type, const char *value);
-
+t_token     	*tokenise(const char *input);
+void        	free_tokens(t_token *tokens);
+t_token 		*create_token(t_token_type type, const char *value);
+t_token_type	get_token_type(const char *str);
+size_t			get_token_length(const char *input);
+int				is_special_char(char c);
 #endif

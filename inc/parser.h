@@ -44,5 +44,7 @@ void        free_ast(t_ast_node *node);
 t_ast_node  *parse_command(t_token **tokens);
 t_ast_node  *parse_pipeline(t_token **tokens);
 t_ast_node  *parse_expression(t_token **tokens);
-
+int			is_redirection_token(t_token_type type);
+t_ast_node	*handle_redirection(t_ast_node *left, t_token **tokens);
+t_ast_type	get_ast_type(t_token_type type);
 #endif

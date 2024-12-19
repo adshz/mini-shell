@@ -18,5 +18,3 @@ int	is_redirection_token(t_token_type type)
 		|| type == TOKEN_APPEND
 		|| type == TOKEN_HEREDOC);
 }
-
-

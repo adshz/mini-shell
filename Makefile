@@ -32,7 +32,13 @@ SRCS		:=	\
 				main.c \
 				init/init.c \
 				lexer/tokeniser.c \
+				lexer/token_utils.c \
 				parser/parser.c \
+				parser/parser_utils.c \
+				parser/pipeline_parser.c \
+				parser/redirection_parser.c \
+				parser/command_parser.c \
+				parser/ast_builder.c \
 				signals/ft_signals.c \
 				executor/executor.c \
 				executor/pipe_handler.c \

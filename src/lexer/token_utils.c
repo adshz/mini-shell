@@ -71,7 +71,7 @@ size_t	get_token_length(const char *input)
 			return (2);
 		return (1);
 	}
-	while (input[len] && !is_whitespace(input[len])
+	while (input[len] && !ft_isspace(input[len])
 		&& !is_special_char(input[len]))
 		len++;
 	return (len);
