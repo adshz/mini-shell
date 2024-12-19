@@ -18,13 +18,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static void cleanup_line_and_tokens(t_shell *shell, bool skip_ast)
+static void cleanup_line_and_tokens(t_shell *shell)
 {
-    if (!skip_ast && shell->ast)
-    {
-        free_ast(shell->ast);
-        shell->ast = NULL;
-    }
     if (shell->tokens)
     {
         free_tokens(shell->tokens);
@@ -34,6 +29,15 @@ static void cleanup_line_and_tokens(t_shell *shell, bool skip_ast)
     {
         free(shell->line);
         shell->line = NULL;
+    }
+}
+
+static void cleanup_ast(t_shell *shell)
+{
+    if (shell->ast)
+    {
+        free_ast(shell->ast);
+        shell->ast = NULL;
     }
 }
 
@@ -92,7 +96,8 @@ void cleanup_shell(t_shell *shell)
     if (!shell)
         return;
     tcgetattr(STDIN_FILENO, &shell->term_settings);
-    cleanup_line_and_tokens(shell, true);
+    cleanup_ast(shell);
+    cleanup_line_and_tokens(shell);
     cleanup_env_and_cmds(shell);
     cleanup_pids_and_pwd(shell);
     cleanup_history(shell);
