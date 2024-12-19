@@ -37,6 +37,17 @@ static void	cleanup_current_command(t_shell *shell)
 
 static bool	parse_and_build_ast(t_shell *shell)
 {
+	size_t	i;
+
+	// Skip spaces and tabs
+	i = 0;
+	while (shell->line[i] && (shell->line[i] == ' ' || shell->line[i] == '\t'))
+		i++;
+	
+	// If line is empty or only whitespace
+	if (!shell->line[i])
+		return (false);
+
 	if (shell->line[0])
 		add_history(shell->line);
 	shell->tokens = tokenise(shell->line);
