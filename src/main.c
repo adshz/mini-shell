@@ -31,7 +31,7 @@ static void	cleanup_current_command(t_shell *shell)
 	free_ast(shell->ast);
 	free(shell->line);
 	shell->tokens = NULL;
-	shell->ast = NULL;
+	shell->ast = (void *)-1;
 	shell->line = NULL;
 }
 

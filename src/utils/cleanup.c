@@ -20,7 +20,7 @@
 
 static void cleanup_line_and_tokens(t_shell *shell)
 {
-    if (shell->ast)
+    if (shell->ast && shell->ast != (void *)-1)
     {
         free_ast(shell->ast);
         shell->ast = NULL;
