@@ -80,13 +80,27 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 	if (!env_array)
 	{
 		free(cmd_path);
-		return (1);
+		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
+
+	// Save current stdin/stdout
+	shell->stdin_backup = dup(STDIN_FILENO);
+	shell->stdout_backup = dup(STDOUT_FILENO);
+
 	execve(cmd_path, node->args, env_array);
-	perror("execve");
+	
+	// If execve returns, there was an error
+	print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
+	
+	// Restore stdin/stdout
+	dup2(shell->stdin_backup, STDIN_FILENO);
+	dup2(shell->stdout_backup, STDOUT_FILENO);
+	close(shell->stdin_backup);
+	close(shell->stdout_backup);
+
 	free(cmd_path);
 	ft_free_array(env_array);
-	return (1);
+	return (ERR_NOT_EXECUTABLE);
 }
 
 int	execute_command(t_ast_node *node, t_hashmap *env)
@@ -99,8 +113,9 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	if (!node->args || !node->args[0])
 		return (1);
 	
-	// Initialize shell structure for builtin commands
+	// Initialize shell structure
 	shell.env = env;
+	shell.signint_child = false;
 	
 	// First check if it's a builtin
 	if (is_builtin(node->args[0]))
@@ -111,19 +126,25 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	if (!cmd_path)
 		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
 
+	shell.signint_child = true;  // Mark that we're running a child process
 	pid = fork();
 	if (pid == -1)
 	{
 		free(cmd_path);
-		return (print_error(NULL, "fork failed", 1));
+		return (print_error(NULL, "fork failed", ERR_GENERAL));
 	}
 	if (pid == 0)
 	{
 		status = execute_external_command(&shell, node, cmd_path);
 		exit(status);
 	}
+	
 	free(cmd_path);
 	waitpid(pid, &status, 0);
+	shell.signint_child = false;  // Reset the child process flag
+	
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
 	return (WEXITSTATUS(status));
 }
 

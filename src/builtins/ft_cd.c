@@ -12,8 +12,11 @@
 
 #include "shell.h"
 #include "builtins.h"
+#include "libft.h"
+#include "hashtable.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <limits.h>
 
 static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 {
@@ -23,12 +26,12 @@ static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 		hashmap_set(shell->env, "OLDPWD", old_pwd);
 	if (getcwd(cwd, PATH_MAX))
 	{
-        hashmap_set(shell->env, "OLDPWD", old_pwd);
-        hashmap_set(shell->env, "PWD", cwd);
-				// Debug prints to verify values
+		hashmap_set(shell->env, "OLDPWD", old_pwd);
+		hashmap_set(shell->env, "PWD", cwd);
+		// Debug prints to verify values
 		printf("OLDPWD set to: %s\n", old_pwd);
 		printf("PWD set to: %s\n", cwd);
-    }
+	}
 }
 
 static char	*get_home_path(t_shell *shell)
@@ -81,7 +84,6 @@ int	builtin_cd(t_shell *shell, t_ast_node *node)
 		return (1);
 	}
 
-	//
 	if (!node->args[1])
 		path = get_home_path(shell);
 	else if (ft_strcmp(node->args[1], "-") == 0)
