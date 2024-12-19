@@ -19,34 +19,34 @@
 
 static void cleanup_line_and_tokens(t_shell *shell)
 {
-    if (shell->line)
+    if (shell->ast)
     {
-        free(shell->line);
-        shell->line = NULL;
+        free_ast(shell->ast);
+        shell->ast = NULL;
     }
     if (shell->tokens)
     {
         free_tokens(shell->tokens);
         shell->tokens = NULL;
     }
-    if (shell->ast)
+    if (shell->line)
     {
-        free_ast(shell->ast);
-        shell->ast = NULL;
+        free(shell->line);
+        shell->line = NULL;
     }
 }
 
 static void cleanup_env_and_cmds(t_shell *shell)
 {
+    if (shell->cmds)
+    {
+        ft_lstclear(&shell->cmds, &free_cmd);
+        shell->cmds = NULL;
+    }
     if (shell->env)
     {
         hashmap_destroy(shell->env);
         shell->env = NULL;
-    }
-    if (shell->cmds)
-    {
-        ft_lstclear(&shell->cmds, free);
-        shell->cmds = NULL;
     }
 }
 
@@ -82,13 +82,15 @@ static void cleanup_fds(t_shell *shell)
         close(shell->stdin_backup);
     if (shell->stdout_backup > 2)
         close(shell->stdout_backup);
-    tcsetattr(STDIN_FILENO, TCSANOW, &shell->term_settings);
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &shell->term_settings) == -1)
+        print_error("tcsetattr", "Failed to restore terminal settings", 1);
 }
 
 void cleanup_shell(t_shell *shell)
 {
     if (!shell)
         return;
+    tcgetattr(STDIN_FILENO, &shell->term_settings);
     cleanup_line_and_tokens(shell);
     cleanup_env_and_cmds(shell);
     cleanup_pids_and_pwd(shell);
