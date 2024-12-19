@@ -40,5 +40,3 @@ int	builtin_exit(t_shell *shell, t_ast_node *node)
 	cleanup_shell(shell);
 	exit(exit_code);
 }
-
-
