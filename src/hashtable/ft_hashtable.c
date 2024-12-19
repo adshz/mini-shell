@@ -70,10 +70,8 @@ int hashmap_insert(t_hashmap *table, char *key, char *value, int free_old)
 
     if (!table || !key || !value)
         return -1;
-
     index = hash_function(key, table->size);
     item = table->items[index];
-
     // Check for existing key and update
     while (item)
     {
@@ -89,12 +87,10 @@ int hashmap_insert(t_hashmap *table, char *key, char *value, int free_old)
         }
         item = item->next;
     }
-
     // Create new item
     new_item = (t_hash_item *)malloc(sizeof(t_hash_item));
     if (!new_item)
         return -1;
-
     new_key = ft_strdup(key);
     new_value = ft_strdup(value);
     if (!new_key || !new_value)
@@ -104,7 +100,6 @@ int hashmap_insert(t_hashmap *table, char *key, char *value, int free_old)
         free(new_item);
         return -1;
     }
-
     new_item->key = new_key;
     new_item->value = new_value;
     new_item->next = table->items[index];
@@ -122,7 +117,6 @@ char *hashmap_search(t_hashmap *table, char *key)
 
     index = hash_function(key, table->size);
     item = table->items[index];
-
     while (item)
     {
         if (ft_strcmp(item->key, key) == 0)
@@ -171,7 +165,6 @@ t_hashmap *env_to_hash(char **envp)
     env = hashmap_create_table(100);
     if (!env)
         return NULL;
-
     i = 0;
     while (envp[i])
     {
@@ -180,8 +173,7 @@ t_hashmap *env_to_hash(char **envp)
         {
             key_len = equals_pos - envp[i];
             key = ft_substr(envp[i], 0, key_len);
-            value = ft_strdup(equals_pos + 1);
-            
+            value = ft_strdup(equals_pos + 1);   
             if (!key || !value || hashmap_insert(env, key, value, 1) != 0)
             {
                 free(key);
@@ -246,7 +238,6 @@ void hashmap_set(t_hashmap *table, const char *key, const char *value)
     temp_key = (char *)key;
     index = hash_function(key, table->size);
     item = table->items[index];
-    
     while (item)
     {
         if (ft_strcmp(item->key, temp_key) == 0)
@@ -257,7 +248,6 @@ void hashmap_set(t_hashmap *table, const char *key, const char *value)
         }
         item = item->next;
     }
-
     new_item = (t_hash_item *)malloc(sizeof(t_hash_item));
     if (!new_item)
         return;
