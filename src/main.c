@@ -59,6 +59,7 @@ static bool	parse_and_build_ast(t_shell *shell)
 		free_tokens(shell->tokens);
 		return (false);
 	}
+	add_command_to_history(shell, shell->ast);
 	return (true);
 }
 

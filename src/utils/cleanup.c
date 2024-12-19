@@ -14,6 +14,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "libft.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <unistd.h>
 

@@ -17,4 +17,8 @@ void    ft_free_array(char **array);
 t_env   *hashmap_to_env(t_hashmap *map);
 char    **create_env_array(t_hashmap *env);
 
+// Command utilities
+void    free_cmd(void *content);
+void    add_command_to_history(t_shell *shell, t_ast_node *cmd);
+
 #endif 

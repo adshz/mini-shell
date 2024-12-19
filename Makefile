@@ -67,6 +67,7 @@ SRCS		:=	\
 				hashtable/hashtable_collision.c \
 				utils/error_handler.c \
 				utils/env_utils.c \
+				utils/command_utils.c \
 				
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
