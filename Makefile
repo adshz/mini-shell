@@ -43,8 +43,6 @@ SRCS		:=	\
 				executor/executor.c \
 				executor/pipe_handler.c \
 				executor/redirections.c \
-				utils/string_utils.c \
-				utils/cleanup.c \
 				builtins/builtins.c \
 				builtins/ft_pwd.c \
 				builtins/ft_echo.c \
@@ -65,14 +63,26 @@ SRCS		:=	\
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
 				hashtable/hashtable_collision.c \
+				utils/string_utils.c \
 				utils/error_handler.c \
 				utils/env_utils.c \
 				utils/command_utils.c \
+				utils/cleanup.c \
+				utils/command_cleanup.c \
+				utils/terminal_cleanup.c \
 				
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
 ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
 MKFL		:=	--no-print-directory
+
+
+READLINE_DIR := $(shell brew --prefix readline)
+CFLAGS += -I$(READLINE_DIR)/include
+LDFLAGS += -L$(READLINE_DIR)/lib -lreadline
+LIBFT_PATH  := ./libft
+LIBFT       := $(LIBFT_PATH)/libft.a
+ALL_LIBS    := $(LIBFT) $(LDFLAGS)
 
 all: banner $(NAME)
 
@@ -98,11 +108,11 @@ banner:
 		@echo "$(DF)"
 
 
-$(NAME): LIBFT $(OBJS)
+$(NAME): $(LIBFT) $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
 	@echo "${YELLOW}[MINISHELL] ${GREEN}Build Completed${DF}"
 
-LIBFT:
+$(LIBFT):
 	@make $(MKFL) -C $(LIBFT_PATH) all
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

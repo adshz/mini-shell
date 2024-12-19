@@ -12,6 +12,8 @@
 #ifndef SHELL_H
 # define SHELL_H
 # include "libft.h"
+// delete it later
+# include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>

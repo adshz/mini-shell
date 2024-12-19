@@ -18,92 +18,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-static void cleanup_line_and_tokens(t_shell *shell)
-{
-    if (shell->tokens)
-    {
-        free_tokens(shell->tokens);
-        shell->tokens = NULL;
-    }
-    if (shell->line)
-    {
-        free(shell->line);
-        shell->line = NULL;
-    }
-}
-
-static void cleanup_ast(t_shell *shell)
-{
-    if (shell->ast)
-    {
-        free_ast(shell->ast);
-        shell->ast = NULL;
-    }
-}
-
-static void cleanup_env_and_cmds(t_shell *shell)
-{
-    if (shell->cmds)
-    {
-        ft_lstclear(&shell->cmds, &free_cmd);
-        shell->cmds = NULL;
-    }
-    if (shell->env)
-    {
-        hashmap_destroy(shell->env);
-        shell->env = NULL;
-    }
-}
-
-static void cleanup_pids_and_pwd(t_shell *shell)
-{
-    if (shell->pids)
-    {
-        free(shell->pids);
-        shell->pids = NULL;
-    }
-    if (shell->old_pwd)
-    {
-        free(shell->old_pwd);
-        shell->old_pwd = NULL;
-    }
-}
-
-static void cleanup_history(t_shell *shell)
-{
-    if (shell->history)
-    {
-        char **tmp = shell->history;
-        while (*tmp)
-            free(*tmp++);
-        free(shell->history);
-        shell->history = NULL;
-    }
-}
-
-static void cleanup_fds(t_shell *shell)
-{
-    if (shell->stdin_backup > 2)
-        close(shell->stdin_backup);
-    if (shell->stdout_backup > 2)
-        close(shell->stdout_backup);
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &shell->term_settings) == -1)
-        print_error("tcsetattr", "Failed to restore terminal settings", 1);
-}
-
+// Main cleanup function
 void cleanup_shell(t_shell *shell)
 {
     if (!shell)
         return;
-    tcgetattr(STDIN_FILENO, &shell->term_settings);
     
-    // Skip AST and tokens cleanup if already done by cleanup_current_command
+    rl_clear_history();
+    cleanup_terminal_state(shell);
+    
     if (shell->ast || shell->tokens || shell->line)
         cleanup_current_command(shell);
         
     cleanup_env_and_cmds(shell);
-    cleanup_pids_and_pwd(shell);
-    cleanup_history(shell);
-    cleanup_fds(shell);
+    cleanup_process_state(shell);
 }
-

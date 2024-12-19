@@ -20,5 +20,9 @@ char    **create_env_array(t_hashmap *env);
 // Command utilities
 void    free_cmd(void *content);
 void    add_command_to_history(t_shell *shell, t_ast_node *cmd);
-
+void    cleanup_terminal_state(t_shell *shell);
+void    cleanup_process_state(t_shell *shell);
+void    cleanup_current_command(t_shell *shell);
+void    cleanup_env_and_cmds(t_shell *shell);
+void    cleanup_shell(t_shell *shell);
 #endif 

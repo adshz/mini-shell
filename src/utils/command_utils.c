@@ -24,9 +24,9 @@ void    free_cmd(void *content)
     free_ast(cmd);
 }
 
-void    add_command_to_history(t_shell *shell, t_ast_node *cmd)
+void add_command_to_history(t_shell *shell, t_ast_node *cmd)
 {
-    t_list  *new_cmd;
+    t_list *new_cmd;
 
     if (!shell || !cmd)
         return;
@@ -34,4 +34,5 @@ void    add_command_to_history(t_shell *shell, t_ast_node *cmd)
     if (!new_cmd)
         return;
     ft_lstadd_back(&shell->cmds, new_cmd);
-} 
+    shell->ast = NULL;
+}

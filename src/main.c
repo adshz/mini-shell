@@ -25,25 +25,6 @@ static void	validate_args(int argc, char **argv)
 	}
 }
 
-static void	cleanup_current_command(t_shell *shell)
-{
-	if (shell->ast)
-	{
-		free_ast(shell->ast);
-		shell->ast = NULL;
-	}
-	if (shell->tokens)
-	{
-		free_tokens(shell->tokens);
-		shell->tokens = NULL;
-	}
-	if (shell->line)
-	{
-		free(shell->line);
-		shell->line = NULL;
-	}
-}
-
 static bool	parse_and_build_ast(t_shell *shell)
 {
 	size_t	i;
@@ -81,22 +62,27 @@ static void	interactive_loop(t_shell *shell)
 		if (!shell->line)
 		{
 			ft_putendl_fd("exit", STDOUT_FILENO);
-			break ;
+			break;
 		}
-
 		// Skip empty lines
 		if (shell->line[0] == '\0')
 		{
 			free(shell->line);
 			continue;
 		}
-
 		if (parse_and_build_ast(shell))
 		{
 			shell->exit_status = execute_ast(shell, shell->ast);
+			// If exit was called, we should break the loop
+			if (ft_strcmp(shell->line, "exit") == 0)
+			{
+				cleanup_current_command(shell);
+				break;
+			}
 			cleanup_current_command(shell);
 		}
 	}
+	cleanup_shell(shell);
 }
 
 int	main(int argc, char *argv[], char **envp)

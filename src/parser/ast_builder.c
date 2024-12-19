@@ -56,14 +56,21 @@ void	free_ast(t_ast_node *node)
 {
 	if (!node || node == (void *)-1)
 		return ;
+    ft_printf("Freeing AST node: %p\n", (void*)node);  // Debug print
 	if (node->left)
 		free_ast(node->left);
 	if (node->right)
 		free_ast(node->right);
 	if (node->value)
-		free(node->value);
+	{
+        ft_printf("Freeing value: %s\n", node->value);  // Debug print
+        free(node->value);
+	}
 	if (node->args)
+    {
+        ft_printf("Freeing args\n");  // Debug print
 		free_args(node->args);
+	}
 	free(node);
 }
 

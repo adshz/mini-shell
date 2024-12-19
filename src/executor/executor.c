@@ -120,7 +120,12 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	shell.signint_child = false;
 	
 	if (is_builtin(node->args[0]))
-		return (execute_builtin(&shell, node));
+	{
+		int ret = execute_builtin(&shell, node);
+		if (ft_strcmp(node->args[0], "exit") == 0)
+			exit(ret);
+		return ret;
+	}
 	return (execute_external_command(&shell, node));
 }
 
