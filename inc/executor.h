@@ -13,13 +13,16 @@
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
-# include "parser.h"
-# include "shell.h"
+# include "types.h"
+# include <unistd.h>
 
 // Exit status codes
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
 # define EXIT_CMD_NOT_FOUND 127
+
+// Forward declarations
+typedef struct s_shell t_shell;
 
 // Function prototypes
 int     execute_ast(t_shell *shell, t_ast_node *ast);
@@ -38,7 +41,7 @@ char    *process_heredoc(t_shell *shell, const char *delimiter);
 void    cleanup_heredoc(char *heredoc_content);
 
 // Add handle_pipe declaration here instead
-int         handle_pipe(t_shell *shell, t_ast_node *node);
+int     handle_pipe(t_shell *shell, t_ast_node *node);
 
 #endif
 

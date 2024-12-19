@@ -26,6 +26,7 @@
 # include <limits.h>
 # include <termios.h>
 # include <stdbool.h>
+# include "types.h"
 # include "lexer.h"
 # include "parser.h"
 # include "hashtable.h"
