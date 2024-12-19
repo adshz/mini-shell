@@ -65,8 +65,10 @@ SRCS		:=	\
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
-				hashtable/hashtable_collision.c
-
+				hashtable/hashtable_collision.c \
+				utils/error_handler.c \
+				utils/env_utils.c \
+				
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
 ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
