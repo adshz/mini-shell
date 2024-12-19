@@ -12,6 +12,7 @@
 #include "executor.h"
 #include "builtins.h"
 #include "libft.h"
+#include "utils.h"
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -88,24 +89,34 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 	return (1);
 }
 
-int	execute_command(char **args, t_env *env)
+int	execute_command(t_ast_node *node, t_hashmap *env)
 {
 	char	*cmd_path;
 	int		status;
 	pid_t	pid;
+	t_env	*env_list;
 
-	if (!args || !args[0])
+	if (!node->args || !node->args[0])
 		return (1);
 	
+	// Convert hashmap to env list for builtins
+	env_list = hashmap_to_env(env);
+	
 	// First check if it's a builtin
-	if (is_builtin(args[0]))
-		return (execute_builtin(args, env));
+	if (is_builtin(node->args[0]))
+	{
+		status = execute_builtin(node, env_list);
+		free(env_list);
+		return (status);
+	}
 
 	// Get the full path of the command
-	cmd_path = get_command_path(args[0], env);
+	cmd_path = get_command_path(node->args[0], env);
+	free(env_list);
+	
 	if (!cmd_path)
 	{
-		ft_error("command not found", args[0]);
+		ft_error("command not found", node->args[0]);
 		return (127);  // Command not found error code
 	}
 
@@ -117,10 +128,8 @@ int	execute_command(char **args, t_env *env)
 	}
 	if (pid == 0)
 	{
-		execve(cmd_path, args, env_to_array(env));
-		// If execve returns, there was an error
-		ft_error("execve failed", args[0]);
-		exit(126);  // Execution permission denied or similar
+		status = execute_external_command(shell, node, cmd_path);
+		exit(status);
 	}
 	free(cmd_path);
 	waitpid(pid, &status, 0);
@@ -128,7 +137,7 @@ int	execute_command(char **args, t_env *env)
 }
 
 // Helper function to find the full path of a command
-static char	*get_command_path(char *cmd, t_env *env)
+static char	*get_command_path(char *cmd, t_hashmap *env)
 {
 	char	**paths;
 	char	*path_var;
@@ -182,7 +191,7 @@ static int	execute_command_node(t_shell *shell, t_ast_node *node)
 	if (pid == 0)
 	{
 		handle_redirections(shell, node);
-		exit(execute_command(node->args, shell->env));
+		exit(execute_command(node, shell->env));
 	}
 	else if (pid > 0)
 	{
@@ -199,7 +208,10 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 	if (node->type == AST_COMMAND)
 		return (execute_command_node(shell, node));
 	else if (node->type == AST_PIPE)
-		return (handle_pipe(shell, node));
-	return (0);
+		return (execute_pipe(shell, node));
+	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
+			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
+		return (execute_redirection(shell, node));
+	return (1);
 }
 

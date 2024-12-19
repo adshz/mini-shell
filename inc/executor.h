@@ -15,6 +15,8 @@
 
 # include "types.h"
 # include "parser.h"
+# include "utils.h"
+# include "hashtable.h"
 # include <unistd.h>
 
 // Exit status codes
@@ -27,7 +29,7 @@ typedef struct s_minishell t_shell;
 
 // Function prototypes
 int     execute_ast(t_shell *shell, t_ast_node *ast);
-int     execute_command(char **args, t_env *env);
+int     execute_command(t_ast_node *node, t_hashmap *env);
 int     execute_pipe(t_shell *shell, t_ast_node *node);
 int     execute_redirection(t_shell *shell, t_ast_node *node);
 void    handle_redirections(t_shell *shell, t_ast_node *node);
@@ -41,7 +43,8 @@ void    close_pipes(int old_pipe[2], int new_pipe[2]);
 char    *process_heredoc(t_shell *shell, const char *delimiter);
 void    cleanup_heredoc(char *heredoc_content);
 
-// Add handle_pipe declaration here instead
+// Command execution helpers
+char    *get_command_path(const char *cmd, t_hashmap *env);
 int     handle_pipe(t_shell *shell, t_ast_node *node);
 
 #endif
