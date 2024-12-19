@@ -76,6 +76,8 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 		char *cmd_path)
 {
 	char	**env_array;
+	char	*current_dir;
+	char	cwd[PATH_MAX];
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
@@ -84,21 +86,20 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node,
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
 
-	// Save current stdin/stdout
-	shell->stdin_backup = dup(STDIN_FILENO);
-	shell->stdout_backup = dup(STDOUT_FILENO);
+	// Get current working directory from shell's env
+	current_dir = hashmap_get(shell->env, "PWD");
+	if (current_dir && getcwd(cwd, sizeof(cwd)))
+	{
+		// If current directory differs from shell's PWD, change to it
+		if (ft_strcmp(current_dir, cwd) != 0)
+			chdir(current_dir);
+	}
 
 	execve(cmd_path, node->args, env_array);
 	
 	// If execve returns, there was an error
 	print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
 	
-	// Restore stdin/stdout
-	dup2(shell->stdin_backup, STDIN_FILENO);
-	dup2(shell->stdout_backup, STDOUT_FILENO);
-	close(shell->stdin_backup);
-	close(shell->stdout_backup);
-
 	free(cmd_path);
 	ft_free_array(env_array);
 	return (ERR_NOT_EXECUTABLE);
