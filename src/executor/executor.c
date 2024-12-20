@@ -132,10 +132,6 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 	pid_t   pid;
 	int     status;
 
-	ft_putstr_fd("Debug: execute_external_command - Command: ", 2);
-	ft_putstr_fd(node->args[0], 2);
-	ft_putchar_fd('\n', 2);
-
 	cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
 		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
@@ -174,52 +170,18 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	t_shell	shell;
 
 	if (!node->args || !node->args[0])
-	{
-		ft_putstr_fd("Debug: No command arguments\n", 2);
 		return (1);
-	}
-	
-	// Debug print
-	ft_putstr_fd("Debug: execute_command - Command: ", 2);
-	ft_putstr_fd(node->args[0], 2);
-	ft_putchar_fd('\n', 2);
-	
-	// Debug print node value
-	ft_putstr_fd("Debug: execute_command - Node value: '", 2);
-	if (node->value)
-		ft_putstr_fd(node->value, 2);
-	ft_putstr_fd("'\n", 2);
-	
-	// Debug print args
-	int i = 0;
-	ft_putstr_fd("Debug: execute_command - Arguments:\n", 2);
-	while (node->args[i])
-	{
-		ft_putstr_fd("arg[", 2);
-		ft_putnbr_fd(i, 2);
-		ft_putstr_fd("]: '", 2);
-		ft_putstr_fd(node->args[i], 2);
-		ft_putstr_fd("'\n", 2);
-		i++;
-	}
 	
 	shell.env = env;
 	shell.signint_child = false;
 	
-	// Debug print before checking builtin
-	ft_putstr_fd("Debug: execute_command - Checking if '", 2);
-	ft_putstr_fd(node->args[0], 2);
-	ft_putstr_fd("' is a builtin\n", 2);
-	
 	if (is_builtin(node->args[0]))
 	{
-		ft_putstr_fd("Debug: execute_command - Executing as builtin\n", 2);
 		int ret = execute_builtin(&shell, node);
 		if (ft_strcmp(node->args[0], "exit") == 0)
 			exit(ret);
 		return ret;
 	}
-	ft_putstr_fd("Debug: execute_command - Executing as external command\n", 2);
 	return (execute_external_command(&shell, node));
 }
 
@@ -262,32 +224,15 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 int	execute_ast(t_shell *shell, t_ast_node *node)
 {
 	if (!node)
-	{
-		ft_putstr_fd("Debug: execute_ast - Node is NULL\n", 2);
 		return (0);
-	}
-
-	ft_putstr_fd("Debug: execute_ast - Node type: ", 2);
-	ft_putnbr_fd(node->type, 2);
-	ft_putstr_fd("\n", 2);
 
 	if (node->type == AST_COMMAND)
-	{
-		ft_putstr_fd("Debug: execute_ast - Executing command\n", 2);
 		return (execute_command(node, shell->env));
-	}
 	else if (node->type == AST_PIPE)
-	{
-		ft_putstr_fd("Debug: execute_ast - Executing pipe\n", 2);
 		return (execute_pipe(shell, node));
-	}
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
 			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
-	{
-		ft_putstr_fd("Debug: execute_ast - Executing redirection\n", 2);
 		return (execute_redirection(shell, node));
-	}
 
-	ft_putstr_fd("Debug: execute_ast - Unknown node type\n", 2);
 	return (1);
 }

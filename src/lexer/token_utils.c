@@ -64,7 +64,7 @@ static char *process_quoted_string(const char *input, size_t len)
 	char    *result;
 	size_t  i;
 	size_t  j;
-	char    current_quote;
+	t_tokenizer_state state;
 
 	result = malloc(len + 1);
 	if (!result)
@@ -72,16 +72,33 @@ static char *process_quoted_string(const char *input, size_t len)
 	
 	i = 0;
 	j = 0;
-	current_quote = '\0';
+	state = STATE_NORMAL;
 	
 	while (i < len)
 	{
-		if ((input[i] == '\'' || input[i] == '\"') && current_quote == '\0')
-			current_quote = input[i];
-		else if (input[i] == current_quote)
-			current_quote = '\0';
-		else
-			result[j++] = input[i];
+		if (state == STATE_NORMAL)
+		{
+			if (input[i] == '\'')
+				state = STATE_IN_SINGLE_QUOTE;
+			else if (input[i] == '\"')
+				state = STATE_IN_DOUBLE_QUOTE;
+			else
+				result[j++] = input[i];
+		}
+		else if (state == STATE_IN_SINGLE_QUOTE)
+		{
+			if (input[i] == '\'')
+				state = STATE_NORMAL;
+			else
+				result[j++] = input[i];
+		}
+		else if (state == STATE_IN_DOUBLE_QUOTE)
+		{
+			if (input[i] == '\"')
+				state = STATE_NORMAL;
+			else
+				result[j++] = input[i];
+		}
 		i++;
 	}
 	result[j] = '\0';

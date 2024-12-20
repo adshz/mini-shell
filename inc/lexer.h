@@ -30,6 +30,12 @@ typedef enum e_token_type
     TOKEN_EOF            // End of input
 }   t_token_type;
 
+typedef enum e_tokenizer_state {
+	STATE_NORMAL,
+	STATE_IN_SINGLE_QUOTE,
+	STATE_IN_DOUBLE_QUOTE
+} t_tokenizer_state;
+
 typedef struct s_token
 {
     char            *value;
