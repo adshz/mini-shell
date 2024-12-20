@@ -39,6 +39,24 @@ static char *expand_variables(t_shell *shell, const char *arg)
     in_single_quotes = 0;
     in_double_quotes = 0;
 
+    // Handle tilde expansion at the start of the argument
+    if (arg[0] == '~' && (arg[1] == '\0' || arg[1] == '/') && !in_single_quotes && !in_double_quotes)
+    {
+        char *home = hashmap_get(shell->env, "HOME");
+        if (home)
+        {
+            ft_strlcpy(result, home, ft_strlen(home) + 1);
+            j = ft_strlen(home);
+            if (arg[1] == '/')
+            {
+                result[j++] = '/';
+                i = 2;  // Skip the tilde and slash
+            }
+            else
+                i = 1;  // Skip just the tilde
+        }
+    }
+
     while (arg[i])
     {
         if (arg[i] == '\'' && !in_double_quotes)
