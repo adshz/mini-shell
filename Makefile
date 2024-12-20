@@ -70,6 +70,10 @@ SRCS		:=	\
 				utils/cleanup.c \
 				utils/command_cleanup.c \
 				utils/terminal_cleanup.c \
+				expander/expand_variables.c \
+				expander/quote_handling.c \
+				expander/special_expansions.c \
+				expander/expander_utils.c
 				
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft

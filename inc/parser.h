@@ -15,6 +15,7 @@
 
 # include <stdlib.h>
 # include "lexer.h"
+# include "types.h"
 
 typedef enum e_ast_type
 {
@@ -25,7 +26,8 @@ typedef enum e_ast_type
     AST_REDIR_APPEND,// Append redirection (>>)
     AST_HEREDOC,     // Here document (<<)
     AST_AND,         // AND operator (&&)
-    AST_OR          // OR operator (||)
+    AST_OR,          // OR operator (||)
+    AST_VAR_EXPANSION // Variable expansion ($var)
 } t_ast_type;
 
 typedef struct s_ast_node
@@ -33,6 +35,8 @@ typedef struct s_ast_node
     t_ast_type          type;
     char                *value;      // For commands and file names
     char                **args;      // For command arguments
+    int                 is_expanded; // Flag to indicate if this node contains expanded variables
+    char                *original;   // Original unexpanded value (for variable expansions)
     struct s_ast_node   *left;
     struct s_ast_node   *right;
 } t_ast_node;
@@ -44,7 +48,13 @@ void        free_ast(t_ast_node *node);
 t_ast_node  *parse_command(t_token **tokens);
 t_ast_node  *parse_pipeline(t_token **tokens);
 t_ast_node  *parse_expression(t_token **tokens);
-int			is_redirection_token(t_token_type type);
-t_ast_node	*handle_redirection(t_ast_node *left, t_token **tokens);
-t_ast_type	get_ast_type(t_token_type type);
+int         is_redirection_token(t_token_type type);
+t_ast_node  *handle_redirection(t_ast_node *left, t_token **tokens);
+t_ast_type  get_ast_type(t_token_type type);
+
+// New helper functions for variable expansion
+int         is_variable_token(const char *token);
+char        *expand_variable(t_shell *shell, const char *var_name);
+t_ast_node  *create_expanded_node(t_shell *shell, const char *value);
+int is_variable_token(const char *token);
 #endif

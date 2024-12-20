@@ -18,63 +18,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "errors.h"
-
-static char *expand_variables(t_shell *shell, const char *arg)
-{
-	char *result;
-	char *var_value;
-	size_t i;
-	size_t j;
-	char var_name[1024];
-
-	if (!arg)
-		return (NULL);
-
-	result = malloc(4096);
-	if (!result)
-		return (NULL);
-
-	i = 0;
-	j = 0;
-
-	// Handle tilde expansion at the start of the argument
-	if (arg[0] == '~' && (arg[1] == '\0' || arg[1] == '/'))
-	{
-		char *home = hashmap_get(shell->env, "HOME");
-		if (home)
-		{
-			ft_strlcpy(result, home, ft_strlen(home) + 1);
-			j = ft_strlen(home);
-			i = 1;  // Skip the tilde
-		}
-	}
-
-	while (arg[i])
-	{
-		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1]) || arg[i + 1] == '_'))
-		{
-			size_t var_len = 0;
-			i++;  // Skip the $
-			while (arg[i + var_len] && (ft_isalnum(arg[i + var_len]) || arg[i + var_len] == '_'))
-				var_len++;
-			if (var_len > 0)
-			{
-				ft_strlcpy(var_name, arg + i, var_len + 1);
-				var_value = hashmap_get(shell->env, var_name);
-				if (var_value)
-				{
-					ft_strlcpy(result + j, var_value, ft_strlen(var_value) + 1);
-					j += ft_strlen(var_value);
-				}
-				i += var_len;
-				continue;
-			}
-		}
-		result[j++] = arg[i++];
-	}
-	result[j] = '\0';
-	return (result);
-}
+#include "expander.h"
 
 static char	*create_env_string(const char *key, const char *value)
 {
@@ -126,45 +70,42 @@ char	**create_env_array(t_hashmap *env)
 	return (env_array);
 }
 
-static int	execute_external_command(t_shell *shell, t_ast_node *node)
+static int execute_external_command(t_shell *shell, t_ast_node *node)
 {
-	char    *cmd_path;
-	char    **env_array;
-	pid_t   pid;
-	int     status;
-	char    *expanded_cmd;
-	int     exit_status;
+	char **cmd_args;
+	char *cmd_path;
+	int status;
 
-	// Expand the command if it starts with $
 	if (node->args[0][0] == '$')
 	{
-		expanded_cmd = expand_variables(shell, node->args[0]);
-		if (!expanded_cmd)
+		cmd_args = expand_command(shell, node->args[0]);
+		if (!cmd_args)
 		{
 			shell->exit_status = ERR_CMD_NOT_FOUND;
-			return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
 		}
-
-		// Format error message like bash
-		ft_putstr_fd("bash: ", STDERR_FILENO);
-		ft_putstr_fd(expanded_cmd, STDERR_FILENO);
-		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-		free(expanded_cmd);
-		shell->exit_status = 127;
-		return (127);
 	}
+	else
+		cmd_args = node->args;
 
-	cmd_path = get_command_path(node->args[0], shell->env);
+	cmd_path = get_command_path(cmd_args[0], shell->env);
 	if (!cmd_path)
 	{
-		shell->exit_status = ERR_CMD_NOT_FOUND;
-		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
+		if (node->args[0][0] == '$')
+			free_expanded_args(cmd_args);
+		return print_error(cmd_args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
 	}
+
+	char    **env_array;
+	pid_t   pid;
+	int     exit_status;
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
 	{
 		free(cmd_path);
+		if (node->args[0][0] == '$')
+			ft_free_array(cmd_args);
 		shell->exit_status = ERR_MALLOC;
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
@@ -173,7 +114,7 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 	pid = fork();
 	if (pid == 0)
 	{
-		execve(cmd_path, node->args, env_array);
+		execve(cmd_path, cmd_args, env_array);
 		print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
 		exit(ERR_NOT_EXECUTABLE);
 	}
@@ -183,6 +124,8 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 		shell->signint_child = false;
 		free(cmd_path);
 		ft_free_array(env_array);
+		if (node->args[0][0] == '$')
+			ft_free_array(cmd_args);
 		if (WIFEXITED(status))
 		{
 			exit_status = WEXITSTATUS(status);
@@ -195,6 +138,8 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 
 	free(cmd_path);
 	ft_free_array(env_array);
+	if (node->args[0][0] == '$')
+		ft_free_array(cmd_args);
 	shell->exit_status = ERR_GENERAL;
 	return (print_error(NULL, "fork failed", ERR_GENERAL));
 }

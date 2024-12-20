@@ -14,10 +14,19 @@
 #include "lexer.h"
 #include "libft.h"
 
-static void skip_spaces(const char **input)
+static t_tokenizer_state get_next_state(t_tokenizer_state current_state, char c)
 {
-	while (**input && ft_isspace(**input))
-		(*input)++;
+	if (current_state == STATE_NORMAL)
+	{
+		if (c == '\'')
+			return STATE_IN_SINGLE_QUOTE;
+		if (c == '\"')
+			return STATE_IN_DOUBLE_QUOTE;
+	}
+	else if ((current_state == STATE_IN_SINGLE_QUOTE && c == '\'') ||
+			(current_state == STATE_IN_DOUBLE_QUOTE && c == '\"'))
+		return STATE_NORMAL;
+	return current_state;
 }
 
 static size_t get_token_length_with_state(const char *input)
@@ -27,38 +36,20 @@ static size_t get_token_length_with_state(const char *input)
 	
 	while (input[len])
 	{
-		if (state == STATE_NORMAL)
+		state = get_next_state(state, input[len]);
+		if (state == STATE_NORMAL && ft_isspace(input[len]) && len > 0)
+			break;
+		if (state == STATE_NORMAL && len == 0 && is_special_char(input[len]))
 		{
-			if (input[len] == '\'')
-				state = STATE_IN_SINGLE_QUOTE;
-			else if (input[len] == '\"')
-				state = STATE_IN_DOUBLE_QUOTE;
-			else if (ft_isspace(input[len]) && !is_special_char(input[len]))
-				break;
-			else if (is_special_char(input[len]))
-			{
-				if (len == 0)
-				{
-					if ((input[len] == '|' && input[len + 1] == '|') ||
-						(input[len] == '&' && input[len + 1] == '&') ||
-						(input[len] == '<' && input[len + 1] == '<') ||
-						(input[len] == '>' && input[len + 1] == '>'))
-						return (2);
-					return (1);
-				}
-				break;
-			}
+			if ((input[len] == '|' && input[len + 1] == '|') ||
+				(input[len] == '&' && input[len + 1] == '&') ||
+				(input[len] == '<' && input[len + 1] == '<') ||
+				(input[len] == '>' && input[len + 1] == '>'))
+				return 2;
+			return 1;
 		}
-		else if (state == STATE_IN_SINGLE_QUOTE)
-		{
-			if (input[len] == '\'')
-				state = STATE_NORMAL;
-		}
-		else if (state == STATE_IN_DOUBLE_QUOTE)
-		{
-			if (input[len] == '\"')
-				state = STATE_NORMAL;
-		}
+		if (state == STATE_NORMAL && len > 0 && is_special_char(input[len]))
+			break;
 		len++;
 	}
 	return len;
@@ -74,6 +65,23 @@ static char *extract_token(const char *input, size_t len)
 	return token;
 }
 
+static t_token *create_token_with_type(const char *value, t_token_type type)
+{
+	t_token *token = malloc(sizeof(t_token));
+	if (!token)
+		return NULL;
+	
+	token->value = ft_strdup(value);
+	if (!token->value)
+	{
+		free(token);
+		return NULL;
+	}
+	token->type = type;
+	token->next = NULL;
+	return token;
+}
+
 t_token *tokenise(const char *input)
 {
 	t_token *head = NULL;
@@ -81,14 +89,18 @@ t_token *tokenise(const char *input)
 	
 	while (input && *input)
 	{
-		skip_spaces(&input);
+		// Skip whitespace
+		while (*input && ft_isspace(*input))
+			input++;
 		if (!*input)
 			break;
 		
+		// Get token length considering quotes and special characters
 		size_t len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
 		
+		// Extract and create token
 		char *value = extract_token(input, len);
 		if (!value)
 		{
@@ -96,7 +108,8 @@ t_token *tokenise(const char *input)
 			return NULL;
 		}
 		
-		t_token *new_token = create_token(get_token_type(input), value);
+		// Create token with appropriate type
+		t_token *new_token = create_token_with_type(value, get_token_type(input));
 		free(value);
 		
 		if (!new_token)
@@ -105,6 +118,7 @@ t_token *tokenise(const char *input)
 			return NULL;
 		}
 		
+		// Add token to list
 		if (!head)
 		{
 			head = new_token;

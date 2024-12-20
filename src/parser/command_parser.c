@@ -38,6 +38,11 @@ static char	**allocate_args(int arg_count)
 	return (args);
 }
 
+int is_variable_token(const char *token)
+{
+	return (token && token[0] == '$' && token[1] != '\0');
+}
+
 static int	fill_args(char **args, t_token *start, int arg_count)
 {
 	t_token	*current;
@@ -47,7 +52,15 @@ static int	fill_args(char **args, t_token *start, int arg_count)
 	i = 0;
 	while (i < arg_count)
 	{
-		args[i] = ft_strdup(current->value);
+		if (is_variable_token(current->value))
+		{
+			// For variable tokens, store them as is, they will be expanded during execution
+			args[i] = ft_strdup(current->value);
+		}
+		else
+		{
+			args[i] = ft_strdup(current->value);
+		}
 		if (!args[i])
 			return (0);
 		current = current->next;
@@ -70,6 +83,11 @@ t_ast_node	*parse_command(t_token **tokens)
 	node = create_ast_node(AST_COMMAND, start->value);
 	if (!node)
 		return (NULL);
+
+	// Set expansion flag if the command starts with $
+	node->is_expanded = is_variable_token(start->value);
+	if (node->is_expanded)
+		node->original = ft_strdup(start->value);
 
 	node->args = allocate_args(arg_count);
 	if (!node->args)
