@@ -15,6 +15,19 @@
 #include "expander.h"
 #include <stdio.h>
 
+static void print_env_var(const char *key, const char *value)
+{
+    ft_putstr_fd("declare -x ", STDOUT_FILENO);
+    ft_putstr_fd((char *)key, STDOUT_FILENO);
+    if (value)
+    {
+        ft_putstr_fd("=\"", STDOUT_FILENO);
+        ft_putstr_fd((char *)value, STDOUT_FILENO);
+        ft_putchar_fd('\"', STDOUT_FILENO);
+    }
+    ft_putchar_fd('\n', STDOUT_FILENO);
+}
+
 static bool is_valid_identifier(const char *str)
 {
     int i;
@@ -87,7 +100,20 @@ static char *expand_if_needed(t_shell *shell, const char *arg)
 
     equals = ft_strchr(arg, '=');
     if (!equals)
-        return ft_strdup(arg);
+    {
+        // Handle the case where we're expanding a single variable (like $var)
+        key = ft_strdup(arg + 1);  // Skip the $
+        expanded = expand_variables(shell, key);
+        free(key);
+        
+        // If expansion results in empty string, return NULL to trigger print_sorted_env
+        if (!expanded || !*expanded)
+        {
+            free(expanded);
+            return NULL;
+        }
+        return expanded;
+    }
 
     // Extract the variable name (excluding $)
     key = ft_substr(arg + 1, 0, equals - (arg + 1));
@@ -112,8 +138,7 @@ static char *expand_if_needed(t_shell *shell, const char *arg)
 
 static void print_sorted_env(t_shell *shell)
 {
-    // TODO: Implement printing sorted environment variables
-    (void)shell;
+    hashmap_iterate(shell->env, print_env_var);
 }
 
 int builtin_export(t_shell *shell, t_ast_node *node)
@@ -132,6 +157,14 @@ int builtin_export(t_shell *shell, t_ast_node *node)
     {
         printf("DEBUG: Processing export argument %d: '%s'\n", i, node->args[i]);
         expanded_arg = expand_if_needed(shell, node->args[i]);
+        
+        // If expansion results in empty string, print all variables
+        if (!expanded_arg)
+        {
+            print_sorted_env(shell);
+            return 0;
+        }
+        
         printf("DEBUG: After expansion: '%s'\n", expanded_arg);
 
         if (!is_valid_identifier(expanded_arg))
