@@ -72,9 +72,31 @@ char	**create_env_array(t_hashmap *env)
 
 static int execute_external_command(t_shell *shell, t_ast_node *node)
 {
+	if (!node->args[0])
+		return (1);
+
+	// Handle tilde expansion for command
+	if (node->args[0][0] == '~')
+	{
+		char *expanded = expand_tilde(shell, node->args[0]);
+		if (!expanded)
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+
+		// Try to execute the expanded path
+		if (access(expanded, F_OK) == 0)
+		{
+			ft_putstr_fd(expanded, STDERR_FILENO);
+			ft_putendl_fd(": is a directory", STDERR_FILENO);
+			free(expanded);
+			return 1;
+		}
+		free(expanded);
+	}
+
+	// Handle variable expansion
 	if (node->args[0][0] == '$')
 	{
-		char *expanded_value = expand_variables(shell, node->args[0] + 1);
+		char *expanded_value = expand_simple_variable(shell, node->args[0] + 1);
 		if (!expanded_value)
 		{
 			shell->exit_status = ERR_CMD_NOT_FOUND;

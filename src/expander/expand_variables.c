@@ -1,7 +1,8 @@
 #include "expander.h"
 #include "libft.h"
+#include "shell.h"
 
-char *expand_variables(t_shell *shell, const char *arg)
+char *expand_simple_variable(t_shell *shell, const char *arg)
 {
     char *var_value;
     char var_name[1024];
@@ -20,6 +21,7 @@ char *expand_variables(t_shell *shell, const char *arg)
 
     // Get the variable value
     var_value = hashmap_get(shell->env, var_name);
+
     if (var_value)
     {
         // Remove surrounding quotes if present
@@ -39,6 +41,23 @@ char *expand_variables(t_shell *shell, const char *arg)
     return (NULL);
 }
 
+char *expand_tilde(t_shell *shell, const char *arg)
+{
+    if (!arg || arg[0] != '~')
+        return ft_strdup(arg);
+
+    char *home = hashmap_get(shell->env, "HOME");
+    if (!home)
+        return ft_strdup(arg);
+
+    if (arg[1] == '\0')  // Just "~"
+        return ft_strdup(home);
+    else if (arg[1] == '/')  // "~/something"
+        return ft_strjoin(home, arg + 1);
+    
+    return ft_strdup(arg);  // Not a tilde expansion case
+}
+
 char **expand_command(t_shell *shell, const char *cmd)
 {
     char *expanded_value;
@@ -47,7 +66,7 @@ char **expand_command(t_shell *shell, const char *cmd)
     // Skip the $ for command expansion
     if (cmd[0] == '$')
     {
-        expanded_value = expand_variables(shell, cmd + 1);
+        expanded_value = expand_simple_variable(shell, cmd + 1);
         if (!expanded_value)
             return (NULL);
             
@@ -73,4 +92,4 @@ char **expand_command(t_shell *shell, const char *cmd)
     cmd_args[1] = NULL;
     
     return cmd_args;
-} 
+}
