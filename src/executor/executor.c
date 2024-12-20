@@ -19,61 +19,50 @@
 #include <errno.h>
 #include "errors.h"
 
-//static char **split_command_args(char *command)
-//{
-	//char    **args;
-	//size_t  arg_count;
-	//char    *token_start;
-	//size_t  token_len;
-	//int     in_single_quotes;
-//
-	//args = malloc(sizeof(char *) * MAX_ARGS);
-	//if (!args)
-		//return (NULL);
-	//
-	//arg_count = 0;
-	//token_start = command;
-	//token_len = 0;
-	//in_single_quotes = 0;
-	//
-	//while (*command)
-	//{
-		//if (*command == '\'')
-			//in_single_quotes = !in_single_quotes;
-		//else if (!in_single_quotes && is_special_char(*command))
-		//{
-			//if (token_len > 0)
-			//{
-				//char *token = malloc(token_len + 1);
-				//if (!token)
-					//break;
-				//ft_strlcpy(token, token_start, token_len + 1);
-				//
-				//args[arg_count++] = handle_quotes(token);
-				//free(token);
-				//token_len = 0;
-			//}
-			//token_start = command + 1;
-		//}
-		//else
-			//token_len++;
-		//command++;
-	//}
-	//
-	//if (token_len > 0 && arg_count < MAX_ARGS - 1)
-	//{
-		//char *token = malloc(token_len + 1);
-		//if (token)
-		//{
-			//ft_strlcpy(token, token_start, token_len + 1);
-			//args[arg_count++] = handle_quotes(token);
-			//free(token);
-		//}
-	//}
-	//
-	//args[arg_count] = NULL;
-	//return (args);
-//}
+static char *expand_variables(t_shell *shell, const char *arg)
+{
+	char *result;
+	char *var_value;
+	size_t i;
+	size_t j;
+	char var_name[1024];
+
+	if (!arg)
+		return (NULL);
+
+	result = malloc(4096);
+	if (!result)
+		return (NULL);
+
+	i = 0;
+	j = 0;
+
+	while (arg[i])
+	{
+		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1]) || arg[i + 1] == '_'))
+		{
+			size_t var_len = 0;
+			i++;  // Skip the $
+			while (arg[i + var_len] && (ft_isalnum(arg[i + var_len]) || arg[i + var_len] == '_'))
+				var_len++;
+			if (var_len > 0)
+			{
+				ft_strlcpy(var_name, arg + i, var_len + 1);
+				var_value = hashmap_get(shell->env, var_name);
+				if (var_value)
+				{
+					ft_strlcpy(result + j, var_value, ft_strlen(var_value) + 1);
+					j += ft_strlen(var_value);
+				}
+				i += var_len;
+				continue;
+			}
+		}
+		result[j++] = arg[i++];
+	}
+	result[j] = '\0';
+	return (result);
+}
 
 static char	*create_env_string(const char *key, const char *value)
 {
@@ -131,6 +120,22 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 	char    **env_array;
 	pid_t   pid;
 	int     status;
+	char    *expanded_cmd;
+
+	// Expand the command if it starts with $
+	if (node->args[0][0] == '$')
+	{
+		expanded_cmd = expand_variables(shell, node->args[0]);
+		if (!expanded_cmd)
+			return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
+
+		// Format error message like bash
+		ft_putstr_fd("bash: ", STDERR_FILENO);
+		ft_putstr_fd(expanded_cmd, STDERR_FILENO);
+		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+		free(expanded_cmd);
+		return (127);
+	}
 
 	cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
