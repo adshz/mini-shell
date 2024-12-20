@@ -21,6 +21,7 @@ char *expand_simple_variable(t_shell *shell, const char *arg)
 
     // Get the variable value
     var_value = hashmap_get(shell->env, var_name);
+
     if (var_value)
     {
         // Remove surrounding quotes if present
@@ -91,4 +92,4 @@ char **expand_command(t_shell *shell, const char *cmd)
     cmd_args[1] = NULL;
     
     return cmd_args;
-} 
+}
