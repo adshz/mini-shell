@@ -5,7 +5,7 @@
 # include "libft.h"
 
 /* Variable expansion */
-char    *expand_variables(t_shell *shell, const char *arg);
+char    *expand_simple_variable(t_shell *shell, const char *arg);
 char    **expand_command(t_shell *shell, const char *cmd);
 char    *expand_word(t_shell *shell, const char *word);
 
@@ -22,5 +22,10 @@ char    *expand_home_dir(t_shell *shell, const char *arg);
 int     is_valid_variable_char(char c);
 char    *get_variable_name(const char *str, size_t *i);
 void    free_expanded_args(char **args);
+
+/* Special expansions */
+char    *expand_simple_variable(t_shell *shell, const char *arg);
+char    **expand_command(t_shell *shell, const char *cmd);
+char    *expand_tilde(t_shell *shell, const char *arg); 
 
 #endif 

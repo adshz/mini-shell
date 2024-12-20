@@ -14,6 +14,7 @@
 #include "libft.h"
 #include "shell.h"
 #include "parser.h"
+#include "expander.h"
 #include <unistd.h>
 #include <stdio.h>
 
@@ -55,7 +56,7 @@ static void ft_itoa_buf(int n, char *buf)
     }
 }
 
-static char *expand_variables(t_shell *shell, const char *arg)
+static char *expand_complex_variable(t_shell *shell, const char *arg)
 {
     char *result;
     char *var_value;
@@ -67,6 +68,10 @@ static char *expand_variables(t_shell *shell, const char *arg)
 
     if (!arg)
         return (NULL);
+
+    // First check for tilde expansion
+    if (arg[0] == '~')
+        return expand_tilde(shell, arg);
 
     result = malloc(4096);  // Allocate a reasonable buffer size
     if (!result)
@@ -167,7 +172,7 @@ int ft_echo(t_shell *shell, t_ast_node *node)
     // Print all remaining arguments
     while (node->args[i])
     {
-        expanded = expand_variables(shell, node->args[i]);
+        expanded = expand_complex_variable(shell, node->args[i]);
         if (expanded)
         {
             ft_putstr_fd(expanded, STDOUT_FILENO);

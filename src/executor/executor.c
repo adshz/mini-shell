@@ -74,7 +74,7 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 {
 	if (node->args[0][0] == '$')
 	{
-		char *expanded_value = expand_variables(shell, node->args[0] + 1);
+		char *expanded_value = expand_simple_variable(shell, node->args[0] + 1);
 		if (!expanded_value)
 		{
 			shell->exit_status = ERR_CMD_NOT_FOUND;
