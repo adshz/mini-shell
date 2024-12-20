@@ -24,25 +24,64 @@ bool is_builtin(const char *cmd)
     const char **builtins;
 
     if (!cmd)
+    {
+        ft_putstr_fd("Debug: is_builtin - cmd is NULL\n", 2);
         return false;
+    }
+    
+    ft_putstr_fd("Debug: is_builtin - Checking command: '", 2);
+    ft_putstr_fd((char *)cmd, 2);
+    ft_putstr_fd("'\n", 2);
+    
     i = 0;
     builtins = get_builtins();
+    ft_putstr_fd("Debug: is_builtin - Available builtins:\n", 2);
     while (builtins[i])
     {
+        ft_putstr_fd("  '", 2);
+        ft_putstr_fd((char *)builtins[i], 2);
+        ft_putstr_fd("'\n", 2);
         if (ft_strcmp((char *)cmd, (char *)builtins[i]) == 0)
+        {
+            ft_putstr_fd("Debug: is_builtin - Found matching builtin\n", 2);
             return true;
+        }
         i++;
     }
+    ft_putstr_fd("Debug: is_builtin - No matching builtin found\n", 2);
     return false;
 }
 
 int execute_builtin(t_shell *shell, t_ast_node *node)
 {
     if (!node || !node->value)
+    {
+        ft_putstr_fd("Debug: node or node->value is NULL\n", 2);
         return 1;
+    }
+
+    ft_putstr_fd("Debug: Executing builtin command: ", 2);
+    ft_putstr_fd(node->value, 2);
+    ft_putchar_fd('\n', 2);
+
+    // Debug print args
+    int i = 0;
+    ft_putstr_fd("Debug: Command arguments:\n", 2);
+    while (node->args && node->args[i])
+    {
+        ft_putstr_fd("arg[", 2);
+        ft_putnbr_fd(i, 2);
+        ft_putstr_fd("]: '", 2);
+        ft_putstr_fd(node->args[i], 2);
+        ft_putstr_fd("'\n", 2);
+        i++;
+    }
 
     if (ft_strcmp(node->value, "echo") == 0)
-        return builtin_echo(shell, node);
+    {
+        ft_putstr_fd("Debug: Calling ft_echo\n", 2);
+        return ft_echo(shell, node);
+    }
     if (ft_strcmp(node->value, "cd") == 0)
         return builtin_cd(shell, node);
     if (ft_strcmp(node->value, "pwd") == 0)
@@ -55,6 +94,8 @@ int execute_builtin(t_shell *shell, t_ast_node *node)
         return builtin_env(shell, node);
     if (ft_strcmp(node->value, "exit") == 0)
         return builtin_exit(shell, node);
+
+    ft_putstr_fd("Debug: Command not found as builtin\n", 2);
     return 1;
 }
 

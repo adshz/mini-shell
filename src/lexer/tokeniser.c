@@ -14,11 +14,6 @@
 #include "lexer.h"
 #include "libft.h"
 
-int	is_special_char(char c)
-{
-	return (c == '|' || c == '<' || c == '>' || c == ';' || c == '&');
-}
-
 static t_token	*add_token_to_list(t_token **head, t_token **current,
 		const char *input, char *value)
 {

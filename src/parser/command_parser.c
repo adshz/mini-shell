@@ -65,21 +65,53 @@ t_ast_node	*parse_command(t_token **tokens)
 	start = *tokens;
 	arg_count = count_args(start);
 	if (arg_count == 0)
+	{
+		ft_putstr_fd("Debug: parse_command - No arguments found\n", 2);
 		return (NULL);
+	}
+
+	ft_putstr_fd("Debug: parse_command - Creating node with value: '", 2);
+	ft_putstr_fd(start->value, 2);
+	ft_putstr_fd("'\n", 2);
+
 	node = create_ast_node(AST_COMMAND, start->value);
 	if (!node)
+	{
+		ft_putstr_fd("Debug: parse_command - Failed to create node\n", 2);
 		return (NULL);
+	}
+
 	node->args = allocate_args(arg_count);
 	if (!node->args)
 	{
+		ft_putstr_fd("Debug: parse_command - Failed to allocate args\n", 2);
 		free_ast(node);
 		return (NULL);
 	}
+
 	if (!fill_args(node->args, start, arg_count))
 	{
+		ft_putstr_fd("Debug: parse_command - Failed to fill args\n", 2);
 		free_ast(node);
 		return (NULL);
 	}
+
+	// Debug print the created node
+	ft_putstr_fd("Debug: parse_command - Node created:\n", 2);
+	ft_putstr_fd("  value: '", 2);
+	ft_putstr_fd(node->value, 2);
+	ft_putstr_fd("'\n  args:\n", 2);
+	int i = 0;
+	while (node->args[i])
+	{
+		ft_putstr_fd("    arg[", 2);
+		ft_putnbr_fd(i, 2);
+		ft_putstr_fd("]: '", 2);
+		ft_putstr_fd(node->args[i], 2);
+		ft_putstr_fd("'\n", 2);
+		i++;
+	}
+
 	*tokens = start;
 	while (arg_count--)
 		*tokens = (*tokens)->next;

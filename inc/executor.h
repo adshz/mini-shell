@@ -19,6 +19,8 @@
 # include "hashtable.h"
 # include <unistd.h>
 
+# define MAX_ARGS 1024  // Or whatever maximum number of arguments you want to support
+
 // Exit status codes
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1

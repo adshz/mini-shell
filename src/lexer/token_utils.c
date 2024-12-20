@@ -14,20 +14,101 @@
 #include "lexer.h"
 #include "libft.h"
 
-t_token	*create_token(t_token_type type, const char *value)
+static int is_in_quotes(const char *input, size_t pos)
 {
-	t_token	*token;
+	size_t  i;
+	int     quote_count;
 
-	token = (t_token *)malloc(sizeof(t_token));
+	i = 0;
+	quote_count = 0;
+	while (i < pos)
+	{
+		if (input[i] == '\'')
+			quote_count++;
+		i++;
+	}
+	return (quote_count % 2);
+}
+
+static size_t get_word_length(const char *input)
+{
+	size_t  len;
+
+	len = 0;
+	while (input[len])
+	{
+		if (!is_in_quotes(input, len) && 
+			(ft_isspace(input[len]) || is_special_char(input[len])))
+			break;
+		len++;
+	}
+	return (len);
+}
+
+size_t get_token_length(const char *input)
+{
+	if (is_special_char(input[0]))
+	{
+		if ((input[0] == '|' && input[1] == '|')
+			|| (input[0] == '&' && input[1] == '&')
+			|| (input[0] == '<' && input[1] == '<')
+			|| (input[0] == '>' && input[1] == '>'))
+			return (2);
+		return (1);
+	}
+	return (get_word_length(input));
+}
+
+static char *process_quoted_string(const char *input, size_t len)
+{
+	char    *result;
+	size_t  i;
+	size_t  j;
+	char    current_quote;
+
+	result = malloc(len + 1);
+	if (!result)
+		return (NULL);
+	
+	i = 0;
+	j = 0;
+	current_quote = '\0';
+	
+	while (i < len)
+	{
+		if ((input[i] == '\'' || input[i] == '\"') && current_quote == '\0')
+			current_quote = input[i];
+		else if (input[i] == current_quote)
+			current_quote = '\0';
+		else
+			result[j++] = input[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+t_token *create_token(t_token_type type, const char *value)
+{
+	t_token *token;
+	char    *processed_value;
+
+	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
-	token->type = type;
-	token->value = ft_strdup(value);
-	if (!token->value)
+	
+	if (ft_strchr(value, '\'') || ft_strchr(value, '\"'))
+		processed_value = process_quoted_string(value, ft_strlen(value));
+	else
+		processed_value = ft_strdup(value);
+	
+	if (!processed_value)
 	{
 		free(token);
 		return (NULL);
 	}
+	token->value = processed_value;
+	token->type = type;
 	token->next = NULL;
 	return (token);
 }
@@ -55,26 +136,6 @@ t_token_type	get_token_type(const char *str)
 	if (str[0] == '\n')
 		return (TOKEN_NEWLINE);
 	return (TOKEN_WORD);
-}
-
-size_t	get_token_length(const char *input)
-{
-	size_t	len;
-
-	len = 0;
-	if (is_special_char(input[0]))
-	{
-		if ((input[0] == '|' && input[1] == '|')
-			|| (input[0] == '&' && input[1] == '&')
-			|| (input[0] == '<' && input[1] == '<')
-			|| (input[0] == '>' && input[1] == '>'))
-			return (2);
-		return (1);
-	}
-	while (input[len] && !ft_isspace(input[len])
-		&& !is_special_char(input[len]))
-		len++;
-	return (len);
 }
 
 void	free_tokens(t_token *tokens)

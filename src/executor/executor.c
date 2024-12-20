@@ -19,6 +19,62 @@
 #include <errno.h>
 #include "errors.h"
 
+//static char **split_command_args(char *command)
+//{
+	//char    **args;
+	//size_t  arg_count;
+	//char    *token_start;
+	//size_t  token_len;
+	//int     in_single_quotes;
+//
+	//args = malloc(sizeof(char *) * MAX_ARGS);
+	//if (!args)
+		//return (NULL);
+	//
+	//arg_count = 0;
+	//token_start = command;
+	//token_len = 0;
+	//in_single_quotes = 0;
+	//
+	//while (*command)
+	//{
+		//if (*command == '\'')
+			//in_single_quotes = !in_single_quotes;
+		//else if (!in_single_quotes && is_special_char(*command))
+		//{
+			//if (token_len > 0)
+			//{
+				//char *token = malloc(token_len + 1);
+				//if (!token)
+					//break;
+				//ft_strlcpy(token, token_start, token_len + 1);
+				//
+				//args[arg_count++] = handle_quotes(token);
+				//free(token);
+				//token_len = 0;
+			//}
+			//token_start = command + 1;
+		//}
+		//else
+			//token_len++;
+		//command++;
+	//}
+	//
+	//if (token_len > 0 && arg_count < MAX_ARGS - 1)
+	//{
+		//char *token = malloc(token_len + 1);
+		//if (token)
+		//{
+			//ft_strlcpy(token, token_start, token_len + 1);
+			//args[arg_count++] = handle_quotes(token);
+			//free(token);
+		//}
+	//}
+	//
+	//args[arg_count] = NULL;
+	//return (args);
+//}
+
 static char	*create_env_string(const char *key, const char *value)
 {
 	return (ft_strjoin3(key, "=", value));
@@ -71,10 +127,14 @@ char	**create_env_array(t_hashmap *env)
 
 static int	execute_external_command(t_shell *shell, t_ast_node *node)
 {
-	char	*cmd_path;
-	char	**env_array;
-	pid_t	pid;
-	int		status;
+	char    *cmd_path;
+	char    **env_array;
+	pid_t   pid;
+	int     status;
+
+	ft_putstr_fd("Debug: execute_external_command - Command: ", 2);
+	ft_putstr_fd(node->args[0], 2);
+	ft_putchar_fd('\n', 2);
 
 	cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
@@ -114,18 +174,52 @@ int	execute_command(t_ast_node *node, t_hashmap *env)
 	t_shell	shell;
 
 	if (!node->args || !node->args[0])
+	{
+		ft_putstr_fd("Debug: No command arguments\n", 2);
 		return (1);
+	}
+	
+	// Debug print
+	ft_putstr_fd("Debug: execute_command - Command: ", 2);
+	ft_putstr_fd(node->args[0], 2);
+	ft_putchar_fd('\n', 2);
+	
+	// Debug print node value
+	ft_putstr_fd("Debug: execute_command - Node value: '", 2);
+	if (node->value)
+		ft_putstr_fd(node->value, 2);
+	ft_putstr_fd("'\n", 2);
+	
+	// Debug print args
+	int i = 0;
+	ft_putstr_fd("Debug: execute_command - Arguments:\n", 2);
+	while (node->args[i])
+	{
+		ft_putstr_fd("arg[", 2);
+		ft_putnbr_fd(i, 2);
+		ft_putstr_fd("]: '", 2);
+		ft_putstr_fd(node->args[i], 2);
+		ft_putstr_fd("'\n", 2);
+		i++;
+	}
 	
 	shell.env = env;
 	shell.signint_child = false;
 	
+	// Debug print before checking builtin
+	ft_putstr_fd("Debug: execute_command - Checking if '", 2);
+	ft_putstr_fd(node->args[0], 2);
+	ft_putstr_fd("' is a builtin\n", 2);
+	
 	if (is_builtin(node->args[0]))
 	{
+		ft_putstr_fd("Debug: execute_command - Executing as builtin\n", 2);
 		int ret = execute_builtin(&shell, node);
 		if (ft_strcmp(node->args[0], "exit") == 0)
 			exit(ret);
 		return ret;
 	}
+	ft_putstr_fd("Debug: execute_command - Executing as external command\n", 2);
 	return (execute_external_command(&shell, node));
 }
 
@@ -168,16 +262,32 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 int	execute_ast(t_shell *shell, t_ast_node *node)
 {
 	if (!node)
+	{
+		ft_putstr_fd("Debug: execute_ast - Node is NULL\n", 2);
 		return (0);
+	}
+
+	ft_putstr_fd("Debug: execute_ast - Node type: ", 2);
+	ft_putnbr_fd(node->type, 2);
+	ft_putstr_fd("\n", 2);
 
 	if (node->type == AST_COMMAND)
+	{
+		ft_putstr_fd("Debug: execute_ast - Executing command\n", 2);
 		return (execute_command(node, shell->env));
+	}
 	else if (node->type == AST_PIPE)
+	{
+		ft_putstr_fd("Debug: execute_ast - Executing pipe\n", 2);
 		return (execute_pipe(shell, node));
+	}
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
 			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
+	{
+		ft_putstr_fd("Debug: execute_ast - Executing redirection\n", 2);
 		return (execute_redirection(shell, node));
+	}
 
+	ft_putstr_fd("Debug: execute_ast - Unknown node type\n", 2);
 	return (1);
 }
-

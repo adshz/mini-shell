@@ -17,7 +17,7 @@
 # include "parser.h"
 
 /* Builtin command functions */
-int		builtin_echo(t_shell *shell, t_ast_node *node);
+int		ft_echo(t_shell *shell, t_ast_node *node);
 int		builtin_cd(t_shell *shell, t_ast_node *node);
 int		builtin_pwd(t_shell *shell, t_ast_node *node);
 int		builtin_export(t_shell *shell, t_ast_node *node);

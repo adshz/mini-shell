@@ -25,4 +25,8 @@ void    cleanup_process_state(t_shell *shell);
 void    cleanup_current_command(t_shell *shell);
 void    cleanup_env_and_cmds(t_shell *shell);
 void    cleanup_shell(t_shell *shell);
+
+// Add these declarations
+int is_special_char(char c);
+char *handle_quotes(const char *input);
 #endif 

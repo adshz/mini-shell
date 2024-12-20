@@ -12,25 +12,68 @@
 #include "executor.h"
 #include "errors.h"
 #include "utils.h"
+#include "builtins.h"
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
 
-static void	execute_pipe_child(t_shell *shell, t_ast_node *node, int pfds[2], int is_left)
+static void	handle_child_error(const char *cmd)
 {
-	if (is_left)
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd((char *)cmd, STDERR_FILENO);
+	ft_putendl_fd(": Command not found", STDERR_FILENO);
+	exit(127);
+}
+
+static int	check_command(t_shell *shell, t_ast_node *cmd)
+{
+	if (!cmd || !cmd->value)
+		return (0);
+	if (is_builtin(cmd->value))
+		return (1);
+	if (get_command_path(cmd->value, shell->env))
+		return (1);
+	return (0);
+}
+
+static void	execute_left_child(t_shell *shell, t_ast_node *node, int *pfds)
+{
+	if (!node->left)
+		exit(1);
+
+	close(pfds[0]);
+	if (dup2(pfds[1], STDOUT_FILENO) == -1)
+	{
+		close(pfds[1]);
+		ft_putstr_fd("minishell: pipe error\n", STDERR_FILENO);
+		exit(1);
+	}
+	close(pfds[1]);
+
+	if (!check_command(shell, node->left))
+		handle_child_error(node->left->value);
+	exit(execute_ast(shell, node->left));
+}
+
+static void	execute_right_child(t_shell *shell, t_ast_node *node, int *pfds)
+{
+	if (!node->right)
+		exit(1);
+
+	close(pfds[1]);
+	if (dup2(pfds[0], STDIN_FILENO) == -1)
 	{
 		close(pfds[0]);
-		dup2(pfds[1], STDOUT_FILENO);
-		close(pfds[1]);
+		ft_putstr_fd("minishell: pipe error\n", STDERR_FILENO);
+		exit(1);
 	}
-	else
-	{
-		close(pfds[1]);
-		dup2(pfds[0], STDIN_FILENO);
-		close(pfds[0]);
-	}
-	exit(execute_ast(shell, node));
+	close(pfds[0]);
+
+	if (!check_command(shell, node->right))
+		handle_child_error(node->right->value);
+	exit(execute_ast(shell, node->right));
 }
 
 int	execute_pipe(t_shell *shell, t_ast_node *node)
@@ -38,94 +81,47 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	int		pfds[2];
 	pid_t	pid_left;
 	pid_t	pid_right;
-	int		status;
+	int		status_left;
+	int		status_right;
 
 	if (pipe(pfds) == -1)
-		return (print_error(NULL, "pipe failed", 1));
+		return (print_error(NULL, strerror(errno), 1));
 
 	shell->signint_child = true;
 	pid_left = fork();
 	if (pid_left == -1)
-		return (print_error(NULL, "fork failed", 1));
+	{
+		close(pfds[0]);
+		close(pfds[1]);
+		return (print_error(NULL, strerror(errno), 1));
+	}
+
 	if (pid_left == 0)
-		execute_pipe_child(shell, node->left, pfds, 1);
+		execute_left_child(shell, node, pfds);
 
 	pid_right = fork();
 	if (pid_right == -1)
-		return (print_error(NULL, "fork failed", 1));
+	{
+		close(pfds[0]);
+		close(pfds[1]);
+		kill(pid_left, SIGTERM);
+		waitpid(pid_left, NULL, 0);
+		return (print_error(NULL, strerror(errno), 1));
+	}
+
 	if (pid_right == 0)
-		execute_pipe_child(shell, node->right, pfds, 0);
+		execute_right_child(shell, node, pfds);
 
 	close(pfds[0]);
 	close(pfds[1]);
 
-	waitpid(pid_left, NULL, 0);
-	waitpid(pid_right, &status, 0);
+	waitpid(pid_left, &status_left, 0);
+	waitpid(pid_right, &status_right, 0);
 	shell->signint_child = false;
-	return (WEXITSTATUS(status));
-}
 
-void	setup_pipes(int old_pipe[2], int new_pipe[2], int is_first, int is_last)
-{
-	if (!is_first)
-	{
-		dup2(old_pipe[0], STDIN_FILENO);
-		close(old_pipe[0]);
-		close(old_pipe[1]);
-	}
-	if (!is_last)
-	{
-		dup2(new_pipe[1], STDOUT_FILENO);
-		close(new_pipe[0]);
-		close(new_pipe[1]);
-	}
-}
-
-void	close_pipes(int old_pipe[2], int new_pipe[2])
-{
-	if (old_pipe[0] != -1)
-		close(old_pipe[0]);
-	if (old_pipe[1] != -1)
-		close(old_pipe[1]);
-	if (new_pipe[0] != -1)
-		close(new_pipe[0]);
-	if (new_pipe[1] != -1)
-		close(new_pipe[1]);
-}
-
-int	handle_pipe(t_shell *shell, t_ast_node *node)
-{
-	int		pipefd[2];
-	pid_t	pid;
-	int		status;
-
-	if (pipe(pipefd) == -1)
-		return (1);
-
-	pid = fork();
-	if (pid == -1)
-	{
-		close(pipefd[0]);
-		close(pipefd[1]);
-		return (1);
-	}
-
-	if (pid == 0)
-	{
-		close(pipefd[0]);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		exit(execute_command(node->left, shell->env));
-	}
-	else
-	{
-		close(pipefd[1]);
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		status = execute_command(node->right, shell->env);
-		waitpid(pid, NULL, 0);
-		return (status);
-	}
+	if (WIFEXITED(status_right))
+		return (WEXITSTATUS(status_right));
+	return (1);
 }
 
 
