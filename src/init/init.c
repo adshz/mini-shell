@@ -70,6 +70,7 @@ static void	init_env_vars(t_shell *shell, char *argv[])
 			"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
 	if (!hashmap_search(shell->env, "_"))
 		hashmap_insert(shell->env, "_", argv[0], 0);
+	hashmap_remove(shell->env, "OLDPWD");
 }
 
 void	init_shell(t_shell *shell, char *argv[], char *envp[])
