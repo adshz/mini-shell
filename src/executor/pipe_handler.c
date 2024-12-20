@@ -83,6 +83,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	pid_t	pid_right;
 	int		status_left;
 	int		status_right;
+	int     exit_status;
 
 	if (pipe(pfds) == -1)
 		return (print_error(NULL, strerror(errno), 1));
@@ -120,8 +121,13 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	shell->signint_child = false;
 
 	if (WIFEXITED(status_right))
-		return (WEXITSTATUS(status_right));
-	return (1);
+	{
+		exit_status = WEXITSTATUS(status_right);
+		shell->exit_status = exit_status;  // Update shell's exit status
+		return exit_status;
+	}
+	shell->exit_status = 1;  // Update shell's exit status for error case
+	return 1;
 }
 
 

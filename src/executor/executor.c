@@ -133,30 +133,39 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 	pid_t   pid;
 	int     status;
 	char    *expanded_cmd;
+	int     exit_status;
 
 	// Expand the command if it starts with $
 	if (node->args[0][0] == '$')
 	{
 		expanded_cmd = expand_variables(shell, node->args[0]);
 		if (!expanded_cmd)
+		{
+			shell->exit_status = ERR_CMD_NOT_FOUND;
 			return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
+		}
 
 		// Format error message like bash
 		ft_putstr_fd("bash: ", STDERR_FILENO);
 		ft_putstr_fd(expanded_cmd, STDERR_FILENO);
 		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
 		free(expanded_cmd);
+		shell->exit_status = 127;
 		return (127);
 	}
 
 	cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
+	{
+		shell->exit_status = ERR_CMD_NOT_FOUND;
 		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND));
+	}
 
 	env_array = create_env_array(shell->env);
 	if (!env_array)
 	{
 		free(cmd_path);
+		shell->exit_status = ERR_MALLOC;
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
 
@@ -174,32 +183,38 @@ static int	execute_external_command(t_shell *shell, t_ast_node *node)
 		shell->signint_child = false;
 		free(cmd_path);
 		ft_free_array(env_array);
-		return (WEXITSTATUS(status));
+		if (WIFEXITED(status))
+		{
+			exit_status = WEXITSTATUS(status);
+			shell->exit_status = exit_status;
+			return exit_status;
+		}
+		shell->exit_status = 1;
+		return 1;
 	}
 
 	free(cmd_path);
 	ft_free_array(env_array);
+	shell->exit_status = ERR_GENERAL;
 	return (print_error(NULL, "fork failed", ERR_GENERAL));
 }
 
-int	execute_command(t_ast_node *node, t_hashmap *env)
+int	execute_command(t_shell *shell, t_ast_node *node)
 {
-	t_shell	shell;
+	int ret;
 
 	if (!node->args || !node->args[0])
 		return (1);
 	
-	shell.env = env;
-	shell.signint_child = false;
-	
 	if (is_builtin(node->args[0]))
 	{
-		int ret = execute_builtin(&shell, node);
+		ret = execute_builtin(shell, node);
 		if (ft_strcmp(node->args[0], "exit") == 0)
 			exit(ret);
 		return ret;
 	}
-	return (execute_external_command(&shell, node));
+	ret = execute_external_command(shell, node);
+	return ret;
 }
 
 char	*get_command_path(const char *cmd, t_hashmap *env)
@@ -240,16 +255,31 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 
 int	execute_ast(t_shell *shell, t_ast_node *node)
 {
+	int ret;
+
 	if (!node)
 		return (0);
 
 	if (node->type == AST_COMMAND)
-		return (execute_command(node, shell->env));
+	{
+		ret = execute_command(shell, node);
+		shell->exit_status = ret;  // Update shell's exit status
+		return ret;
+	}
 	else if (node->type == AST_PIPE)
-		return (execute_pipe(shell, node));
+	{
+		ret = execute_pipe(shell, node);
+		shell->exit_status = ret;  // Update shell's exit status
+		return ret;
+	}
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
 			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
-		return (execute_redirection(shell, node));
+	{
+		ret = execute_redirection(shell, node);
+		shell->exit_status = ret;  // Update shell's exit status
+		return ret;
+	}
 
+	shell->exit_status = 1;  // Update shell's exit status for error case
 	return (1);
 }
