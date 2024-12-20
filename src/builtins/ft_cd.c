@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <limits.h>
+#include <errno.h>
 
 static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 {
@@ -27,7 +28,7 @@ static void	update_pwd_vars(t_shell *shell, char *old_pwd)
 	if (getcwd(cwd, PATH_MAX))
 		hashmap_set(shell->env, "PWD", cwd);
 	else
-		perror("getcwd");
+		ft_putendl_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory", STDERR_FILENO);
 }
 
 static char	*get_home_path(t_shell *shell)
@@ -111,7 +112,7 @@ int	builtin_cd(t_shell *shell, t_ast_node *node)
 	old_pwd = getcwd(cwd, PATH_MAX);
 	if (!old_pwd)
 	{
-		perror("cd: getcwd");
+		ft_putendl_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory", STDERR_FILENO);
 		return (1);
 	}
 
@@ -126,7 +127,10 @@ int	builtin_cd(t_shell *shell, t_ast_node *node)
 
 	if (chdir(path) != 0)
 	{
-		perror("cd");
+		ft_putstr_fd("cd: ", STDERR_FILENO);
+		ft_putstr_fd(node->args[1], STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
+		ft_putendl_fd(strerror(errno), STDERR_FILENO);
 		if (path != node->args[1] && path != hashmap_get(shell->env, "HOME") 
 			&& path != hashmap_get(shell->env, "OLDPWD"))
 			free(path);

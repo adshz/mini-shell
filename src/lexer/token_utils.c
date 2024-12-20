@@ -61,48 +61,8 @@ size_t get_token_length(const char *input)
 
 static char *process_quoted_string(const char *input, size_t len)
 {
-	char    *result;
-	size_t  i;
-	size_t  j;
-	t_tokenizer_state state;
-
-	result = malloc(len + 1);
-	if (!result)
-		return (NULL);
-	
-	i = 0;
-	j = 0;
-	state = STATE_NORMAL;
-	
-	while (i < len)
-	{
-		if (state == STATE_NORMAL)
-		{
-			if (input[i] == '\'')
-				state = STATE_IN_SINGLE_QUOTE;
-			else if (input[i] == '\"')
-				state = STATE_IN_DOUBLE_QUOTE;
-			else
-				result[j++] = input[i];
-		}
-		else if (state == STATE_IN_SINGLE_QUOTE)
-		{
-			if (input[i] == '\'')
-				state = STATE_NORMAL;
-			else
-				result[j++] = input[i];
-		}
-		else if (state == STATE_IN_DOUBLE_QUOTE)
-		{
-			if (input[i] == '\"')
-				state = STATE_NORMAL;
-			else
-				result[j++] = input[i];
-		}
-		i++;
-	}
-	result[j] = '\0';
-	return (result);
+	(void)len;  // Silence unused parameter warning
+	return ft_strdup(input);  // Preserve the original string with quotes
 }
 
 t_token *create_token(t_token_type type, const char *value)
