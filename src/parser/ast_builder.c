@@ -37,39 +37,34 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 	return (node);
 }
 
-static void	free_args(char **args)
-{
-	int	i;
-
-	if (!args)
-		return ;
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
-}
-
 void	free_ast(t_ast_node *node)
 {
-	if (!node || node == (void *)-1)
-		return ;
-    ft_printf("Freeing AST node: %p\n", (void*)node);  // Debug print
-	if (node->left)
-		free_ast(node->left);
-	if (node->right)
-		free_ast(node->right);
-	if (node->value)
+	if (!node)
+		return;
+
+	if (node->type == AST_PIPE)
 	{
-        ft_printf("Freeing value: %s\n", node->value);  // Debug print
-        free(node->value);
+		free_ast(node->left);
+		free_ast(node->right);
 	}
-	if (node->args)
-    {
-        ft_printf("Freeing args\n");  // Debug print
-		free_args(node->args);
+	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
+			 node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
+	{
+		free_ast(node->left);
+		if (node->value)
+			free(node->value);
+	}
+	else if (node->type == AST_COMMAND)
+	{
+		if (node->value)
+			free(node->value);
+		if (node->args)
+		{
+			char **args = node->args;
+			while (*args)
+				free(*args++);
+			free(node->args);
+		}
 	}
 	free(node);
 }
@@ -92,5 +87,3 @@ t_ast_type	get_ast_type(t_token_type type)
 		return (AST_OR);
 	return (AST_COMMAND);
 }
-
-

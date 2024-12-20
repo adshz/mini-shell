@@ -72,63 +72,69 @@ char	**create_env_array(t_hashmap *env)
 
 static int execute_external_command(t_shell *shell, t_ast_node *node)
 {
-	char **cmd_args;
-	char *cmd_path;
-	int status;
-
 	if (node->args[0][0] == '$')
 	{
-		cmd_args = expand_command(shell, node->args[0]);
-		if (!cmd_args)
+		char *expanded_value = expand_variables(shell, node->args[0] + 1);
+		if (!expanded_value)
 		{
 			shell->exit_status = ERR_CMD_NOT_FOUND;
 			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
 		}
-	}
-	else
-		cmd_args = node->args;
 
-	cmd_path = get_command_path(cmd_args[0], shell->env);
+		t_token *expanded_tokens = tokenise(expanded_value);
+		free(expanded_value);
+		
+		if (!expanded_tokens)
+		{
+			shell->exit_status = ERR_CMD_NOT_FOUND;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+		}
+
+		t_ast_node *expanded_ast = parse(expanded_tokens);
+		free_tokens(expanded_tokens);
+
+		if (!expanded_ast)
+		{
+			shell->exit_status = ERR_CMD_NOT_FOUND;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+		}
+
+		int status = execute_ast(shell, expanded_ast);
+		free_ast(expanded_ast);
+		return status;
+	}
+
+	char *cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
-	{
-		if (node->args[0][0] == '$')
-			free_expanded_args(cmd_args);
-		return print_error(cmd_args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
-	}
+		return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
 
-	char    **env_array;
-	pid_t   pid;
-	int     exit_status;
-
-	env_array = create_env_array(shell->env);
+	char **env_array = create_env_array(shell->env);
 	if (!env_array)
 	{
 		free(cmd_path);
-		if (node->args[0][0] == '$')
-			ft_free_array(cmd_args);
 		shell->exit_status = ERR_MALLOC;
 		return (print_error(NULL, MSG_MALLOC, ERR_MALLOC));
 	}
 
 	shell->signint_child = true;
-	pid = fork();
+	pid_t pid = fork();
 	if (pid == 0)
 	{
-		execve(cmd_path, cmd_args, env_array);
+		execve(cmd_path, node->args, env_array);
 		print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
+		
 		exit(ERR_NOT_EXECUTABLE);
 	}
 	else if (pid > 0)
 	{
+		int status;
 		waitpid(pid, &status, 0);
 		shell->signint_child = false;
 		free(cmd_path);
 		ft_free_array(env_array);
-		if (node->args[0][0] == '$')
-			ft_free_array(cmd_args);
 		if (WIFEXITED(status))
 		{
-			exit_status = WEXITSTATUS(status);
+			int exit_status = WEXITSTATUS(status);
 			shell->exit_status = exit_status;
 			return exit_status;
 		}
@@ -138,8 +144,6 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 
 	free(cmd_path);
 	ft_free_array(env_array);
-	if (node->args[0][0] == '$')
-		ft_free_array(cmd_args);
 	shell->exit_status = ERR_GENERAL;
 	return (print_error(NULL, "fork failed", ERR_GENERAL));
 }
