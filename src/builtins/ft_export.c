@@ -81,8 +81,6 @@ static void export_variable(t_shell *shell, char *arg)
                arg, existing_value ? existing_value : "NULL");
         if (existing_value)
             hashmap_set(shell->env, arg, ft_strdup(existing_value));
-        else
-            hashmap_set(shell->env, arg, ft_strdup(""));
     }
 }
 
