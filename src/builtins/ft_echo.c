@@ -100,6 +100,21 @@ static char *expand_variables(t_shell *shell, const char *arg)
     return (result);
 }
 
+static bool is_valid_n_flag(const char *arg)
+{
+    if (!arg || !*arg || arg[0] != '-')
+        return false;
+    
+    int i = 1;
+    while (arg[i])
+    {
+        if (arg[i] != 'n')
+            return false;
+        i++;
+    }
+    return i > 1;  // Must have at least one 'n'
+}
+
 int ft_echo(t_shell *shell, t_ast_node *node)
 {
     int i;
@@ -112,8 +127,8 @@ int ft_echo(t_shell *shell, t_ast_node *node)
     i = 1;  // Start from 1 to skip the command name
     n_flag = 0;
     
-    // Check for -n flag
-    if (node->args[i] && ft_strcmp(node->args[i], "-n") == 0)
+    // Check for -n flags
+    while (node->args[i] && is_valid_n_flag(node->args[i]))
     {
         n_flag = 1;
         i++;
