@@ -21,7 +21,8 @@ int    builtin_exit(t_shell *shell, t_ast_node *node)
     if (!shell || !node)
         return (1);
 
-    ft_putendl_fd("exit", STDERR_FILENO);
+    if (!shell->in_pipe)
+        ft_putendl_fd("exit", STDERR_FILENO);
     
     // Get exit code before cleanup
     if (!node->args || !node->args[1])
@@ -39,6 +40,7 @@ int    builtin_exit(t_shell *shell, t_ast_node *node)
     else
         exit_code = ft_atoi(node->args[1]) % 256;
 
-    cleanup_shell(shell);
+    if (!shell->in_pipe)
+        cleanup_shell(shell);
     exit(exit_code);
 }

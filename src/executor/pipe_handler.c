@@ -55,6 +55,7 @@ static void	execute_left_child(t_shell *shell, t_ast_node *node, int *pfds)
 	if (!check_command(shell, node->left))
 		handle_child_error(node->left->value);
 
+	shell->in_pipe = 1;
 	exit(execute_ast(shell, node->left));
 }
 
@@ -71,6 +72,8 @@ static void	execute_right_child(t_shell *shell, t_ast_node *node, int *pfds)
 		exit(1);
 	}
 	close(pfds[0]);
+
+	shell->in_pipe = 1;
 
 	if (node->right->type == AST_PIPE)
 	{
@@ -92,6 +95,14 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	int		status_left;
 	int		status_right;
 	int     exit_status;
+
+	// Check if right command is exit
+	if (node->right && ft_strcmp(node->right->value, "exit") == 0)
+	{
+		// Execute exit immediately in the parent process
+		shell->in_pipe = 1;  // Set in_pipe to prevent terminal cleanup
+		return (execute_ast(shell, node->right));
+	}
 
 	if (pipe(pfds) == -1)
 		return (print_error(NULL, strerror(errno), 1));

@@ -35,6 +35,7 @@ typedef struct s_minishell
     struct termios  term_settings;
     bool            heredoc_sigint;
     bool            signint_child;
+    bool            in_pipe;
 } t_shell;
 
 #endif 
