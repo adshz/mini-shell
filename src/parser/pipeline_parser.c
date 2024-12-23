@@ -36,9 +36,25 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 
 	if (!tokens || !*tokens)
 		return (NULL);
+
+	// Check for pipe at start of input
+	if ((*tokens)->type == TOKEN_PIPE)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
+		return (NULL);
+	}
+
 	left = parse_command(tokens);
 	if (!left)
 		return (NULL);
+
+	// Check if exit is the first command and there's a pipe
+	if (left->value && ft_strcmp(left->value, "exit") == 0 && *tokens && (*tokens)->type == TOKEN_PIPE)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
+		free_ast(left);
+		return (NULL);
+	}
 
 	current = *tokens;
 	if (!current || current->type != TOKEN_PIPE)

@@ -48,7 +48,7 @@ static bool	parse_and_build_ast(t_shell *shell)
 	if (!shell->ast)
 	{
 		free(shell->line);
-		free_tokens(shell->tokens);
+		shell->line = NULL;
 		return (false);
 	}
 

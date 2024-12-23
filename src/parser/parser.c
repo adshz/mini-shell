@@ -46,10 +46,21 @@ t_ast_node	*parse(t_token *tokens)
 
 	if (!tokens)
 		return (NULL);
+
+	// Check for pipe at start of input
+	if (tokens->type == TOKEN_PIPE)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
+		return (NULL);
+	}
+
 	current = tokens;
 	ast = parse_expression(&current);
 	if (!ast)
+	{
+		// Don't free tokens here, as they are owned by the shell struct
 		return (NULL);
+	}
 	if (current != NULL)
 	{
 		free_ast(ast);
