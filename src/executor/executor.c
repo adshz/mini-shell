@@ -79,7 +79,10 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		char *expanded = expand_tilde(shell, node->args[0]);
 		if (!expanded)
-			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+		{
+			shell->exit_status = 127;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
+		}
 
 		if (access(expanded, F_OK) == 0)
 		{
@@ -94,10 +97,11 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 	if (node->args[0][0] == '$')
 	{
 		char *expanded_value = expand_simple_variable(shell, node->args[0] + 1);
-		if (!expanded_value)
+		if (!expanded_value || !*expanded_value)
 		{
-			shell->exit_status = ERR_CMD_NOT_FOUND;
-			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+			if (expanded_value)
+				free(expanded_value);
+			return (0);  // Just return success without executing anything
 		}
 
 		t_token *expanded_tokens = tokenise(expanded_value);
@@ -105,8 +109,8 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 		
 		if (!expanded_tokens)
 		{
-			shell->exit_status = ERR_CMD_NOT_FOUND;
-			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+			shell->exit_status = 127;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
 		}
 
 		t_ast_node *expanded_ast = parse(expanded_tokens);
@@ -114,8 +118,8 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 
 		if (!expanded_ast)
 		{
-			shell->exit_status = ERR_CMD_NOT_FOUND;
-			return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+			shell->exit_status = 127;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
 		}
 
 		int status = execute_ast(shell, expanded_ast);
@@ -123,9 +127,37 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 		return status;
 	}
 
+	// Special handling for . and ..
+	if (ft_strcmp(node->args[0], "..") == 0 || ft_strcmp(node->args[0], ".") == 0)
+	{
+		shell->exit_status = 127;
+		return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
+	}
+
 	char *cmd_path = get_command_path(node->args[0], shell->env);
 	if (!cmd_path)
-		return print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_CMD_NOT_FOUND);
+	{
+		// If the command contains a slash, try to execute it directly
+		if (ft_strchr(node->args[0], '/'))
+		{
+			if (access(node->args[0], F_OK) == 0)
+			{
+				if (access(node->args[0], X_OK) != 0)
+					return print_error(node->args[0], strerror(errno), ERR_NOT_EXECUTABLE);
+				cmd_path = ft_strdup(node->args[0]);
+			}
+			else
+			{
+				shell->exit_status = 127;
+				return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
+			}
+		}
+		else
+		{
+			shell->exit_status = 127;
+			return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
+		}
+	}
 
 	char **env_array = create_env_array(shell->env);
 	if (!env_array)
@@ -194,8 +226,8 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 
 	if (!cmd || !*cmd)
 		return (NULL);
-	if (ft_strchr(cmd, '/'))
-		return (ft_strdup(cmd));
+	if (ft_strchr(cmd, '/') || ft_strcmp(cmd, "..") == 0 || ft_strcmp(cmd, ".") == 0)
+		return (NULL);  // Return NULL for direct paths and . or ..
 	
 	path_var = hashmap_get(env, "PATH");
 	if (!path_var)
