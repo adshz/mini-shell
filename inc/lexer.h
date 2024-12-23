@@ -33,7 +33,8 @@ typedef enum e_token_type
 typedef enum e_tokenizer_state {
 	STATE_NORMAL,
 	STATE_IN_SINGLE_QUOTE,
-	STATE_IN_DOUBLE_QUOTE
+	STATE_IN_DOUBLE_QUOTE,
+	STATE_IN_BACKSLASH
 } t_tokenizer_state;
 
 typedef struct s_token

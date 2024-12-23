@@ -61,7 +61,7 @@ static void	init_pwd(t_shell *shell)
 	}
 }
 
-static void	init_env_vars(t_shell *shell, char *argv[])
+void	init_env_vars(t_shell *shell, char *argv[])
 {
 	init_pwd(shell);
 	init_shlvl(shell);

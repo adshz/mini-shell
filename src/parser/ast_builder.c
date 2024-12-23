@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "parser.h"
 #include "libft.h"
+#include <stdio.h>
 
 t_ast_node	*create_ast_node(t_ast_type type, char *value)
 {
@@ -40,15 +41,14 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 void	free_ast(t_ast_node *node)
 {
 	if (!node)
-		return;
-
+		return ;
 	if (node->type == AST_PIPE)
 	{
 		free_ast(node->left);
 		free_ast(node->right);
 	}
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
-			 node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
+			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
 	{
 		free_ast(node->left);
 		if (node->value)

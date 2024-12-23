@@ -10,59 +10,143 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
-#include "shell.h"
+#include <stdio.h>
 #include "lexer.h"
+#include "shell.h"
 #include "libft.h"
 
 static t_tokenizer_state get_next_state(t_tokenizer_state current_state, char c)
 {
+	static int was_backslash;
+
+	was_backslash = 0;
+	if (current_state == STATE_IN_BACKSLASH)
+	{
+		was_backslash = 0;
+		return (STATE_NORMAL);
+	}
 	if (current_state == STATE_NORMAL)
 	{
+		if (c == '\\')
+		{
+			was_backslash = 1;
+			return (STATE_IN_BACKSLASH);
+		}
 		if (c == '\'')
-			return STATE_IN_SINGLE_QUOTE;
+			return (STATE_IN_SINGLE_QUOTE);
 		if (c == '\"')
-			return STATE_IN_DOUBLE_QUOTE;
+			return (STATE_IN_DOUBLE_QUOTE);
 	}
-	else if ((current_state == STATE_IN_SINGLE_QUOTE && c == '\'') ||
-			(current_state == STATE_IN_DOUBLE_QUOTE && c == '\"'))
-		return STATE_NORMAL;
-	return current_state;
+	else if (current_state == STATE_IN_DOUBLE_QUOTE)
+	{
+		if (c == '\\' && !was_backslash)
+		{
+			was_backslash = 1;
+			return (STATE_IN_BACKSLASH);
+		}
+		if (c == '\"' && !was_backslash)
+			return (STATE_NORMAL);
+		was_backslash = 0;
+	}
+	else if (current_state == STATE_IN_SINGLE_QUOTE && c == '\'')
+		return (STATE_NORMAL);
+	was_backslash = 0;
+	return (current_state);
 }
 
-static size_t get_token_length_with_state(const char *input)
+static size_t	get_token_length_with_state(const char *input)
 {
-	size_t len = 0;
-	t_tokenizer_state state = STATE_NORMAL;
-	
+	size_t			len;
+	t_tokenizer_state	state;
+
+	len = 0;
+	state = STATE_NORMAL;
 	while (input[len])
 	{
+		if (state == STATE_IN_DOUBLE_QUOTE && input[len] == '\\')
+		{
+			if (input[len + 1] == '"')
+			{
+				len += 2;
+				continue;
+			}
+		}
 		state = get_next_state(state, input[len]);
 		if (state == STATE_NORMAL && ft_isspace(input[len]) && len > 0)
-			break;
+			break ;
 		if (state == STATE_NORMAL && len == 0 && is_special_char(input[len]))
 		{
 			if ((input[len] == '|' && input[len + 1] == '|') ||
 				(input[len] == '&' && input[len + 1] == '&') ||
 				(input[len] == '<' && input[len + 1] == '<') ||
 				(input[len] == '>' && input[len + 1] == '>'))
-				return 2;
-			return 1;
+				return (2);
+			return (1);
 		}
 		if (state == STATE_NORMAL && len > 0 && is_special_char(input[len]))
-			break;
+			break ;
 		len++;
 	}
-	return len;
+	return (len);
 }
 
 static char *extract_token(const char *input, size_t len)
 {
-	char *token = malloc(len + 1);
-	if (!token)
-		return NULL;
-	
-	ft_strlcpy(token, input, len + 1);
-	return token;
+	char	*result;
+	size_t	i;
+	size_t	j;
+	t_tokenizer_state state;
+
+	result = malloc(len + 1);
+	i = 0;
+	j = 0;
+	state = STATE_NORMAL;
+	if (!result)
+		return (NULL);
+	while (i < len)
+	{
+		if (state == STATE_IN_DOUBLE_QUOTE)
+		{
+			if (input[i] == '\\')
+			{
+				if (i + 1 < len && input[i + 1] == '"')
+				{
+					i++;
+					result[j++] = input[i];
+				}
+				else
+				{
+					result[j++] = input[i];
+				}
+				i++;
+				continue;
+			}
+		}
+		else if (input[i] == '\\' && state == STATE_NORMAL)
+		{
+			i++;
+			if (i < len)
+				result[j++] = input[i++];
+			continue;
+		}
+		if (input[i] == '"' && state == STATE_NORMAL)
+			state = STATE_IN_DOUBLE_QUOTE;
+		else if (input[i] == '"' && state == STATE_IN_DOUBLE_QUOTE)
+			state = STATE_NORMAL;
+		else if (input[i] == '\'' && state == STATE_NORMAL)
+			state = STATE_IN_SINGLE_QUOTE;
+		else if (input[i] == '\'' && state == STATE_IN_SINGLE_QUOTE)
+			state = STATE_NORMAL;
+		if ((state == STATE_NORMAL && input[i] != '"' && input[i] != '\'') || 
+			(state == STATE_IN_DOUBLE_QUOTE && input[i] != '"') || 
+			(state == STATE_IN_SINGLE_QUOTE && input[i] != '\''))
+		{
+			result[j++] = input[i];
+		}
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
 }
 
 static t_token *create_token_with_type(const char *value, t_token_type type)
@@ -84,41 +168,33 @@ static t_token *create_token_with_type(const char *value, t_token_type type)
 
 t_token *tokenise(const char *input)
 {
-	t_token *head = NULL;
-	t_token *current = NULL;
-	
+	t_token *head;
+	t_token *current;
+
+	head = NULL;
+	current = NULL;
 	while (input && *input)
 	{
-		// Skip whitespace
 		while (*input && ft_isspace(*input))
 			input++;
 		if (!*input)
 			break;
-		
-		// Get token length considering quotes and special characters
 		size_t len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
-		
-		// Extract and create token
 		char *value = extract_token(input, len);
 		if (!value)
 		{
 			free_tokens(head);
-			return NULL;
+			return (NULL);
 		}
-		
-		// Create token with appropriate type
 		t_token *new_token = create_token_with_type(value, get_token_type(input));
 		free(value);
-		
 		if (!new_token)
 		{
 			free_tokens(head);
-			return NULL;
+			return (NULL);
 		}
-		
-		// Add token to list
 		if (!head)
 		{
 			head = new_token;
@@ -129,9 +205,7 @@ t_token *tokenise(const char *input)
 			current->next = new_token;
 			current = new_token;
 		}
-		
 		input += len;
 	}
-	
-	return head;
+	return (head);
 }

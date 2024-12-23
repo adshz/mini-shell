@@ -29,7 +29,6 @@
 # include <termios.h>
 # include <stdbool.h>
 # include "types.h"
-# include "lexer.h"
 # include "parser.h"
 # include "hashtable.h"
 # include "signals.h"

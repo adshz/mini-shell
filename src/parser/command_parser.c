@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "parser.h"
 #include "libft.h"
-
+#include <stdio.h>
 static int	count_args(t_token *tokens)
 {
 	int		count;
@@ -54,7 +54,6 @@ static int	fill_args(char **args, t_token *start, int arg_count)
 	{
 		if (is_variable_token(current->value))
 		{
-			// For variable tokens, store them as is, they will be expanded during execution
 			args[i] = ft_strdup(current->value);
 		}
 		else
@@ -84,7 +83,6 @@ t_ast_node	*parse_command(t_token **tokens)
 	if (!node)
 		return (NULL);
 
-	// Set expansion flag if the command starts with $
 	node->is_expanded = is_variable_token(start->value);
 	if (node->is_expanded)
 		node->original = ft_strdup(start->value);

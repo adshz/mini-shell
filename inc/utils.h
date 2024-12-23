@@ -4,6 +4,8 @@
 # include "types.h"
 # include "hashtable.h"
 # include "parser.h"
+# include "errors.h"
+
 // Error handling
 int     ft_error(const char *msg, const char *arg);
 
@@ -26,7 +28,12 @@ void    cleanup_current_command(t_shell *shell);
 void    cleanup_env_and_cmds(t_shell *shell);
 void    cleanup_shell(t_shell *shell);
 
-// Add these declarations
-int is_special_char(char c);
-char *handle_quotes(const char *input);
+// String utilities
+char *get_command_path(const char *cmd, struct s_hashmap *env);
+char *ft_strjoin_with_sep(char const *s1, char const *s2, char sep);
+
+// Environment utilities
+void init_env_vars(t_shell *shell, char *argv[]);
+char **hash_to_env(struct s_hashmap *env);
+
 #endif 
