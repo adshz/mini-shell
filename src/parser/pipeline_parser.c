@@ -48,44 +48,23 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	if (!left)
 		return (NULL);
 
-	// Check if exit is the first command and there's a pipe
-	if (left->value && ft_strcmp(left->value, "exit") == 0 && *tokens && (*tokens)->type == TOKEN_PIPE)
+	current = *tokens;
+	if (!current || current->type != TOKEN_PIPE)
+		return (left);
+
+	*tokens = current->next;
+	if (!*tokens)
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
 		free_ast(left);
 		return (NULL);
 	}
 
-	current = *tokens;
-	if (!current || current->type != TOKEN_PIPE)
-		return (left);
-
-	*tokens = current->next;
-	right = parse_command(tokens);
+	right = parse_pipeline(tokens);
 	if (!right)
 	{
 		free_ast(left);
 		return (NULL);
-	}
-
-	current = *tokens;
-	if (current && current->type == TOKEN_PIPE)
-	{
-		t_ast_node *rest_of_pipeline;
-		*tokens = current->next;
-		rest_of_pipeline = parse_pipeline(tokens);
-		if (!rest_of_pipeline)
-		{
-			free_ast(left);
-			free_ast(right);
-			return (NULL);
-		}
-		right = create_pipe_node(right, rest_of_pipeline);
-		if (!right)
-		{
-			free_ast(left);
-			return (NULL);
-		}
 	}
 
 	return (create_pipe_node(left, right));
