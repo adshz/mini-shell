@@ -39,15 +39,38 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	left = parse_command(tokens);
 	if (!left)
 		return (NULL);
+
 	current = *tokens;
 	if (!current || current->type != TOKEN_PIPE)
 		return (left);
+
 	*tokens = current->next;
-	right = parse_pipeline(tokens);
+	right = parse_command(tokens);
 	if (!right)
 	{
 		free_ast(left);
 		return (NULL);
 	}
+
+	current = *tokens;
+	if (current && current->type == TOKEN_PIPE)
+	{
+		t_ast_node *rest_of_pipeline;
+		*tokens = current->next;
+		rest_of_pipeline = parse_pipeline(tokens);
+		if (!rest_of_pipeline)
+		{
+			free_ast(left);
+			free_ast(right);
+			return (NULL);
+		}
+		right = create_pipe_node(right, rest_of_pipeline);
+		if (!right)
+		{
+			free_ast(left);
+			return (NULL);
+		}
+	}
+
 	return (create_pipe_node(left, right));
 } 

@@ -54,6 +54,7 @@ static void	execute_left_child(t_shell *shell, t_ast_node *node, int *pfds)
 
 	if (!check_command(shell, node->left))
 		handle_child_error(node->left->value);
+
 	exit(execute_ast(shell, node->left));
 }
 
@@ -71,8 +72,15 @@ static void	execute_right_child(t_shell *shell, t_ast_node *node, int *pfds)
 	}
 	close(pfds[0]);
 
+	if (node->right->type == AST_PIPE)
+	{
+		int status = execute_pipe(shell, node->right);
+		exit(status);
+	}
+
 	if (!check_command(shell, node->right))
 		handle_child_error(node->right->value);
+
 	exit(execute_ast(shell, node->right));
 }
 
@@ -88,7 +96,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	if (pipe(pfds) == -1)
 		return (print_error(NULL, strerror(errno), 1));
 
-	shell->signint_child = true;
+	shell->signint_child = 1;
 	pid_left = fork();
 	if (pid_left == -1)
 	{
@@ -118,15 +126,16 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 
 	waitpid(pid_left, &status_left, 0);
 	waitpid(pid_right, &status_right, 0);
-	shell->signint_child = false;
+
+	shell->signint_child = 0;
 
 	if (WIFEXITED(status_right))
 	{
 		exit_status = WEXITSTATUS(status_right);
-		shell->exit_status = exit_status;  // Update shell's exit status
+		shell->exit_status = exit_status;
 		return exit_status;
 	}
-	shell->exit_status = 1;  // Update shell's exit status for error case
+	shell->exit_status = 1;
 	return 1;
 }
 
