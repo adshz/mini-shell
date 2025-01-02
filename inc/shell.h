@@ -35,7 +35,7 @@
 # include "errors.h"
 # include "utils.h"
 
-# define PROMPT ">>minishell$ "
+# define PROMPT "minishell$ "
 /* Configure Return values for readability */
 # define SUCCESS 0
 # define ERROR 1

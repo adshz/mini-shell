@@ -75,6 +75,16 @@ t_ast_node	*parse_command(t_token **tokens)
 	t_token		*start;
 
 	start = *tokens;
+	if (!start)
+		return (NULL);
+
+	// Check for redirection tokens first
+	if (start->type == TOKEN_REDIRECT_IN || start->type == TOKEN_REDIRECT_OUT ||
+		start->type == TOKEN_APPEND || start->type == TOKEN_HEREDOC)
+	{
+		return (handle_redirection(NULL, tokens));
+	}
+
 	arg_count = count_args(start);
 	if (arg_count == 0)
 		return (NULL);
@@ -100,8 +110,21 @@ t_ast_node	*parse_command(t_token **tokens)
 		return (NULL);
 	}
 
-	*tokens = start;
-	while (arg_count--)
+	// Advance tokens past the command arguments
+	while (arg_count > 0)
+	{
 		*tokens = (*tokens)->next;
+		arg_count--;
+	}
+
+	// Check for redirection after the command
+	if (*tokens && ((*tokens)->type == TOKEN_REDIRECT_IN || 
+		(*tokens)->type == TOKEN_REDIRECT_OUT ||
+		(*tokens)->type == TOKEN_APPEND || 
+		(*tokens)->type == TOKEN_HEREDOC))
+	{
+		return (handle_redirection(node, tokens));
+	}
+
 	return (node);
 } 

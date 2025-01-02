@@ -40,7 +40,7 @@ static int	check_command(t_shell *shell, t_ast_node *cmd)
 
 static void	execute_left_child(t_shell *shell, t_ast_node *node, int *pfds)
 {
-	if (!node || !node->left || !node->left->value)
+	if (!node || !node->left)
 	{
 		close(pfds[0]);
 		close(pfds[1]);
@@ -48,6 +48,33 @@ static void	execute_left_child(t_shell *shell, t_ast_node *node, int *pfds)
 	}
 
 	close(pfds[0]);
+
+	// Handle redirections first if this is a redirection node
+	if (node->left->type == AST_REDIR_OUT || 
+		node->left->type == AST_REDIR_IN ||
+		node->left->type == AST_REDIR_APPEND ||
+		node->left->type == AST_HEREDOC)
+	{
+		handle_redirections(shell, node->left);
+		
+		// For pure redirection without a command (like "> test"), create an empty command
+		if (!node->left->left)
+		{
+			// Set up the pipe for the next command
+			if (dup2(pfds[1], STDOUT_FILENO) == -1)
+			{
+				close(pfds[1]);
+				ft_putstr_fd("minishell: pipe error\n", STDERR_FILENO);
+				exit(1);
+			}
+			close(pfds[1]);
+			exit(0); // Exit successfully for pure redirection
+		}
+		// If there's a command after redirection, execute it
+		node->left = node->left->left;
+	}
+
+	// Then set up the pipe
 	if (dup2(pfds[1], STDOUT_FILENO) == -1)
 	{
 		close(pfds[1]);
@@ -82,6 +109,15 @@ static void	execute_right_child(t_shell *shell, t_ast_node *node, int *pfds)
 	close(pfds[0]);
 
 	shell->in_pipe = 1;
+
+	// Handle redirections if this is a redirection node
+	if (node->right->type == AST_REDIR_OUT || 
+		node->right->type == AST_REDIR_IN ||
+		node->right->type == AST_REDIR_APPEND ||
+		node->right->type == AST_HEREDOC)
+	{
+		handle_redirections(shell, node->right);
+	}
 
 	if (node->right->type == AST_PIPE)
 	{
