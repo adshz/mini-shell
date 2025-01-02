@@ -163,36 +163,48 @@ static t_token *create_token_with_type(const char *value, t_token_type type)
 
 t_token *tokenise(const char *input)
 {
-	t_token *head;
-	t_token *current;
+	t_token	*head;
+	t_token	*current;
 	size_t	len;
 	char	*value;
-	t_token	*new_token;
+	t_token_type type;
 
 	head = NULL;
 	current = NULL;
-	while (input && *input)
+	while (*input)
 	{
-		while (*input && ft_isspace(*input))
+		while (ft_isspace(*input))
 			input++;
 		if (!*input)
 			break;
+
 		len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
+
 		value = extract_token(input, len);
 		if (!value)
 		{
 			free_tokens(head);
 			return (NULL);
 		}
-		new_token = create_token_with_type(value, get_token_type(input));
+
+		type = get_token_type(value);
+		if (type == TOKEN_EOF)  // Stop on syntax error
+		{
+			free(value);
+			free_tokens(head);
+			return (NULL);
+		}
+
+		t_token *new_token = create_token_with_type(value, type);
 		free(value);
 		if (!new_token)
 		{
 			free_tokens(head);
 			return (NULL);
 		}
+
 		if (!head)
 		{
 			head = new_token;
@@ -203,6 +215,7 @@ t_token *tokenise(const char *input)
 			current->next = new_token;
 			current = new_token;
 		}
+
 		input += len;
 	}
 	return (head);

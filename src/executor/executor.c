@@ -258,6 +258,7 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 	int ret;
 	pid_t pid;
 	int status;
+	int saved_stdout;
 
 	if (!node)
 		return (0);
@@ -280,7 +281,29 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 		// Special handling for builtins with redirections
 		if (node->left && node->left->args && is_builtin(node->left->args[0]))
 		{
-			// Fork only for redirections
+			// Special handling for cd: execute in current process
+			if (ft_strcmp(node->left->args[0], "cd") == 0)
+			{
+				// Save current stdout
+				saved_stdout = dup(STDOUT_FILENO);
+				if (saved_stdout == -1)
+					return (print_error(NULL, "dup failed", 1));
+
+				// Set up redirection
+				handle_redirections(shell, node);
+				
+				// Execute cd
+				ret = execute_builtin(shell, node->left);
+				
+				// Restore stdout
+				if (dup2(saved_stdout, STDOUT_FILENO) == -1)
+					ret = print_error(NULL, "dup2 failed", 1);
+				close(saved_stdout);
+				
+				shell->exit_status = ret;
+				return ret;
+			}
+			// For other builtins, fork and handle redirection
 			pid = fork();
 			if (pid == -1)
 				return (print_error(NULL, "fork failed", 1));

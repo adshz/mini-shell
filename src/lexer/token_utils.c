@@ -13,6 +13,7 @@
 #include "shell.h"
 #include "lexer.h"
 #include "libft.h"
+#include "utils.h"
 
 static int is_in_quotes(const char *input, size_t pos)
 {
@@ -112,6 +113,13 @@ t_token_type	get_token_type(const char *str)
 		return (TOKEN_SEMICOLON);
 	if (str[0] == '\n')
 		return (TOKEN_NEWLINE);
+	if (str[0] == '(' || str[0] == ')' || str[0] == '{' || str[0] == '}')
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
+		ft_putchar_fd(str[0], STDERR_FILENO);
+		ft_putendl_fd("'", STDERR_FILENO);
+		return (TOKEN_EOF);
+	}
 	return (TOKEN_WORD);
 }
 
