@@ -100,24 +100,29 @@ static void	execute_right_child(t_shell *shell, t_ast_node *node, int *pfds)
 	}
 
 	close(pfds[1]);
-	if (dup2(pfds[0], STDIN_FILENO) == -1)
-	{
-		close(pfds[0]);
-		ft_putstr_fd("minishell: pipe error\n", STDERR_FILENO);
-		exit(1);
-	}
-	close(pfds[0]);
 
-	shell->in_pipe = 1;
-
-	// Handle redirections if this is a redirection node
+	// If there's a redirection, it takes precedence over pipe input
 	if (node->right->type == AST_REDIR_OUT || 
 		node->right->type == AST_REDIR_IN ||
 		node->right->type == AST_REDIR_APPEND ||
 		node->right->type == AST_HEREDOC)
 	{
 		handle_redirections(shell, node->right);
+		node->right = node->right->left;
 	}
+	else
+	{
+		// Only set up pipe input if there's no redirection
+		if (dup2(pfds[0], STDIN_FILENO) == -1)
+		{
+			close(pfds[0]);
+			ft_putstr_fd("minishell: pipe error\n", STDERR_FILENO);
+			exit(1);
+		}
+	}
+	close(pfds[0]);
+
+	shell->in_pipe = 1;
 
 	if (node->right->type == AST_PIPE)
 	{

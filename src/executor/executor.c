@@ -256,6 +256,8 @@ char	*get_command_path(const char *cmd, t_hashmap *env)
 int	execute_ast(t_shell *shell, t_ast_node *node)
 {
 	int ret;
+	pid_t pid;
+	int status;
 
 	if (!node)
 		return (0);
@@ -275,6 +277,31 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
 			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
 	{
+		// Special handling for builtins with redirections
+		if (node->left && node->left->args && is_builtin(node->left->args[0]))
+		{
+			// Fork only for redirections
+			pid = fork();
+			if (pid == -1)
+				return (print_error(NULL, "fork failed", 1));
+			if (pid == 0)
+			{
+				handle_redirections(shell, node);
+				ret = execute_builtin(shell, node->left);
+				exit(ret);
+			}
+			waitpid(pid, &status, 0);
+			ret = WEXITSTATUS(status);
+			shell->exit_status = ret;
+			
+			// If it's the exit builtin, we need to exit after handling redirection
+			if (node->left->args && ft_strcmp(node->left->args[0], "exit") == 0)
+				exit(ret);
+				
+			return ret;
+		}
+		
+		// Normal redirection handling for non-builtins
 		ret = execute_redirection(shell, node);
 		shell->exit_status = ret;  // Update shell's exit status
 		return ret;
