@@ -19,6 +19,9 @@
 # include "hashtable.h"
 # include <unistd.h>
 
+// Function to read input line by line
+char	*get_next_line(int fd);
+
 # define MAX_ARGS 1024  // Or whatever maximum number of arguments you want to support
 
 // Exit status codes
