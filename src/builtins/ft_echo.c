@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static void ft_itoa_buf(int n, char *buf)
+void ft_itoa_buf(int n, char *buf)
 {
     int i;
     int is_negative;

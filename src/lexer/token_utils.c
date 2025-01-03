@@ -113,7 +113,7 @@ t_token_type	get_token_type(const char *str)
 		return (TOKEN_SEMICOLON);
 	if (str[0] == '\n')
 		return (TOKEN_NEWLINE);
-	if (str[0] == '(' || str[0] == ')' || str[0] == '{' || str[0] == '}')
+	if (str[0] == '(' || str[0] == ')')  // Only parentheses are treated as special
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
 		ft_putchar_fd(str[0], STDERR_FILENO);

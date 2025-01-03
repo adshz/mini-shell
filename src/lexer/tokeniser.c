@@ -143,24 +143,6 @@ static char *extract_token(const char *input, size_t len)
 	return (result);
 }
 
-static t_token *create_token_with_type(const char *value, t_token_type type)
-{
-	t_token *token;
-
-	token = malloc(sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->value = ft_strdup(value);
-	if (!token->value)
-	{
-		free(token);
-		return (NULL);
-	}
-	token->type = type;
-	token->next = NULL;
-	return (token);
-}
-
 t_token *tokenise(const char *input)
 {
 	t_token	*head;
@@ -197,7 +179,7 @@ t_token *tokenise(const char *input)
 			return (NULL);
 		}
 
-		t_token *new_token = create_token_with_type(value, type);
+		t_token *new_token = create_token(type, value);
 		free(value);
 		if (!new_token)
 		{

@@ -51,7 +51,7 @@ t_ast_node  *parse_expression(t_token **tokens);
 int         is_redirection_token(t_token_type type);
 t_ast_node  *handle_redirection(t_ast_node *left, t_token **tokens);
 t_ast_type  get_ast_type(t_token_type type);
-
+t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens);
 // New helper functions for variable expansion
 int         is_variable_token(const char *token);
 char        *expand_variable(t_shell *shell, const char *var_name);

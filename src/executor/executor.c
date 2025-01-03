@@ -201,11 +201,31 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 
 int	execute_command(t_shell *shell, t_ast_node *node)
 {
+	ft_putstr_fd("\nDEBUG: Executing command\n", STDERR_FILENO);
+	if (!node || !node->args || !node->args[0])
+	{
+		ft_putstr_fd("DEBUG: Invalid command node\n", STDERR_FILENO);
+		return 1;
+	}
+
+	ft_putstr_fd("DEBUG: Command: ", STDERR_FILENO);
+	ft_putstr_fd(node->args[0], STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+
+	// Print all arguments
+	int i = 0;
+	while (node->args[i])
+	{
+		ft_putstr_fd("DEBUG: Arg[", STDERR_FILENO);
+		ft_putnbr_fd(i, STDERR_FILENO);
+		ft_putstr_fd("]: ", STDERR_FILENO);
+		ft_putstr_fd(node->args[i], STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+		i++;
+	}
+
 	int ret;
 
-	if (!node->args || !node->args[0])
-		return (1);
-	
 	if (is_builtin(node->args[0]))
 	{
 		ret = execute_builtin(shell, node);
@@ -290,7 +310,7 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 					return (print_error(NULL, "dup failed", 1));
 
 				// Set up redirection
-				handle_redirections(shell, node);
+				setup_redirections(shell, node);
 				
 				// Execute cd
 				ret = execute_builtin(shell, node->left);
@@ -309,7 +329,7 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 				return (print_error(NULL, "fork failed", 1));
 			if (pid == 0)
 			{
-				handle_redirections(shell, node);
+				setup_redirections(shell, node);
 				ret = execute_builtin(shell, node->left);
 				exit(ret);
 			}

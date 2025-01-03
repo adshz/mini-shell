@@ -12,7 +12,7 @@
 #include "parser.h"
 #include "libft.h"
 
-static t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens)
+t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens)
 {
 	t_token	*current;
 
@@ -31,12 +31,25 @@ t_ast_node	*parse_expression(t_token **tokens)
 {
 	t_ast_node	*node;
 
+	ft_putstr_fd("\nDEBUG: Starting parse_expression\n", STDERR_FILENO);
 	if (!tokens || !*tokens)
-		return (NULL);
+	{
+		ft_putstr_fd("DEBUG: No tokens to parse\n", STDERR_FILENO);
+		return NULL;
+	}
+
 	node = parse_pipeline(tokens);
 	if (!node)
-		return (NULL);
-	return (handle_redirections(node, tokens));
+	{
+		ft_putstr_fd("DEBUG: Pipeline parsing failed\n", STDERR_FILENO);
+		return NULL;
+	}
+
+	ft_putstr_fd("DEBUG: Handling redirections for node: ", STDERR_FILENO);
+	ft_putstr_fd(node->value ? node->value : "NULL", STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+
+	return handle_redirections(node, tokens);
 }
 
 t_ast_node	*parse(t_token *tokens)

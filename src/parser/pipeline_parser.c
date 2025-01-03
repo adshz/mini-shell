@@ -12,22 +12,6 @@
 #include "parser.h"
 #include "libft.h"
 
-static t_ast_node	*create_pipe_node(t_ast_node *left, t_ast_node *right)
-{
-	t_ast_node	*pipe_node;
-
-	pipe_node = create_ast_node(AST_PIPE, NULL);
-	if (!pipe_node)
-	{
-		free_ast(left);
-		free_ast(right);
-		return (NULL);
-	}
-	pipe_node->left = left;
-	pipe_node->right = right;
-	return (pipe_node);
-}
-
 t_ast_node	*parse_pipeline(t_token **tokens)
 {
 	t_ast_node	*left;
@@ -37,14 +21,13 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	if (!tokens || !*tokens)
 		return (NULL);
 
-	// Check for pipe at start of input
-	if ((*tokens)->type == TOKEN_PIPE)
-	{
-		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
-		return (NULL);
-	}
-
+	// Parse left side (can be a command or redirection)
 	left = parse_command(tokens);
+	if (!left)
+		return (NULL);
+
+	// Handle any redirections on the left side
+	left = handle_redirections(left, tokens);
 	if (!left)
 		return (NULL);
 
@@ -52,6 +35,7 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	if (!current || current->type != TOKEN_PIPE)
 		return (left);
 
+	// Move past pipe token
 	*tokens = current->next;
 	if (!*tokens)
 	{
@@ -60,6 +44,7 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 		return (NULL);
 	}
 
+	// Parse right side recursively
 	right = parse_pipeline(tokens);
 	if (!right)
 	{
@@ -67,5 +52,16 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 		return (NULL);
 	}
 
-	return (create_pipe_node(left, right));
+	// Create pipe node
+	t_ast_node *pipe_node = create_ast_node(AST_PIPE, NULL);
+	if (!pipe_node)
+	{
+		free_ast(left);
+		free_ast(right);
+		return (NULL);
+	}
+
+	pipe_node->left = left;
+	pipe_node->right = right;
+	return pipe_node;
 } 
