@@ -92,7 +92,7 @@ static void	execute_left_child(t_shell *shell, t_ast_node *node, int pipe_fd[2])
 	}
 	close(pipe_fd[1]);
 
-	// Handle redirections
+	// Handle redirections first, before any command execution
 	debug_msg("Left child - setting up redirections\n");
 	setup_redirections(shell, node->left);
 
@@ -220,23 +220,8 @@ int execute_pipe(t_shell *shell, t_ast_node *node)
 	debug_msg(pid_str);
 	debug_msg("\n");
 
-	// Only stop pipeline for fatal errors (like file not found), not for grep's "no matches" (status 1)
-	t_ast_node *cmd_node = node->left;
-	while (cmd_node && cmd_node->type != AST_COMMAND)
-		cmd_node = cmd_node->left;
-
-	// If left command is not grep and failed, or if it's grep and returned something other than 0 or 1
-	if ((cmd_node && ft_strcmp(cmd_node->args[0], "grep") != 0 && left_status != 0) ||
-		(cmd_node && ft_strcmp(cmd_node->args[0], "grep") == 0 && left_status > 1))
-	{
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		debug_msg("Left command failed with fatal error, skipping right command\n");
-		debug_msg("=== PIPE EXECUTION END ===\n");
-		return left_status;
-	}
-
-	// Execute right child
+	// Execute right child regardless of left command's status
+	// This ensures the pipeline continues even if left command fails
 	right_pid = fork();
 	if (right_pid == -1)
 	{
