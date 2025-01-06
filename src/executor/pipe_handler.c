@@ -206,27 +206,7 @@ int execute_pipe(t_shell *shell, t_ast_node *node)
 	if (left_pid == 0)
 		execute_left_child(shell, node, pipe_fd);
 
-	// Execute right child
-	right_pid = fork();
-	if (right_pid == -1)
-	{
-		debug_msg("Failed to fork right child\n");
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		kill(left_pid, SIGTERM);
-		waitpid(left_pid, NULL, 0);
-		return (print_error(NULL, "fork failed", 1));
-	}
-
-	if (right_pid == 0)
-		execute_right_child(shell, node, pipe_fd);
-
-	// Parent process
-	debug_msg("Parent process closing pipe fds\n");
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
-
-	// Wait for children and get their status
+	// Wait for left child first
 	debug_msg("Waiting for left child (pid: ");
 	char pid_str[12];
 	ft_itoa_buf(left_pid, pid_str);
@@ -240,6 +220,40 @@ int execute_pipe(t_shell *shell, t_ast_node *node)
 	debug_msg(pid_str);
 	debug_msg("\n");
 
+	// Only stop pipeline for fatal errors (like file not found), not for grep's "no matches" (status 1)
+	t_ast_node *cmd_node = node->left;
+	while (cmd_node && cmd_node->type != AST_COMMAND)
+		cmd_node = cmd_node->left;
+
+	// If left command is not grep and failed, or if it's grep and returned something other than 0 or 1
+	if ((cmd_node && ft_strcmp(cmd_node->args[0], "grep") != 0 && left_status != 0) ||
+		(cmd_node && ft_strcmp(cmd_node->args[0], "grep") == 0 && left_status > 1))
+	{
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		debug_msg("Left command failed with fatal error, skipping right command\n");
+		debug_msg("=== PIPE EXECUTION END ===\n");
+		return left_status;
+	}
+
+	// Execute right child
+	right_pid = fork();
+	if (right_pid == -1)
+	{
+		debug_msg("Failed to fork right child\n");
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		return (print_error(NULL, "fork failed", 1));
+	}
+
+	if (right_pid == 0)
+		execute_right_child(shell, node, pipe_fd);
+
+	// Parent process
+	debug_msg("Parent process closing pipe fds\n");
+	close(pipe_fd[0]);
+	close(pipe_fd[1]);
+
 	debug_msg("Waiting for right child (pid: ");
 	ft_itoa_buf(right_pid, pid_str);
 	debug_msg(pid_str);
@@ -252,7 +266,6 @@ int execute_pipe(t_shell *shell, t_ast_node *node)
 	debug_msg(pid_str);
 	debug_msg("\n");
 
-	// Return the status of the right command (last in pipe)
 	if (right_status != 0)
 		debug_msg("Pipe execution failed\n");
 	else

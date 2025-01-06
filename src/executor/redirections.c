@@ -215,13 +215,25 @@ int	handle_heredoc(t_ast_node *node)
 void	setup_redirections(t_shell *shell, t_ast_node *node)
 {
 	int status;
-	t_ast_node *current = node;
-	int has_input_error = 0;
-	int saved_stdin = -1;
-	int saved_stdout = -1;
-	int heredoc_pipe[2] = {-1, -1};
+	t_ast_node *current;
+	int has_input_error;
+	int saved_stdin;
+	int saved_stdout;
+	int heredoc_pipe[2];
 	t_ast_node *redir_nodes[100];  // Array to store redirection nodes
-	int redir_count = 0;
+	int redir_count;
+	int heredoc_count;
+	int current_heredoc;
+	int collecting_content;
+	int i;
+	int rightmost_output_index;
+
+	has_input_error = 0;
+	saved_stdin = -1;
+	saved_stdout = -1;
+	heredoc_pipe[0] = -1;
+	heredoc_pipe[1] = -1;
+	redir_count = 0;
 
 	if (!node)
 		return;
@@ -249,11 +261,13 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 
 	// Process heredocs in order
-	int heredoc_count = 0;
-	for (int i = redir_count - 1; i >= 0; i--)
+	heredoc_count = 0;
+	i = redir_count - 1;
+	while (i >= 0)
 	{
 		if (redir_nodes[i]->type == AST_HEREDOC)
 			heredoc_count++;
+		i--;
 	}
 
 	// Only create pipe for the last heredoc
@@ -268,9 +282,10 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 
 	// Process all heredocs
-	int current_heredoc = 0;
-	int collecting_content = 0;  // Flag to indicate when to collect content
-	for (int i = redir_count - 1; i >= 0; i--)
+	current_heredoc = 0;
+	collecting_content = 0;  // Flag to indicate when to collect content
+	i = redir_count - 1;
+	while (i >= 0)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_HEREDOC)
@@ -333,10 +348,12 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				heredoc_pipe[0] = -1;
 			}
 		}
+		i--;
 	}
 
 	// Then handle input redirections from left to right
-	for (int i = 0; i < redir_count; i++)
+	i = 0;
+	while (i < redir_count)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_REDIR_IN)
@@ -352,18 +369,69 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(status);
 			}
 		}
+		i++;
 	}
 
-	// Finally handle output redirections from left to right
-	for (int i = 0; i < redir_count; i++)
+	// Finally handle output redirections from right to left
+	// First find the rightmost output redirection
+	rightmost_output_index = -1;
+	i = redir_count - 1;
+	ft_putstr_fd("\nDEBUG: Finding rightmost output redirection\n", STDERR_FILENO);
+	while (i >= 0)
+	{
+		if (redir_nodes[i]->type == AST_REDIR_OUT)
+		{
+			rightmost_output_index = i;
+			ft_putstr_fd("DEBUG: Found rightmost output redirection at index: ", STDERR_FILENO);
+			ft_putnbr_fd(i, STDERR_FILENO);
+			ft_putstr_fd(" (file: ", STDERR_FILENO);
+			ft_putstr_fd(redir_nodes[i]->right->value, STDERR_FILENO);
+			ft_putstr_fd(")\n", STDERR_FILENO);
+			break;  // Stop at first one we find from right
+		}
+		i--;
+	}
+
+	// First handle all non-rightmost output redirections (just create/truncate)
+	i = redir_count - 1;
+	ft_putstr_fd("\nDEBUG: Processing non-rightmost output redirections\n", STDERR_FILENO);
+	while (i >= 0)
 	{
 		current = redir_nodes[i];
-		if (current->type == AST_REDIR_OUT)
+		if (current->type == AST_REDIR_OUT && i != rightmost_output_index)
 		{
-			status = handle_output_redirection(current);
+			ft_putstr_fd("DEBUG: Creating/truncating file: ", STDERR_FILENO);
+			ft_putstr_fd(current->right->value, STDERR_FILENO);
+			ft_putstr_fd("\n", STDERR_FILENO);
+			int fd;
+			fd = open(current->right->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd == -1)
+			{
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
+				close(saved_stdin);
+				close(saved_stdout);
+				exit(1);
+			}
+			close(fd);
+		}
+		i--;
+	}
+
+	// Then handle append redirections
+	i = redir_count - 1;
+	ft_putstr_fd("\nDEBUG: Processing append redirections\n", STDERR_FILENO);
+	while (i >= 0)
+	{
+		current = redir_nodes[i];
+		if (current->type == AST_REDIR_APPEND)
+		{
+			ft_putstr_fd("DEBUG: Processing append redirection: ", STDERR_FILENO);
+			ft_putstr_fd(current->right->value, STDERR_FILENO);
+			ft_putstr_fd("\n", STDERR_FILENO);
+			status = handle_append_redirection(current);
 			if (status != 0)
 			{
-				// Restore original file descriptors before exiting
 				dup2(saved_stdin, STDIN_FILENO);
 				dup2(saved_stdout, STDOUT_FILENO);
 				close(saved_stdin);
@@ -371,18 +439,24 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(status);
 			}
 		}
-		else if (current->type == AST_REDIR_APPEND)
+		i--;
+	}
+
+	// Finally handle the rightmost output redirection
+	if (rightmost_output_index != -1)
+	{
+		current = redir_nodes[rightmost_output_index];
+		ft_putstr_fd("DEBUG: Processing rightmost output redirection: ", STDERR_FILENO);
+		ft_putstr_fd(current->right->value, STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+		status = handle_output_redirection(current);
+		if (status != 0)
 		{
-			status = handle_append_redirection(current);
-			if (status != 0)
-			{
-				// Restore original file descriptors before exiting
-				dup2(saved_stdin, STDIN_FILENO);
-				dup2(saved_stdout, STDOUT_FILENO);
-				close(saved_stdin);
-				close(saved_stdout);
-				exit(status);
-			}
+			dup2(saved_stdin, STDIN_FILENO);
+			dup2(saved_stdout, STDOUT_FILENO);
+			close(saved_stdin);
+			close(saved_stdout);
+			exit(status);
 		}
 	}
 

@@ -224,6 +224,24 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 		i++;
 	}
 
+	// Check if command is 'cat' and has file arguments
+	if (ft_strcmp(node->args[0], "cat") == 0 && node->args[1])
+	{
+		// Check each file argument
+		i = 1;
+		while (node->args[i])
+		{
+			if (access(node->args[i], F_OK) == -1)
+			{
+				ft_putstr_fd("cat: ", STDERR_FILENO);
+				ft_putstr_fd(node->args[i], STDERR_FILENO);
+				ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+				return 1;
+			}
+			i++;
+		}
+	}
+
 	int ret;
 
 	if (is_builtin(node->args[0]))
