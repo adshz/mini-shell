@@ -343,7 +343,14 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 		{
 			status = handle_input_redirection(current);
 			if (status != 0)
-				has_input_error = 1;
+			{
+				// Restore original file descriptors before exiting
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
+				close(saved_stdin);
+				close(saved_stdout);
+				exit(status);
+			}
 		}
 	}
 
