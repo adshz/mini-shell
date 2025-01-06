@@ -217,6 +217,8 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	int saved_stdin = -1;
 	int saved_stdout = -1;
 	int heredoc_pipe[2] = {-1, -1};
+	t_ast_node *redir_nodes[100];  // Array to store redirection nodes
+	int redir_count = 0;
 
 	if (!node)
 		return;
@@ -231,10 +233,22 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 		exit(1);
 	}
 
-	// First collect heredoc content if any
+	// First collect all redirection nodes from right to left
 	current = node;
-	while (current)
+	while (current && redir_count < 100)
 	{
+		if (current->type == AST_REDIR_IN || current->type == AST_REDIR_OUT ||
+			current->type == AST_REDIR_APPEND || current->type == AST_HEREDOC)
+		{
+			redir_nodes[redir_count++] = current;
+		}
+		current = current->left;
+	}
+
+	// Process heredoc first if any
+	for (int i = 0; i < redir_count; i++)
+	{
+		current = redir_nodes[i];
 		if (current->type == AST_HEREDOC)
 		{
 			if (pipe(heredoc_pipe) == -1)
@@ -244,48 +258,11 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(1);
 			}
 
-			// Create a temporary pipe for heredoc
-			int tmp_pipe[2];
-			if (pipe(tmp_pipe) == -1)
-			{
-				close(saved_stdin);
-				close(saved_stdout);
-				close(heredoc_pipe[0]);
-				close(heredoc_pipe[1]);
-				exit(1);
-			}
-
-			// Save current stdin
-			int tmp_stdin = dup(STDIN_FILENO);
-			if (tmp_stdin == -1)
-			{
-				close(saved_stdin);
-				close(saved_stdout);
-				close(heredoc_pipe[0]);
-				close(heredoc_pipe[1]);
-				close(tmp_pipe[0]);
-				close(tmp_pipe[1]);
-				exit(1);
-			}
-
-			// Set up pipe for reading heredoc
-			if (dup2(tmp_pipe[0], STDIN_FILENO) == -1)
-			{
-				close(saved_stdin);
-				close(saved_stdout);
-				close(heredoc_pipe[0]);
-				close(heredoc_pipe[1]);
-				close(tmp_pipe[0]);
-				close(tmp_pipe[1]);
-				close(tmp_stdin);
-				exit(1);
-			}
-
 			// Write heredoc content
 			while (1)
 			{
-				ft_putstr_fd("heredoc> ", STDOUT_FILENO);
-				char *line = get_next_line(tmp_stdin);
+				ft_putstr_fd("heredoc> ", STDERR_FILENO);  // Use STDERR for prompt
+				char *line = get_next_line(STDIN_FILENO);  // Read directly from STDIN
 				if (!line)
 					break;
 
@@ -299,81 +276,52 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 					break;
 				}
 
+				// Write the original line with newline
 				write(heredoc_pipe[1], line, ft_strlen(line));
 				write(heredoc_pipe[1], "\n", 1);
 				free(line);
 			}
 
-			// Restore original stdin
-			dup2(tmp_stdin, STDIN_FILENO);
-			close(tmp_stdin);
-			close(tmp_pipe[0]);
-			close(tmp_pipe[1]);
+			// Close write end of heredoc pipe
 			close(heredoc_pipe[1]);
+
+			// Set up read end of heredoc pipe as stdin
+			if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
+			{
+				close(heredoc_pipe[0]);
+				close(saved_stdin);
+				close(saved_stdout);
+				exit(1);
+			}
+			close(heredoc_pipe[0]);
 			break;  // Only handle first heredoc
 		}
-		current = current->left;
 	}
 
-	// Then handle input redirections
-	current = node;
-	while (current)
+	// Then handle input redirections from left to right
+	for (int i = 0; i < redir_count; i++)
 	{
+		current = redir_nodes[i];
 		if (current->type == AST_REDIR_IN)
 		{
 			status = handle_input_redirection(current);
 			if (status != 0)
 				has_input_error = 1;
 		}
-		current = current->left;
 	}
 
-	// If we have heredoc content, write it to stdin now
-	if (heredoc_pipe[0] != -1)
+	// Finally handle output redirections from left to right
+	for (int i = 0; i < redir_count; i++)
 	{
-		// Create a temporary file to store combined input
-		char tmp_file[] = "/tmp/heredoc_XXXXXX";
-		int tmp_fd = mkstemp(tmp_file);
-		if (tmp_fd == -1)
-		{
-			close(saved_stdin);
-			close(saved_stdout);
-			close(heredoc_pipe[0]);
-			exit(1);
-		}
-
-		// First write heredoc content
-		char buffer[4096];
-		ssize_t n;
-		while ((n = read(heredoc_pipe[0], buffer, sizeof(buffer))) > 0)
-			write(tmp_fd, buffer, n);
-		close(heredoc_pipe[0]);
-
-		// Then append file content if any
-		int input_fd = dup(STDIN_FILENO);
-		if (input_fd != -1)
-		{
-			while ((n = read(input_fd, buffer, sizeof(buffer))) > 0)
-				write(tmp_fd, buffer, n);
-			close(input_fd);
-		}
-
-		// Set up the temporary file as stdin
-		lseek(tmp_fd, 0, SEEK_SET);
-		dup2(tmp_fd, STDIN_FILENO);
-		close(tmp_fd);
-		unlink(tmp_file);  // Delete the temporary file
-	}
-
-	// Finally handle output redirections
-	current = node;
-	while (current)
-	{
+		current = redir_nodes[i];
 		if (current->type == AST_REDIR_OUT)
 		{
 			status = handle_output_redirection(current);
 			if (status != 0)
 			{
+				// Restore original file descriptors before exiting
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
 				close(saved_stdin);
 				close(saved_stdout);
 				exit(status);
@@ -384,17 +332,15 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 			status = handle_append_redirection(current);
 			if (status != 0)
 			{
+				// Restore original file descriptors before exiting
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
 				close(saved_stdin);
 				close(saved_stdout);
 				exit(status);
 			}
 		}
-		current = current->left;
 	}
-
-	// Clean up saved file descriptors
-	close(saved_stdin);
-	close(saved_stdout);
 
 	shell->exit_status = has_input_error;
 }
