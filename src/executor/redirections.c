@@ -48,7 +48,10 @@ static int	handle_input_redirection(t_ast_node *node)
 
 	fd = open(node->right->value, O_RDONLY);
 	if (fd == -1)
+	{
+		close(saved_stdin);
 		return (print_error(node->right->value, strerror(errno), 1));
+	}
 
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
@@ -246,16 +249,11 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 
 	// Process heredocs in order
-	int heredoc_count;
-	int i;
-
-	heredoc_count = 0;
-	i = redir_count - 1;
-	while (i >= 0)
+	int heredoc_count = 0;
+	for (int i = redir_count - 1; i >= 0; i--)
 	{
 		if (redir_nodes[i]->type == AST_HEREDOC)
 			heredoc_count++;
-		i--;
 	}
 
 	// Only create pipe for the last heredoc
@@ -270,22 +268,16 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 
 	// Process all heredocs
-	int current_heredoc;
-	int collecting_content;
-	int is_last_heredoc;
-	int is_second_to_last;
-
-	current_heredoc = 0;
-	collecting_content = 0;  // Flag to indicate when to collect content
-	i = redir_count - 1;
-	while (i >= 0)
+	int current_heredoc = 0;
+	int collecting_content = 0;  // Flag to indicate when to collect content
+	for (int i = redir_count - 1; i >= 0; i--)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_HEREDOC)
 		{
 			current_heredoc++;
-			is_last_heredoc = (current_heredoc == heredoc_count);
-			is_second_to_last = (current_heredoc == heredoc_count - 1);
+			int is_last_heredoc = (current_heredoc == heredoc_count);
+			int is_second_to_last = (current_heredoc == heredoc_count - 1);
 
 			// If this is the second-to-last heredoc, start collecting after its delimiter
 			if (is_second_to_last)
@@ -341,7 +333,6 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				heredoc_pipe[0] = -1;
 			}
 		}
-		i--;
 	}
 
 	// Then handle input redirections from left to right

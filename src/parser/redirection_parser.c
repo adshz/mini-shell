@@ -219,8 +219,7 @@ t_ast_node	*handle_redirection(t_ast_node *node, t_token **tokens)
 				ft_putstr_fd("Checking input file: ", STDERR_FILENO);
 				ft_putstr_fd(file_token->value, STDERR_FILENO);
 				ft_putstr_fd("\n", STDERR_FILENO);
-				if (!check_input_file(file_token->value))
-					return (NULL);
+				check_input_file(file_token->value);  // Just check and print error, don't return
 			}
 
 			if (current->type == TOKEN_REDIRECT_OUT)
