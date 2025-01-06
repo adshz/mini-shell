@@ -246,35 +246,56 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 
 	// Process heredocs in order
-	for (int i = redir_count - 1; i >= 0; i--)
+	int heredoc_count;
+	int i;
+
+	heredoc_count = 0;
+	i = redir_count - 1;
+	while (i >= 0)
+	{
+		if (redir_nodes[i]->type == AST_HEREDOC)
+			heredoc_count++;
+		i--;
+	}
+
+	// Only create pipe for the last heredoc
+	if (heredoc_count > 0)
+	{
+		if (pipe(heredoc_pipe) == -1)
+		{
+			close(saved_stdin);
+			close(saved_stdout);
+			exit(1);
+		}
+	}
+
+	// Process all heredocs
+	int current_heredoc;
+	int collecting_content;
+	int is_last_heredoc;
+	int is_second_to_last;
+
+	current_heredoc = 0;
+	collecting_content = 0;  // Flag to indicate when to collect content
+	i = redir_count - 1;
+	while (i >= 0)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_HEREDOC)
 		{
-			// Close previous heredoc pipe if exists
-			if (heredoc_pipe[0] != -1)
-			{
-				close(heredoc_pipe[0]);
-				heredoc_pipe[0] = -1;
-			}
-			if (heredoc_pipe[1] != -1)
-			{
-				close(heredoc_pipe[1]);
-				heredoc_pipe[1] = -1;
-			}
+			current_heredoc++;
+			is_last_heredoc = (current_heredoc == heredoc_count);
+			is_second_to_last = (current_heredoc == heredoc_count - 1);
 
-			if (pipe(heredoc_pipe) == -1)
-			{
-				close(saved_stdin);
-				close(saved_stdout);
-				exit(1);
-			}
+			// If this is the second-to-last heredoc, start collecting after its delimiter
+			if (is_second_to_last)
+				collecting_content = 0;
 
-			// Write heredoc content
+			// Read until delimiter
 			while (1)
 			{
-				ft_putstr_fd("heredoc> ", STDERR_FILENO);  // Use STDERR for prompt
-				char *line = get_next_line(STDIN_FILENO);  // Read directly from STDIN
+				ft_putstr_fd("heredoc> ", STDERR_FILENO);
+				char *line = get_next_line(STDIN_FILENO);
 				if (!line)
 					break;
 
@@ -285,30 +306,42 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				if (ft_strcmp(line, current->value) == 0)
 				{
 					free(line);
+					// If this is the second-to-last heredoc, start collecting after this
+					if (is_second_to_last)
+						collecting_content = 1;
+					// If this is the last heredoc, stop collecting
+					if (is_last_heredoc)
+						collecting_content = 0;
 					break;
 				}
 
-				// Write the original line with newline
-				write(heredoc_pipe[1], line, ft_strlen(line));
-				write(heredoc_pipe[1], "\n", 1);
+				// Write content if we're collecting (between second-to-last and last delimiter)
+				if (collecting_content)
+				{
+					write(heredoc_pipe[1], line, ft_strlen(line));
+					write(heredoc_pipe[1], "\n", 1);
+				}
 				free(line);
 			}
 
-			// Close write end of heredoc pipe
-			close(heredoc_pipe[1]);
-			heredoc_pipe[1] = -1;
-
-			// Set up read end of heredoc pipe as stdin
-			if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
+			// If this is the last heredoc, set up the pipe
+			if (is_last_heredoc)
 			{
+				close(heredoc_pipe[1]);
+				heredoc_pipe[1] = -1;
+
+				if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
+				{
+					close(heredoc_pipe[0]);
+					close(saved_stdin);
+					close(saved_stdout);
+					exit(1);
+				}
 				close(heredoc_pipe[0]);
-				close(saved_stdin);
-				close(saved_stdout);
-				exit(1);
+				heredoc_pipe[0] = -1;
 			}
-			close(heredoc_pipe[0]);
-			heredoc_pipe[0] = -1;
 		}
+		i--;
 	}
 
 	// Then handle input redirections from left to right
