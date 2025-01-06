@@ -245,12 +245,24 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 		current = current->left;
 	}
 
-	// Process heredoc first if any
-	for (int i = 0; i < redir_count; i++)
+	// Process heredocs in order
+	for (int i = redir_count - 1; i >= 0; i--)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_HEREDOC)
 		{
+			// Close previous heredoc pipe if exists
+			if (heredoc_pipe[0] != -1)
+			{
+				close(heredoc_pipe[0]);
+				heredoc_pipe[0] = -1;
+			}
+			if (heredoc_pipe[1] != -1)
+			{
+				close(heredoc_pipe[1]);
+				heredoc_pipe[1] = -1;
+			}
+
 			if (pipe(heredoc_pipe) == -1)
 			{
 				close(saved_stdin);
@@ -284,6 +296,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 
 			// Close write end of heredoc pipe
 			close(heredoc_pipe[1]);
+			heredoc_pipe[1] = -1;
 
 			// Set up read end of heredoc pipe as stdin
 			if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
@@ -294,7 +307,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(1);
 			}
 			close(heredoc_pipe[0]);
-			break;  // Only handle first heredoc
+			heredoc_pipe[0] = -1;
 		}
 	}
 
