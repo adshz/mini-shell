@@ -201,34 +201,13 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 
 int	execute_command(t_shell *shell, t_ast_node *node)
 {
-	ft_putstr_fd("\nDEBUG: Executing command\n", STDERR_FILENO);
 	if (!node || !node->args || !node->args[0])
-	{
-		ft_putstr_fd("DEBUG: Invalid command node\n", STDERR_FILENO);
 		return 1;
-	}
-
-	ft_putstr_fd("DEBUG: Command: ", STDERR_FILENO);
-	ft_putstr_fd(node->args[0], STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
-
-	// Print all arguments
-	int i = 0;
-	while (node->args[i])
-	{
-		ft_putstr_fd("DEBUG: Arg[", STDERR_FILENO);
-		ft_putnbr_fd(i, STDERR_FILENO);
-		ft_putstr_fd("]: ", STDERR_FILENO);
-		ft_putstr_fd(node->args[i], STDERR_FILENO);
-		ft_putstr_fd("\n", STDERR_FILENO);
-		i++;
-	}
 
 	// Check if command is 'cat' and has file arguments
 	if (ft_strcmp(node->args[0], "cat") == 0 && node->args[1])
 	{
-		// Check each file argument
-		i = 1;
+		int i = 1;
 		while (node->args[i])
 		{
 			if (access(node->args[i], F_OK) == -1)

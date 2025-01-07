@@ -31,25 +31,17 @@ t_ast_node	*parse_expression(t_token **tokens)
 {
 	t_ast_node	*node;
 
-	ft_putstr_fd("\nDEBUG: Starting parse_expression\n", STDERR_FILENO);
 	if (!tokens || !*tokens)
-	{
-		ft_putstr_fd("DEBUG: No tokens to parse\n", STDERR_FILENO);
-		return NULL;
-	}
+		return (NULL);
 
 	node = parse_pipeline(tokens);
 	if (!node)
-	{
-		ft_putstr_fd("DEBUG: Pipeline parsing failed\n", STDERR_FILENO);
-		return NULL;
-	}
+		return (NULL);
 
-	ft_putstr_fd("DEBUG: Handling redirections for node: ", STDERR_FILENO);
-	ft_putstr_fd(node->value ? node->value : "NULL", STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
+	if (*tokens && (*tokens)->type == TOKEN_REDIRECT_IN)
+		node = handle_redirection(node, tokens);
 
-	return handle_redirections(node, tokens);
+	return (node);
 }
 
 t_ast_node	*parse(t_token *tokens)

@@ -69,30 +69,19 @@ static int	handle_output_redirection(t_ast_node *node)
 	int	fd;
 	int saved_stdout;
 
-	ft_putstr_fd("DEBUG: Output redirection - to file: ", STDERR_FILENO);
-	ft_putstr_fd(node->right->value, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdout == -1)
-	{
-		ft_putstr_fd("DEBUG: Output redirection - failed to save stdout\n", STDERR_FILENO);
 		return (print_error(node->right->value, "Failed to save stdout", 1));
-	}
 
 	fd = open(node->right->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		ft_putstr_fd("DEBUG: Output redirection - failed to open/create file\n", STDERR_FILENO);
 		close(saved_stdout);
 		return (print_error(node->right->value, "Cannot create file", 1));
 	}
 
-	ft_putstr_fd("DEBUG: Output redirection - opened file with fd: ", STDERR_FILENO);
-	ft_putnbr_fd(fd, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		ft_putstr_fd("DEBUG: Output redirection - dup2 failed\n", STDERR_FILENO);
 		close(fd);
 		close(saved_stdout);
 		return (print_error(node->right->value, "dup2 failed", 1));
@@ -100,7 +89,6 @@ static int	handle_output_redirection(t_ast_node *node)
 
 	close(fd);
 	close(saved_stdout);
-	ft_putstr_fd("DEBUG: Output redirection - successfully set up\n", STDERR_FILENO);
 	return (0);
 }
 
@@ -376,17 +364,11 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	// First find the rightmost output redirection
 	rightmost_output_index = -1;
 	i = redir_count - 1;
-	ft_putstr_fd("\nDEBUG: Finding rightmost output redirection\n", STDERR_FILENO);
 	while (i >= 0)
 	{
 		if (redir_nodes[i]->type == AST_REDIR_OUT)
 		{
 			rightmost_output_index = i;
-			ft_putstr_fd("DEBUG: Found rightmost output redirection at index: ", STDERR_FILENO);
-			ft_putnbr_fd(i, STDERR_FILENO);
-			ft_putstr_fd(" (file: ", STDERR_FILENO);
-			ft_putstr_fd(redir_nodes[i]->right->value, STDERR_FILENO);
-			ft_putstr_fd(")\n", STDERR_FILENO);
 			break;  // Stop at first one we find from right
 		}
 		i--;
@@ -394,15 +376,11 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 
 	// First handle all non-rightmost output redirections (just create/truncate)
 	i = redir_count - 1;
-	ft_putstr_fd("\nDEBUG: Processing non-rightmost output redirections\n", STDERR_FILENO);
 	while (i >= 0)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_REDIR_OUT && i != rightmost_output_index)
 		{
-			ft_putstr_fd("DEBUG: Creating/truncating file: ", STDERR_FILENO);
-			ft_putstr_fd(current->right->value, STDERR_FILENO);
-			ft_putstr_fd("\n", STDERR_FILENO);
 			int fd;
 			fd = open(current->right->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
@@ -420,15 +398,11 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 
 	// Then handle append redirections
 	i = redir_count - 1;
-	ft_putstr_fd("\nDEBUG: Processing append redirections\n", STDERR_FILENO);
 	while (i >= 0)
 	{
 		current = redir_nodes[i];
 		if (current->type == AST_REDIR_APPEND)
 		{
-			ft_putstr_fd("DEBUG: Processing append redirection: ", STDERR_FILENO);
-			ft_putstr_fd(current->right->value, STDERR_FILENO);
-			ft_putstr_fd("\n", STDERR_FILENO);
 			status = handle_append_redirection(current);
 			if (status != 0)
 			{
@@ -446,9 +420,6 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	if (rightmost_output_index != -1)
 	{
 		current = redir_nodes[rightmost_output_index];
-		ft_putstr_fd("DEBUG: Processing rightmost output redirection: ", STDERR_FILENO);
-		ft_putstr_fd(current->right->value, STDERR_FILENO);
-		ft_putstr_fd("\n", STDERR_FILENO);
 		status = handle_output_redirection(current);
 		if (status != 0)
 		{
