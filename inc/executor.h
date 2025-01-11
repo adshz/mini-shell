@@ -40,6 +40,8 @@ int     handle_heredoc(t_ast_node *node);
 void    setup_pipes(int old_pipe[2], int new_pipe[2], int is_first, int is_last);
 void    close_pipes(int old_pipe[2], int new_pipe[2]);
 
+bool nonint_shell(t_shell *shell, char* input_line);
+
 // Heredoc handling
 char    *process_heredoc(t_shell *shell, const char *delimiter);
 void    cleanup_heredoc(char *heredoc_content);

@@ -28,8 +28,9 @@ INCLUDE		:= -I./inc -I./libft/inc
 SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
+TEST_SRC	:= tests/test_main.c
+SHELL_SRC	:= main.c
 SRCS		:=	\
-				main.c \
 				init/init.c \
 				lexer/tokeniser.c \
 				lexer/token_utils.c \
@@ -74,8 +75,10 @@ SRCS		:=	\
 				expander/quote_handling.c \
 				expander/special_expansions.c \
 				expander/expander_utils.c
-				
-OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
+
+TEST_OBJ		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(TEST_SRC)))
+SHELL_OBJ		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SHELL_SRC)))
+LIB_OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 LIBFT_PATH	:=	./libft
 ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
 MKFL		:=	--no-print-directory
@@ -112,9 +115,13 @@ banner:
 		@echo "$(DF)"
 
 
-$(NAME): $(LIBFT) $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(ALL_LIBS) -o $(NAME)
+$(NAME): $(LIBFT) $(LIB_OBJS) $(SHELL_OBJ)
+	@$(CC) $(CFLAGS) $(LIB_OBJS) $(SHELL_OBJ) $(ALL_LIBS) -o $(NAME)
 	@echo "${YELLOW}[MINISHELL] ${GREEN}Build Completed${DF}"
+
+shell_tests: $(LIBFT) $(LIB_OBJS) $(TEST_OBJ)
+	@$(CC) $(CFLAGS) $(LIB_OBJS) $(TEST_OBJ) $(ALL_LIBS) -o shell_tests
+	@echo "${YELLOW}[MINISHELL TESTS] ${GREEN}Build Completed${DF}"
 
 $(LIBFT):
 	@make $(MKFL) -C $(LIBFT_PATH) all
