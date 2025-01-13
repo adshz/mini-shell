@@ -17,8 +17,6 @@ static bool is_readonly_var(const char *var)
 {
     const char *readonly_vars[] = {
         "SHLVL",
-        "PWD",
-        "OLDPWD",
         NULL
     };
     int i;

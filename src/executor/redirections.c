@@ -61,6 +61,10 @@ char *get_expanded_filename(t_shell *shell, const char *filename)
 
 int is_ambiguous_redirect(t_shell *shell, const char *value)
 {
+	// Skip ambiguity check for literal filenames
+	if (!ft_strchr(value, '$'))
+		return 0;
+
 	char *expanded = expand_variable(shell, value);
 	if (!expanded)
 		return 1;

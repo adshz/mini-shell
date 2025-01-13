@@ -31,7 +31,11 @@ bool is_builtin(const char *cmd)
     while (builtins[i])
     {
         if (ft_strcmp((char *)cmd, (char *)builtins[i]) == 0)
+        {
+            if (ft_strcmp(cmd, "env") == 0)
+                return false;
             return true;
+        }
         i++;
     }
     return false;

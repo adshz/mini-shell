@@ -234,7 +234,11 @@ static int execute_external_command(t_shell *shell, t_ast_node *node)
 		else
 		{
 			shell->exit_status = 127;
-			return print_error(node->args[0], MSG_CMD_NOT_FOUND, 127);
+			// When PATH is unset or command not found in PATH, use "No such file or directory"
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(node->args[0], STDERR_FILENO);
+			ft_putendl_fd(": No such file or directory", STDERR_FILENO);
+			return 127;
 		}
 	}
 
