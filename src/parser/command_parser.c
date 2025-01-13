@@ -68,6 +68,30 @@ static int	fill_args(char **args, t_token *start, int arg_count)
 	return (1);
 }
 
+static int is_variable_assignment(const char *str)
+{
+	int i;
+
+	if (!str || !*str)
+		return (0);
+	
+	// First character must be letter or underscore
+	if (!ft_isalpha(*str) && *str != '_')
+		return (0);
+	
+	// Find equals sign
+	i = 1;
+	while (str[i] && str[i] != '=')
+	{
+		if (!ft_isalnum(str[i]) && str[i] != '_')
+			return (0);
+		i++;
+	}
+	
+	// Must have equals sign
+	return (str[i] == '=');
+}
+
 t_ast_node	*parse_command(t_token **tokens)
 {
 	t_ast_node	*node;
@@ -83,6 +107,16 @@ t_ast_node	*parse_command(t_token **tokens)
 		start->type == TOKEN_APPEND || start->type == TOKEN_HEREDOC)
 	{
 		return (handle_redirection(NULL, tokens));
+	}
+
+	// Check if this is a variable assignment
+	if (is_variable_assignment(start->value))
+	{
+		node = create_ast_node(AST_VAR_EXPANSION, start->value);
+		if (!node)
+			return (NULL);
+		*tokens = (*tokens)->next;
+		return (node);
 	}
 
 	arg_count = count_args(start);

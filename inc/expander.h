@@ -6,6 +6,7 @@
 
 /* Variable expansion */
 char    *expand_simple_variable(t_shell *shell, const char *arg);
+char    *expand_complex_variable(t_shell *shell, const char *arg);
 char    **expand_command(t_shell *shell, const char *cmd);
 char    *expand_word(t_shell *shell, const char *word);
 

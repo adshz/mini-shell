@@ -17,6 +17,8 @@
 #include "shell.h"
 #include "errors.h"
 #include "libft.h"
+#include "env_utils.h"
+#include "hashtable.h"
 
 static void	get_shell_pid(t_shell *shell)
 {
@@ -31,68 +33,32 @@ static void	get_shell_pid(t_shell *shell)
 	shell->pid = pid - 1;
 }
 
-static void	init_shlvl(t_shell *shell)
-{
-	char	*tmp;
-	int		shlvl;
-
-	shlvl = 1;
-	tmp = hashmap_search(shell->env, "SHLVL");
-	if (tmp && ft_atoi(tmp) > 0)
-		shlvl = ft_atoi(tmp) + 1;
-	tmp = ft_itoa(shlvl);
-	if (!tmp)
-		return ;
-	hashmap_insert(shell->env, "SHLVL", tmp, 0);
-	free(tmp);
-}
-
-static void	init_pwd(t_shell *shell)
-{
-	char	*tmp;
-
-	if (!hashmap_search(shell->env, "PWD"))
-	{
-		tmp = getcwd(NULL, 0);
-		if (!tmp)
-			return ;
-		hashmap_insert(shell->env, "PWD", tmp, 0);
-		free(tmp);
-	}
-}
-
-void	init_env_vars(t_shell *shell, char *argv[])
-{
-	init_pwd(shell);
-	init_shlvl(shell);
-	if (!hashmap_search(shell->env, "PATH"))
-		hashmap_insert(shell->env, "PATH",
-			"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
-	if (!hashmap_search(shell->env, "_"))
-		hashmap_insert(shell->env, "_", argv[0], 0);
-	hashmap_remove(shell->env, "OLDPWD");
-}
-
 void	init_shell(t_shell *shell, char *argv[], char *envp[])
 {
-	ft_memset(shell, 0, sizeof(t_shell));
-	shell->exit_status = 0;
+	shell->argv = argv;
+	shell->envp = envp;
+	shell->line = NULL;
+	shell->tokens = NULL;
+	shell->ast = NULL;
+	shell->env = init_env(envp);
+	shell->local_vars = init_hashmap();
+	shell->alias = init_hashmap();
 	shell->cmds = NULL;
+	get_shell_pid(shell);
 	shell->pids = NULL;
+	shell->pid_count = 0;
 	shell->old_pwd = NULL;
 	shell->history = NULL;
+	shell->history_size = 0;
+	shell->history_capacity = 0;
+	shell->exit_status = 0;
+	shell->stdin_backup = -1;
+	shell->stdout_backup = -1;
+	shell->heredoc_sigint = false;
+	shell->signint_child = false;
+	shell->in_pipe = false;
+	shell->in_heredoc = false;
 	
-	if (!envp)
-		shell->env = hashmap_create();
-	else
-		shell->env = env_to_hash(envp);
-	
-	if (!shell->env)
-		exit(ERROR);
-	
-	shell->stdin_backup = dup(STDIN_FILENO);
-	shell->stdout_backup = dup(STDOUT_FILENO);
-	tcgetattr(STDIN_FILENO, &shell->term_settings);
+	// Initialize environment variables
 	init_env_vars(shell, argv);
-	get_shell_pid(shell);
 }

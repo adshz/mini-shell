@@ -34,6 +34,7 @@
 # define MSG_PERMISSION "Permission denied"
 # define MSG_NOT_EXECUTABLE "Not executable"
 # define MSG_NO_SUCH_FILE "No such file or directory"
+# define MSG_FORK "Fork failed"
 
 /* New error type enum for future use */
 typedef enum e_error_type

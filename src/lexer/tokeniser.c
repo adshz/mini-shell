@@ -70,19 +70,29 @@ static size_t	get_token_length_with_state(const char *input)
 			}
 		}
 		state = get_next_state(state, input[len]);
-		if (state == STATE_NORMAL && ft_isspace(input[len]) && len > 0)
-			break;
-		if (state == STATE_NORMAL && len == 0 && is_special_char(input[len]))
+		if (state == STATE_NORMAL)
 		{
-			if ((input[len] == '|' && input[len + 1] == '|') ||
-				(input[len] == '&' && input[len + 1] == '&') ||
-				(input[len] == '<' && input[len + 1] == '<') ||
-				(input[len] == '>' && input[len + 1] == '>'))
-				return (2);
-			return (1);
+			if (len > 0 && (input[len] == '"' || input[len] == '\''))
+			{
+				len++;
+				if (input[len] && !ft_isspace(input[len]) && !is_special_char(input[len]))
+					break;
+				continue;
+			}
+			if (ft_isspace(input[len]) && len > 0)
+				break;
+			if (len == 0 && is_special_char(input[len]))
+			{
+				if ((input[len] == '|' && input[len + 1] == '|') ||
+					(input[len] == '&' && input[len + 1] == '&') ||
+					(input[len] == '<' && input[len + 1] == '<') ||
+					(input[len] == '>' && input[len + 1] == '>'))
+					return (2);
+				return (1);
+			}
+			if (len > 0 && is_special_char(input[len]))
+				break;
 		}
-		if (state == STATE_NORMAL && len > 0 && is_special_char(input[len]))
-			break;
 		len++;
 	}
 	return (len);
@@ -101,6 +111,7 @@ static char *extract_token(const char *input, size_t len)
 	i = 0;
 	j = 0;
 	state = STATE_NORMAL;
+
 	while (i < len)
 	{
 		if (state == STATE_IN_DOUBLE_QUOTE)
@@ -125,17 +136,28 @@ static char *extract_token(const char *input, size_t len)
 				result[j++] = input[i++];
 			continue;
 		}
+
 		if (input[i] == '"' && state == STATE_NORMAL)
+		{
 			state = STATE_IN_DOUBLE_QUOTE;
+			result[j++] = input[i];  // Keep the quote
+		}
 		else if (input[i] == '"' && state == STATE_IN_DOUBLE_QUOTE)
+		{
 			state = STATE_NORMAL;
+			result[j++] = input[i];  // Keep the quote
+		}
 		else if (input[i] == '\'' && state == STATE_NORMAL)
+		{
 			state = STATE_IN_SINGLE_QUOTE;
+			result[j++] = input[i];  // Keep the quote
+		}
 		else if (input[i] == '\'' && state == STATE_IN_SINGLE_QUOTE)
+		{
 			state = STATE_NORMAL;
-		if ((state == STATE_NORMAL && input[i] != '"' && input[i] != '\'') || 
-			(state == STATE_IN_DOUBLE_QUOTE && input[i] != '"') || 
-			(state == STATE_IN_SINGLE_QUOTE && input[i] != '\''))
+			result[j++] = input[i];  // Keep the quote
+		}
+		else
 			result[j++] = input[i];
 		i++;
 	}
@@ -151,6 +173,10 @@ t_token *tokenise(const char *input)
 	char	*value;
 	t_token_type type;
 
+	ft_putstr_fd("\n[DEBUG] Tokenizing input: '", STDERR_FILENO);
+	ft_putstr_fd((char *)input, STDERR_FILENO);
+	ft_putendl_fd("'", STDERR_FILENO);
+
 	head = NULL;
 	current = NULL;
 	while (*input)
@@ -160,9 +186,17 @@ t_token *tokenise(const char *input)
 		if (!*input)
 			break;
 
+			ft_putstr_fd("[DEBUG] Processing segment: '", STDERR_FILENO);
+			ft_putstr_fd((char *)input, STDERR_FILENO);
+			ft_putendl_fd("'", STDERR_FILENO);
+
 		len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
+
+		ft_putstr_fd("[DEBUG] Token length: ", STDERR_FILENO);
+		ft_putnbr_fd(len, STDERR_FILENO);
+		ft_putchar_fd('\n', STDERR_FILENO);
 
 		value = extract_token(input, len);
 		if (!value)
@@ -170,6 +204,10 @@ t_token *tokenise(const char *input)
 			free_tokens(head);
 			return (NULL);
 		}
+
+		ft_putstr_fd("[DEBUG] Extracted token: '", STDERR_FILENO);
+		ft_putstr_fd(value, STDERR_FILENO);
+		ft_putendl_fd("'", STDERR_FILENO);
 
 		type = get_token_type(value);
 		if (type == TOKEN_EOF)  // Stop on syntax error
@@ -187,6 +225,10 @@ t_token *tokenise(const char *input)
 			return (NULL);
 		}
 
+		ft_putstr_fd("[DEBUG] Created token with value: '", STDERR_FILENO);
+		ft_putstr_fd(new_token->value, STDERR_FILENO);
+		ft_putendl_fd("'", STDERR_FILENO);
+
 		if (!head)
 		{
 			head = new_token;
@@ -200,5 +242,7 @@ t_token *tokenise(const char *input)
 
 		input += len;
 	}
+
+	ft_putendl_fd("[DEBUG] Tokenization complete", STDERR_FILENO);
 	return (head);
 }

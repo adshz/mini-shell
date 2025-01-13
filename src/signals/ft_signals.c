@@ -29,8 +29,12 @@ static void disable_ctrl_char_echo(void)
 
 static void	handle_sigint(int signum)
 {
+	ft_putendl_fd("\n[DEBUG] SIGINT received", STDERR_FILENO);
 	g_signal = signum;
-	write(STDOUT_FILENO, "\n", 1);  // Print newline
+
+	// Always print a newline
+	write(STDOUT_FILENO, "\n", 1);
+
 	if (isatty(STDIN_FILENO))
 	{
 		rl_on_new_line();
@@ -43,7 +47,8 @@ void	init_signals(void)
 {
 	struct sigaction sa;
 
-	disable_ctrl_char_echo();  // Disable control char echo
+	ft_putendl_fd("[DEBUG] Initializing signals", STDERR_FILENO);
+	disable_ctrl_char_echo();
 	
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -51,4 +56,8 @@ void	init_signals(void)
 	
 	sigaction(SIGINT, &sa, NULL);
 	signal(SIGQUIT, SIG_IGN);
+
+	// Reset global signal flag
+	g_signal = 0;
+	ft_putendl_fd("[DEBUG] Signal initialization complete", STDERR_FILENO);
 }

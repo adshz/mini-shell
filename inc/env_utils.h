@@ -13,16 +13,15 @@
 # define ENV_UTILS_H
 
 # include "hashtable.h"
+# include "shell.h"
 
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
+// Environment initialization functions
+t_hashmap    *init_env(char **envp);
+t_hashmap    *init_hashmap(void);
 
-char	*get_env_value(t_env *env, const char *key);
-t_env	*hashmap_to_env(t_hashmap *map);
-void	free_env_list(t_env *env);
+// Environment variable management
+void        init_env_vars(t_shell *shell, char *argv[]);
+void        init_shlvl(t_shell *shell);
+void        init_pwd(t_shell *shell);
 
 #endif 

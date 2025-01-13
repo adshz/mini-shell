@@ -31,6 +31,7 @@ OBJ_DIR		:=	./obj
 SRCS		:=	\
 				main.c \
 				init/init.c \
+				env/env_init.c \
 				lexer/tokeniser.c \
 				lexer/token_utils.c \
 				parser/parser.c \
