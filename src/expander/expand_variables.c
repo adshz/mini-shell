@@ -1,6 +1,7 @@
 #include "expander.h"
 #include "libft.h"
 #include "shell.h"
+#include "parser.h"
 
 char *expand_simple_variable(t_shell *shell, const char *arg)
 {
@@ -92,4 +93,9 @@ char **expand_command(t_shell *shell, const char *cmd)
     cmd_args[1] = NULL;
     
     return cmd_args;
+}
+
+char *expand_variable(t_shell *shell, const char *var_name)
+{
+    return expand_simple_variable(shell, var_name);
 }

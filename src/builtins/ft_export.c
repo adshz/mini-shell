@@ -87,6 +87,16 @@ static void export_variable(t_shell *shell, char *arg)
 
         if (key && value && is_valid_identifier(key))
         {
+            // Remove surrounding quotes from value if present
+            size_t val_len = ft_strlen(value);
+            if (val_len >= 2 && ((value[0] == '"' && value[val_len - 1] == '"') ||
+                                (value[0] == '\'' && value[val_len - 1] == '\'')))
+            {
+                char *unquoted = ft_substr(value, 1, val_len - 2);
+                free(value);
+                value = unquoted;
+            }
+
             if (value[0] == '$')
             {
                 expanded_value = expand_simple_variable(shell, value + 1);

@@ -54,7 +54,6 @@ t_ast_type  get_ast_type(t_token_type type);
 t_ast_node	*handle_redirections(t_ast_node *node, t_token **tokens);
 // New helper functions for variable expansion
 int         is_variable_token(const char *token);
-char        *expand_variable(t_shell *shell, const char *var_name);
 t_ast_node  *create_expanded_node(t_shell *shell, const char *value);
-int is_variable_token(const char *token);
+
 #endif

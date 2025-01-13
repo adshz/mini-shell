@@ -33,8 +33,9 @@ int     execute_pipe(t_shell *shell, t_ast_node *node);
 int     execute_redirection(t_shell *shell, t_ast_node *node);
 
 // Redirection handling
-int     handle_append_redirection(t_ast_node *node);
+int     handle_append_redirection(t_ast_node *node, t_shell *shell);
 int     handle_heredoc(t_ast_node *node);
+int     is_ambiguous_redirect(t_shell *shell, const char *value);
 
 // Pipe handling
 void    setup_pipes(int old_pipe[2], int new_pipe[2], int is_first, int is_last);

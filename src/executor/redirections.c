@@ -12,17 +12,36 @@
 #include "executor.h"
 #include "libft.h"
 #include "errors.h"
+#include "shell.h"   // For t_shell
+#include "expander.h"  // For expand_variable
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>  // For strerror
 
-static int	handle_input_redirection(t_ast_node *node)
+// Forward declarations
+static int handle_input_redirection(t_ast_node *node, t_shell *shell);
+static int handle_output_redirection(t_ast_node *node, t_shell *shell);
+
+static int	handle_input_redirection(t_ast_node *node, t_shell *shell)
 {
 	int	fd;
 	int saved_stdin;
+
+	if (is_ambiguous_redirect(shell, node->right->value))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(node->right->value, STDERR_FILENO);
+		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		return (1);
+	}
+
+	saved_stdin = dup(STDIN_FILENO);
+	if (saved_stdin == -1)
+		return (print_error(node->right->value, "Failed to save stdin", 1));
 
 	ft_putstr_fd("\n[DEBUG] Handling input redirection for file: ", STDERR_FILENO);
 	ft_putendl_fd(node->right->value, STDERR_FILENO);
@@ -45,10 +64,6 @@ static int	handle_input_redirection(t_ast_node *node)
 		return (1);  // Return error but don't exit
 	}
 
-	saved_stdin = dup(STDIN_FILENO);
-	if (saved_stdin == -1)
-		return (print_error(node->right->value, "Failed to save stdin", 1));
-
 	fd = open(node->right->value, O_RDONLY);
 	if (fd == -1)
 	{
@@ -70,10 +85,56 @@ static int	handle_input_redirection(t_ast_node *node)
 	return (0);
 }
 
-static int	handle_output_redirection(t_ast_node *node)
+int is_ambiguous_redirect(t_shell *shell, const char *value)
+{
+	if (!value)
+		return (0);
+	
+	// If it starts with $, it's a variable that needs expansion
+	if (value[0] == '$')
+	{
+		char *expanded = expand_variable(shell, value + 1);
+		if (!expanded)
+			return (0);  // If expansion fails, treat as non-ambiguous
+			
+		// Check if expanded value contains spaces
+		int is_ambiguous = 0;
+		char *ptr = expanded;
+		while (*ptr)
+		{
+			if (*ptr == ' ' || *ptr == '\t')
+			{
+				is_ambiguous = 1;
+				break;
+			}
+			ptr++;
+		}
+		free(expanded);
+		return (is_ambiguous);
+	}
+	
+	// For non-variable values, check directly
+	while (*value)
+	{
+		if (*value == ' ' || *value == '\t')
+			return (1);
+		value++;
+	}
+	return (0);
+}
+
+static int	handle_output_redirection(t_ast_node *node, t_shell *shell)
 {
 	int	fd;
 	int saved_stdout;
+
+	if (is_ambiguous_redirect(shell, node->right->value))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(node->right->value, STDERR_FILENO);
+		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		return (1);
+	}
 
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdout == -1)
@@ -98,12 +159,23 @@ static int	handle_output_redirection(t_ast_node *node)
 	return (0);
 }
 
-int	handle_append_redirection(t_ast_node *node)
+int	handle_append_redirection(t_ast_node *node, t_shell *shell)
 {
 	int	fd;
 	int saved_stdout;
 
+	if (is_ambiguous_redirect(shell, node->right->value))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(node->right->value, STDERR_FILENO);
+		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		return (1);
+	}
+
 	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdout == -1)
+		return (print_error(node->right->value, "Failed to save stdout", 1));
+
 	fd = open(node->right->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
@@ -416,7 +488,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 			ft_putstr_fd("[DEBUG] Processing input redirection: ", STDERR_FILENO);
 			ft_putendl_fd(current->right->value, STDERR_FILENO);
 			
-			status = handle_input_redirection(current);
+			status = handle_input_redirection(current, shell);
 			if (status != 0)
 			{
 				ft_putendl_fd("[DEBUG] Input redirection failed", STDERR_FILENO);
@@ -474,7 +546,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 		current = redir_nodes[i];
 		if (current->type == AST_REDIR_APPEND)
 		{
-			status = handle_append_redirection(current);
+			status = handle_append_redirection(current, shell);
 			if (status != 0)
 			{
 				dup2(saved_stdin, STDIN_FILENO);
@@ -491,7 +563,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	if (rightmost_output_index != -1)
 	{
 		current = redir_nodes[rightmost_output_index];
-		status = handle_output_redirection(current);
+		status = handle_output_redirection(current, shell);
 		if (status != 0)
 		{
 			dup2(saved_stdin, STDIN_FILENO);
