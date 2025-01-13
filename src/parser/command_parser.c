@@ -38,7 +38,7 @@ static char	**allocate_args(int arg_count)
 	return (args);
 }
 
-int is_variable_token(const char *token)
+int is_variable_string(const char *token)
 {
 	return (token && token[0] == '$' && token[1] != '\0');
 }
@@ -52,7 +52,7 @@ static int	fill_args(char **args, t_token *start, int arg_count)
 	i = 0;
 	while (i < arg_count)
 	{
-		if (is_variable_token(current->value))
+		if (is_variable_string(current->value))
 		{
 			args[i] = ft_strdup(current->value);
 		}
@@ -127,7 +127,7 @@ t_ast_node	*parse_command(t_token **tokens)
 	if (!node)
 		return (NULL);
 
-	node->is_expanded = is_variable_token(start->value);
+	node->is_expanded = is_variable_string(start->value);
 	if (node->is_expanded)
 		node->original = ft_strdup(start->value);
 

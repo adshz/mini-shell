@@ -7,9 +7,32 @@
 
 // Forward declarations for types used in t_shell
 struct s_token;
-struct s_ast_node;
 struct s_hashmap;
 struct s_list;
+
+typedef enum e_ast_type
+{
+    AST_COMMAND,     // Simple command
+    AST_PIPE,        // Pipeline
+    AST_REDIR_IN,    // Input redirection (<)
+    AST_REDIR_OUT,   // Output redirection (>)
+    AST_REDIR_APPEND,// Append redirection (>>)
+    AST_HEREDOC,     // Here document (<<)
+    AST_AND,         // AND operator (&&)
+    AST_OR,          // OR operator (||)
+    AST_VAR_EXPANSION // Variable expansion ($var)
+} t_ast_type;
+
+typedef struct s_ast_node
+{
+    t_ast_type          type;
+    char                *value;      // For commands and file names
+    char                **args;      // For command arguments
+    int                 is_expanded; // Flag to indicate if this node contains expanded variables
+    char                *original;   // Original unexpanded value (for variable expansions)
+    struct s_ast_node   *left;
+    struct s_ast_node   *right;
+} t_ast_node;
 
 typedef struct s_env
 {
@@ -24,7 +47,7 @@ typedef struct s_minishell
     char            **envp;
     char            *line;
     struct s_token  *tokens;
-    struct s_ast_node *ast;
+    t_ast_node      *ast;
     struct s_hashmap *env;
     struct s_hashmap *local_vars;
     struct s_hashmap *alias;

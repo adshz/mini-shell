@@ -27,6 +27,7 @@ typedef enum e_token_type
     TOKEN_OR,            // ||
     TOKEN_SEMICOLON,     // ;
     TOKEN_NEWLINE,       // \n
+    TOKEN_VARIABLE,      // $VAR
     TOKEN_EOF            // End of input
 }   t_token_type;
 

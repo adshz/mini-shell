@@ -11,10 +11,13 @@
 /* ************************************************************************** */
 #include "parser.h"
 
-int	is_redirection_token(t_token_type type)
+bool is_redirection_token(t_token_type type)
 {
-	return (type == TOKEN_REDIRECT_IN
-		|| type == TOKEN_REDIRECT_OUT
-		|| type == TOKEN_APPEND
-		|| type == TOKEN_HEREDOC);
+	return (type == TOKEN_REDIRECT_IN || type == TOKEN_REDIRECT_OUT ||
+			type == TOKEN_APPEND || type == TOKEN_HEREDOC);
+}
+
+bool is_variable_token(t_token_type type)
+{
+	return (type == TOKEN_VARIABLE);
 }

@@ -12,323 +12,184 @@
 #include "executor.h"
 #include "libft.h"
 #include "errors.h"
-#include "shell.h"   // For t_shell
-#include "expander.h"  // For expand_variable
+#include "shell.h"
+#include "expander.h"
+#include "types.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>  // For strerror
+#include <string.h>
 
-// Forward declarations
-static int handle_input_redirection(t_ast_node *node, t_shell *shell);
-static int handle_output_redirection(t_ast_node *node, t_shell *shell);
-
-static int	handle_input_redirection(t_ast_node *node, t_shell *shell)
+char *get_expanded_filename(t_shell *shell, const char *filename)
 {
-	int	fd;
-	int saved_stdin;
-	char *filename = node->right->value;
-	char *expanded_filename = NULL;
-
-	// Handle quoted variables
-	if (filename[0] == '"' && filename[ft_strlen(filename) - 1] == '"')
+	char *expanded;
+	char *unquoted;
+	
+	// If filename starts with $, it's a variable
+	if (filename[0] == '$')
 	{
-		char *unquoted = ft_substr(filename, 1, ft_strlen(filename) - 2);
+		// Remove the $ prefix
+		expanded = expand_variable(shell, filename + 1);
+		return expanded;
+	}
+	
+	// If filename is quoted, remove quotes and expand if needed
+	if ((filename[0] == '"' || filename[0] == '\'') && 
+		filename[ft_strlen(filename) - 1] == filename[0])
+	{
+		// Remove surrounding quotes
+		unquoted = ft_substr(filename, 1, ft_strlen(filename) - 2);
 		if (!unquoted)
-			return (print_error(filename, "Memory allocation failed", 1));
-
+			return NULL;
+			
+		// If unquoted string starts with $, expand it
 		if (unquoted[0] == '$')
 		{
-			expanded_filename = expand_variable(shell, unquoted + 1);
+			expanded = expand_variable(shell, unquoted + 1);
 			free(unquoted);
-			if (!expanded_filename)
-				return (print_error(filename, "Variable expansion failed", 1));
-			filename = expanded_filename;
+			return expanded;
 		}
-		else
-		{
-			filename = unquoted;
-		}
+		return unquoted;
 	}
-	// Handle unquoted variables
-	else if (filename[0] == '$')
-	{
-		expanded_filename = expand_variable(shell, filename + 1);
-		if (!expanded_filename)
-			return (print_error(filename, "Variable expansion failed", 1));
-		filename = expanded_filename;
-	}
-
-	if (is_ambiguous_redirect(shell, node->right->value))
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(node->right->value, STDERR_FILENO);
-		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
-		return (1);
-	}
-
-	saved_stdin = dup(STDIN_FILENO);
-	if (saved_stdin == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		return (print_error(filename, "Failed to save stdin", 1));
-	}
-
-	ft_putstr_fd("\n[DEBUG] Handling input redirection for file: ", STDERR_FILENO);
-	ft_putendl_fd(filename, STDERR_FILENO);
-
-	// Check if file exists first
-	if (access(filename, F_OK) == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(filename, STDERR_FILENO);
-		ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-		return (1);  // Return error but don't exit
-	}
-
-	// Check if file is readable
-	if (access(filename, R_OK) == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(filename, STDERR_FILENO);
-		ft_putendl_fd(": Permission denied", STDERR_FILENO);
-		return (1);  // Return error but don't exit
-	}
-
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		close(saved_stdin);
-		return (print_error(filename, strerror(errno), 1));
-	}
-
-	ft_putendl_fd("[DEBUG] Successfully opened input file", STDERR_FILENO);
-
-	if (dup2(fd, STDIN_FILENO) == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		close(fd);
-		close(saved_stdin);
-		return (print_error(filename, "dup2 failed", 1));
-	}
-
-	close(fd);
-	ft_putendl_fd("[DEBUG] Successfully redirected stdin", STDERR_FILENO);
-	if (expanded_filename)
-		free(expanded_filename);
-	return (0);
+	
+	// Otherwise return a copy of the original filename
+	return ft_strdup(filename);
 }
 
 int is_ambiguous_redirect(t_shell *shell, const char *value)
 {
-	if (!value)
-		return (0);
+	char *expanded = expand_variable(shell, value);
+	if (!expanded)
+		return 1;
 	
-	// If the value is quoted, it's never ambiguous
-	if (value[0] == '"' && value[ft_strlen(value) - 1] == '"')
-		return (0);
-	
-	// Handle unquoted variables (e.g., $test)
-	if (value[0] == '$')
+	// Check if expanded value contains spaces
+	if (ft_strchr(expanded, ' '))
 	{
-		char *expanded = expand_variable(shell, value + 1);
-		if (!expanded)
-			return (0);  // If expansion fails, treat as non-ambiguous
-			
-		// Check if expanded value contains spaces
-		int is_ambiguous = 0;
-		char *ptr = expanded;
-		while (*ptr)
-		{
-			if (*ptr == ' ' || *ptr == '\t')
-			{
-				is_ambiguous = 1;
-				break;
-			}
-			ptr++;
-		}
 		free(expanded);
-		return (is_ambiguous);
+		return 1;
 	}
 	
-	// For non-variable values, check directly
-	while (*value)
-	{
-		if (*value == ' ' || *value == '\t')
-			return (1);
-		value++;
-	}
-	return (0);
+	free(expanded);
+	return 0;
 }
 
-static int	handle_output_redirection(t_ast_node *node, t_shell *shell)
+int handle_input_redirection(t_ast_node *node, t_shell *shell)
 {
-	int	fd;
-	int saved_stdout;
 	char *filename = node->right->value;
-	char *expanded_filename = NULL;
+	char *expanded_filename;
+	int fd;
 
-	// Handle quoted variables
-	if (filename[0] == '"' && filename[ft_strlen(filename) - 1] == '"')
+	if (is_ambiguous_redirect(shell, filename))
 	{
-		char *unquoted = ft_substr(filename, 1, ft_strlen(filename) - 2);
-		if (!unquoted)
-			return (print_error(filename, "Memory allocation failed", 1));
-
-		if (unquoted[0] == '$')
-		{
-			expanded_filename = expand_variable(shell, unquoted + 1);
-			free(unquoted);
-			if (!expanded_filename)
-				return (print_error(filename, "Variable expansion failed", 1));
-			filename = expanded_filename;
-		}
-		else
-		{
-			filename = unquoted;
-		}
-	}
-	// Handle unquoted variables
-	else if (filename[0] == '$')
-	{
-		expanded_filename = expand_variable(shell, filename + 1);
-		if (!expanded_filename)
-			return (print_error(filename, "Variable expansion failed", 1));
-		filename = expanded_filename;
-	}
-
-	if (is_ambiguous_redirect(shell, node->right->value))
-	{
-		if (expanded_filename)
-			free(expanded_filename);
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(node->right->value, STDERR_FILENO);
-		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		ft_putstr_fd((char *)filename, STDERR_FILENO);
+		ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
 		return (1);
 	}
 
-	saved_stdout = dup(STDOUT_FILENO);
-	if (saved_stdout == -1)
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		return (print_error(filename, "Failed to save stdout", 1));
-	}
+	expanded_filename = get_expanded_filename(shell, filename);
+	if (!expanded_filename)
+		return (1);
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(expanded_filename, O_RDONLY);
 	if (fd == -1)
 	{
-		if (expanded_filename)
-			free(expanded_filename);
-		close(saved_stdout);
-		return (print_error(filename, "Cannot create file", 1));
+		print_error(expanded_filename, "No such file or directory", 1);
+		free(expanded_filename);
+		return (1);
+	}
+
+	if (dup2(fd, STDIN_FILENO) == -1)
+	{
+		print_error("dup2", "Failed to duplicate file descriptor", 1);
+		close(fd);
+		free(expanded_filename);
+		return (1);
+	}
+
+	close(fd);
+	free(expanded_filename);
+	return (0);
+}
+
+int handle_output_redirection(t_ast_node *node, t_shell *shell)
+{
+	char *filename = node->right->value;
+	char *expanded_filename;
+	int fd;
+
+	if (is_ambiguous_redirect(shell, filename))
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd((char *)filename, STDERR_FILENO);
+		ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+		return (1);
+	}
+
+	expanded_filename = get_expanded_filename(shell, filename);
+	if (!expanded_filename)
+		return (1);
+
+	fd = open(expanded_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		print_error(expanded_filename, "Failed to open file", 1);
+		free(expanded_filename);
+		return (1);
 	}
 
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		if (expanded_filename)
-			free(expanded_filename);
+		print_error("dup2", "Failed to duplicate file descriptor", 1);
 		close(fd);
-		close(saved_stdout);
-		return (print_error(filename, "dup2 failed", 1));
-	}
-
-	close(fd);
-	close(saved_stdout);
-	if (expanded_filename)
 		free(expanded_filename);
-	return (0);
-}
-
-int	handle_append_redirection(t_ast_node *node, t_shell *shell)
-{
-	int	fd;
-	int saved_stdout;
-	char *filename = node->right->value;
-	char *expanded_filename = NULL;
-
-	// Handle quoted variables
-	if (filename[0] == '"' && filename[ft_strlen(filename) - 1] == '"')
-	{
-		char *unquoted = ft_substr(filename, 1, ft_strlen(filename) - 2);
-		if (!unquoted)
-			return (print_error(filename, "Memory allocation failed", 1));
-
-		if (unquoted[0] == '$')
-		{
-			expanded_filename = expand_variable(shell, unquoted + 1);
-			free(unquoted);
-			if (!expanded_filename)
-				return (print_error(filename, "Variable expansion failed", 1));
-			filename = expanded_filename;
-		}
-		else
-		{
-			filename = unquoted;
-		}
-	}
-	// Handle unquoted variables
-	else if (filename[0] == '$')
-	{
-		expanded_filename = expand_variable(shell, filename + 1);
-		if (!expanded_filename)
-			return (print_error(filename, "Variable expansion failed", 1));
-		filename = expanded_filename;
-	}
-
-	if (is_ambiguous_redirect(shell, node->right->value))
-	{
-		if (expanded_filename)
-			free(expanded_filename);
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(node->right->value, STDERR_FILENO);
-		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
 		return (1);
 	}
 
-	saved_stdout = dup(STDOUT_FILENO);
-	if (saved_stdout == -1)
+	close(fd);
+	free(expanded_filename);
+	return (0);
+}
+
+int handle_append_redirection(t_ast_node *node, t_shell *shell)
+{
+	char *filename = node->right->value;
+	char *expanded_filename;
+	int fd;
+
+	if (is_ambiguous_redirect(shell, filename))
 	{
-		if (expanded_filename)
-			free(expanded_filename);
-		return (print_error(filename, "Failed to save stdout", 1));
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd((char *)filename, STDERR_FILENO);
+		ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+		return (1);
 	}
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	expanded_filename = get_expanded_filename(shell, filename);
+	if (!expanded_filename)
+		return (1);
+
+	fd = open(expanded_filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
-		if (expanded_filename)
-			free(expanded_filename);
-		close(saved_stdout);
-		return (print_error(filename, "Cannot create file", 1));
+		print_error(expanded_filename, "Failed to open file", 1);
+		free(expanded_filename);
+		return (1);
 	}
 
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		if (expanded_filename)
-			free(expanded_filename);
+		print_error("dup2", "Failed to duplicate file descriptor", 1);
 		close(fd);
-		close(saved_stdout);
-		return (print_error(filename, "dup2 failed", 1));
+		free(expanded_filename);
+		return (1);
 	}
 
 	close(fd);
-	close(saved_stdout);
-	if (expanded_filename)
-		free(expanded_filename);
+	free(expanded_filename);
 	return (0);
 }
 
@@ -425,12 +286,9 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	int has_input_error;
 	int saved_stdin;
 	int saved_stdout;
-	int heredoc_pipe[2];
 	t_ast_node *redir_nodes[100];  // Array to store redirection nodes
 	int redir_count;
-	int heredoc_count;
 	int i;
-	int rightmost_output_index;
 
 	ft_putendl_fd("\n[DEBUG] Starting setup_redirections", STDERR_FILENO);
 
@@ -460,179 +318,21 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 			current->type == AST_REDIR_APPEND || current->type == AST_HEREDOC)
 		{
 			redir_nodes[redir_count++] = current;
-			ft_putstr_fd("[DEBUG] Found redirection node type: ", STDERR_FILENO);
-			ft_putnbr_fd(current->type, STDERR_FILENO);
-			ft_putstr_fd(", value: ", STDERR_FILENO);
-			ft_putendl_fd(current->right->value, STDERR_FILENO);
 		}
 		current = current->left;
 	}
 
-	// Process heredocs in order
-	heredoc_count = 0;
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		if (redir_nodes[i]->type == AST_HEREDOC)
-			heredoc_count++;
-		i--;
-	}
-
-	ft_putstr_fd("[DEBUG] Found heredoc count: ", STDERR_FILENO);
-	ft_putnbr_fd(heredoc_count, STDERR_FILENO);
-	ft_putchar_fd('\n', STDERR_FILENO);
-
-	// Process all heredocs
-	i = redir_count - 1;
-	while (i >= 0)
+	// Process redirections from left to right (reverse the order since we collected right to left)
+	for (i = redir_count - 1; i >= 0; i--)
 	{
 		current = redir_nodes[i];
-		if (current->type == AST_HEREDOC)
+		
+		// Handle each type of redirection
+		if (current->type == AST_REDIR_OUT)
 		{
-			// Create pipe for this heredoc
-			if (pipe(heredoc_pipe) == -1)
-			{
-				close(saved_stdin);
-				close(saved_stdout);
-				exit(1);
-			}
-
-			shell->in_heredoc = true;
-			ft_putendl_fd("[DEBUG] Entering heredoc mode", STDERR_FILENO);
-
-			char *content = malloc(4096);
-			size_t content_size = 0;
-			size_t content_capacity = 4096;
-			if (!content)
-			{
-				close(heredoc_pipe[0]);
-				close(heredoc_pipe[1]);
-				exit(1);
-			}
-
-			// Read until delimiter
-			while (1)
-			{
-				// Check for SIGINT first
-				if (g_signal == SIGINT)
-				{
-					ft_putendl_fd("[DEBUG] heredoc: SIGINT received", STDERR_FILENO);
-					ft_putstr_fd("[DEBUG] Shell state before cleanup - in_heredoc: ", STDERR_FILENO);
-					ft_putnbr_fd(shell->in_heredoc, STDERR_FILENO);
-					ft_putstr_fd(", g_signal: ", STDERR_FILENO);
-					ft_putnbr_fd(g_signal, STDERR_FILENO);
-					ft_putchar_fd('\n', STDERR_FILENO);
-					
-					free(content);
-					shell->in_heredoc = false;
-					close(heredoc_pipe[0]);
-					close(heredoc_pipe[1]);
-					close(saved_stdin);
-					close(saved_stdout);
-					g_signal = 0;  // Reset signal flag immediately
-					
-					ft_putstr_fd("[DEBUG] Shell state after cleanup - in_heredoc: ", STDERR_FILENO);
-					ft_putnbr_fd(shell->in_heredoc, STDERR_FILENO);
-					ft_putstr_fd(", g_signal: ", STDERR_FILENO);
-					ft_putnbr_fd(g_signal, STDERR_FILENO);
-					ft_putchar_fd('\n', STDERR_FILENO);
-					ft_putendl_fd("[DEBUG] heredoc: Exiting with code 130", STDERR_FILENO);
-					shell->exit_status = 130;
-					exit(130);  // Exit immediately instead of return
-				}
-
-				ft_putstr_fd("heredoc> ", STDERR_FILENO);
-				char *line = get_next_line(STDIN_FILENO);
-				
-				if (!line)
-				{
-					ft_putendl_fd("[DEBUG] heredoc: EOF received", STDERR_FILENO);
-					free(content);
-					shell->in_heredoc = false;
-					close(heredoc_pipe[0]);
-					close(heredoc_pipe[1]);
-					close(saved_stdin);
-					close(saved_stdout);
-					ft_putchar_fd('\n', STDERR_FILENO);
-					shell->exit_status = 1;  // EOF in heredoc is an error
-					exit(1);  // Exit immediately on EOF
-				}
-
-				size_t len = ft_strlen(line);
-				if (len > 0 && line[len - 1] == '\n')
-					line[len - 1] = '\0';
-
-				ft_putstr_fd("[DEBUG] heredoc input: '", STDERR_FILENO);
-				ft_putstr_fd(line, STDERR_FILENO);
-				ft_putendl_fd("'", STDERR_FILENO);
-
-				if (ft_strcmp(line, current->value) == 0)
-				{
-					ft_putendl_fd("[DEBUG] heredoc: Delimiter matched", STDERR_FILENO);
-					free(line);
-					break;
-				}
-
-				// Ensure buffer has enough space
-				if (content_size + len + 2 > content_capacity)
-				{
-					char *new_content = malloc(content_capacity * 2);
-					if (!new_content)
-					{
-						free(content);
-						free(line);
-						close(heredoc_pipe[0]);
-						close(heredoc_pipe[1]);
-						exit(1);
-					}
-					ft_strlcpy(new_content, content, content_capacity);
-					free(content);
-					content = new_content;
-					content_capacity *= 2;
-				}
-
-				// Append line to content
-				ft_strlcpy(content + content_size, line, len);
-				content_size += len;
-				content[content_size++] = '\n';
-				content[content_size] = '\0';
-				free(line);
-			}
-
-			// Write content to pipe
-			write(heredoc_pipe[1], content, content_size);
-			free(content);
-			close(heredoc_pipe[1]);
-
-			// Set up pipe read end as stdin
-			if (dup2(heredoc_pipe[0], STDIN_FILENO) == -1)
-			{
-				close(heredoc_pipe[0]);
-				exit(1);
-			}
-			close(heredoc_pipe[0]);
-
-			shell->in_heredoc = false;
-			ft_putendl_fd("[DEBUG] Exiting heredoc mode", STDERR_FILENO);
-		}
-		i--;
-	}
-
-	// Process input redirections from right to left (last one should take precedence)
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		current = redir_nodes[i];
-		if (current->type == AST_REDIR_IN)
-		{
-			ft_putstr_fd("[DEBUG] Processing input redirection: ", STDERR_FILENO);
-			ft_putendl_fd(current->right->value, STDERR_FILENO);
-			
-			status = handle_input_redirection(current, shell);
+			status = handle_output_redirection(current, shell);
 			if (status != 0)
 			{
-				ft_putendl_fd("[DEBUG] Input redirection failed", STDERR_FILENO);
-				// Restore original file descriptors before exiting
 				dup2(saved_stdin, STDIN_FILENO);
 				dup2(saved_stdout, STDOUT_FILENO);
 				close(saved_stdin);
@@ -640,51 +340,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(status);
 			}
 		}
-		i--;
-	}
-
-	// Finally handle output redirections from right to left
-	// First find the rightmost output redirection
-	rightmost_output_index = -1;
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		if (redir_nodes[i]->type == AST_REDIR_OUT)
-		{
-			rightmost_output_index = i;
-			break;  // Stop at first one we find from right
-		}
-		i--;
-	}
-
-	// First handle all non-rightmost output redirections (just create/truncate)
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		current = redir_nodes[i];
-		if (current->type == AST_REDIR_OUT && i != rightmost_output_index)
-		{
-			int fd;
-			fd = open(current->right->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd == -1)
-			{
-				dup2(saved_stdin, STDIN_FILENO);
-				dup2(saved_stdout, STDOUT_FILENO);
-				close(saved_stdin);
-				close(saved_stdout);
-				exit(1);
-			}
-			close(fd);
-		}
-		i--;
-	}
-
-	// Then handle append redirections
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		current = redir_nodes[i];
-		if (current->type == AST_REDIR_APPEND)
+		else if (current->type == AST_REDIR_APPEND)
 		{
 			status = handle_append_redirection(current, shell);
 			if (status != 0)
@@ -696,21 +352,29 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 				exit(status);
 			}
 		}
-		i--;
-	}
-
-	// Finally handle the rightmost output redirection
-	if (rightmost_output_index != -1)
-	{
-		current = redir_nodes[rightmost_output_index];
-		status = handle_output_redirection(current, shell);
-		if (status != 0)
+		else if (current->type == AST_REDIR_IN)
 		{
-			dup2(saved_stdin, STDIN_FILENO);
-			dup2(saved_stdout, STDOUT_FILENO);
-			close(saved_stdin);
-			close(saved_stdout);
-			exit(status);
+			status = handle_input_redirection(current, shell);
+			if (status != 0)
+			{
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
+				close(saved_stdin);
+				close(saved_stdout);
+				exit(status);
+			}
+		}
+		else if (current->type == AST_HEREDOC)
+		{
+			status = handle_heredoc(current);
+			if (status != 0)
+			{
+				dup2(saved_stdin, STDIN_FILENO);
+				dup2(saved_stdout, STDOUT_FILENO);
+				close(saved_stdin);
+				close(saved_stdout);
+				exit(status);
+			}
 		}
 	}
 
@@ -790,5 +454,6 @@ int	execute_redirection(t_shell *shell, t_ast_node *node)
 	
 	return (WEXITSTATUS(status));
 }
+
 
 

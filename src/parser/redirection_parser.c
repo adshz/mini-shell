@@ -85,6 +85,22 @@ t_ast_node	*handle_redirection(t_ast_node *left, t_token **tokens)
 		{
 			t_ast_node *redir_node;
 			
+			// Check for consecutive redirection operators
+			if (current->next && is_redirection_token(current->next->type))
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
+				if (current->next->type == TOKEN_REDIRECT_OUT)
+					ft_putstr_fd(">", STDERR_FILENO);
+				else if (current->next->type == TOKEN_REDIRECT_IN)
+					ft_putstr_fd("<", STDERR_FILENO);
+				else if (current->next->type == TOKEN_APPEND)
+					ft_putstr_fd(">>", STDERR_FILENO);
+				else if (current->next->type == TOKEN_HEREDOC)
+					ft_putstr_fd("<<", STDERR_FILENO);
+				ft_putendl_fd("'", STDERR_FILENO);
+				return NULL;
+			}
+
 			// Move to the file name token
 			t_token *file_token = current->next;
 			if (!file_token || file_token->type != TOKEN_WORD)

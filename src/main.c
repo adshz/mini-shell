@@ -14,6 +14,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+int g_signal = 0;
+
 static void	validate_args(int argc, char **argv)
 {
 	if (argc > 1)
@@ -44,7 +46,7 @@ static bool	parse_and_build_ast(t_shell *shell)
 		return (false);
 	}
 	
-	shell->ast = parse(shell->tokens);
+	shell->ast = parse(shell->tokens, shell);
 	if (!shell->ast)
 	{
 		free(shell->line);

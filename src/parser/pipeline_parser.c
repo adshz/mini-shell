@@ -12,7 +12,7 @@
 #include "parser.h"
 #include "libft.h"
 
-t_ast_node	*parse_pipeline(t_token **tokens)
+t_ast_node	*parse_pipeline(t_token **tokens, t_shell *shell)
 {
 	t_ast_node	*left;
 	t_ast_node	*right;
@@ -27,7 +27,7 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 		return (NULL);
 
 	// Handle any redirections on the left side
-	left = handle_redirections(left, tokens);
+	left = handle_redirection(left, tokens);
 	if (!left)
 		return (NULL);
 
@@ -35,17 +35,27 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	if (!current || current->type != TOKEN_PIPE)
 		return (left);
 
+	// Check for consecutive pipe tokens
+	if (current->next && current->next->type == TOKEN_PIPE)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
+		free_ast(left);
+		shell->exit_status = 2;  // Set exit status for syntax error
+		return (NULL);
+	}
+
 	// Move past pipe token
 	*tokens = current->next;
 	if (!*tokens)
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", STDERR_FILENO);
 		free_ast(left);
+		shell->exit_status = 2;  // Set exit status for syntax error
 		return (NULL);
 	}
 
 	// Parse right side recursively
-	right = parse_pipeline(tokens);
+	right = parse_pipeline(tokens, shell);  // Pass shell to recursive call
 	if (!right)
 	{
 		free_ast(left);

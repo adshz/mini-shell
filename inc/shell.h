@@ -41,7 +41,7 @@
 # define ERROR 1
 # define SYNTAX_ERROR 2
 
-/* Global signal variable */
+/* Global variables */
 extern int	g_signal;
 
 /* Core functions */
