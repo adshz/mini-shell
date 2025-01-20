@@ -1,0 +1,208 @@
+Starting Minishell Tests
+
+4 tests failed:
+
+1. Testing: ENV Command... <env> [0;31mFAILED[0m (only one difference)
+Expected (bash):
+_=/usr/bin/env
+Got (minishell):
+_=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester
+
+Testing: ENV with Extra Arg... [0;32mPASSED[0m
+Testing: ENV Grep OLDPWD... [0;32mPASSED[0m
+Testing: Unset ENV First... [0;32mPASSED[0m
+Testing: Unset ENV Second... [0;32mPASSED[0m
+Testing: Unset ENV Third... [0;32mPASSED[0m
+
+2. Testing: Unset ENV Fourth... <env> after unsetting user, home, path [0;31mFAILED[0m
+Expected (bash):
+_=/usr/bin/env
+Got (minishell):
+_=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester
+
+3. Testing: Export Empty ENV... <export> [0;31mFAILED[0m
+Expected (bash):
+'declare -x COLORTERM="truecolor"
+declare -x COMMAND_MODE="unix2003"
+declare -x DISPLAY="/private/tmp/com.apple.launchd.lXk8gmTj8v/org.xquartz:0"
+declare -x GIT_ASKPASS="/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh"
+declare -x HOME="/Users/litsa"
+declare -x HOMEBREW_CELLAR="/usr/local/Cellar"
+declare -x HOMEBREW_PREFIX="/usr/local"
+declare -x HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+declare -x INFOPATH="/usr/local/share/info:"
+declare -x LANG="en_US.UTF-8"
+declare -x LESS="-R"
+declare -x LOGNAME="litsa"
+declare -x LSCOLORS="Gxfxcxdxbxegedabagacad"
+declare -x LS_COLORS="di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+declare -x MallocNanoZone="0"
+declare -x OLDPWD
+declare -x ORIGINAL_XDG_CURRENT_DESKTOP="undefined"
+declare -x PAGER="less"
+declare -x PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/litsa/.cargo/bin:/Users/litsa/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand:/Users/litsa/Library/Python/3.9/bin:/Users/litsa/.local/bin"
+declare -x PWD="/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2"
+declare -x SHELL="/bin/zsh"
+declare -x SHLVL="2"
+declare -x SSH_AUTH_SOCK="/private/tmp/com.apple.launchd.SMyuCeEX5I/Listeners"
+declare -x TERM="xterm-256color"
+declare -x TERM_PROGRAM="vscode"
+declare -x TERM_PROGRAM_VERSION="1.96.2"
+declare -x TMPDIR="/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/"
+declare -x USER="litsa"
+declare -x USER_ZDOTDIR="/Users/litsa"
+declare -x VSCODE_GIT_ASKPASS_EXTRA_ARGS=""
+declare -x VSCODE_GIT_ASKPASS_MAIN="/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js"
+declare -x VSCODE_GIT_ASKPASS_NODE="/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)"
+declare -x VSCODE_GIT_IPC_HANDLE="/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/vscode-git-89829aba2e.sock"
+declare -x VSCODE_INJECTION="1"
+declare -x XPC_FLAGS="0x0"
+declare -x XPC_SERVICE_NAME="0"
+declare -x ZDOTDIR="/Users/litsa"
+declare -x ZSH="/Users/litsa/.oh-my-zsh"
+declare -x _="/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester"
+declare -x __CFBundleIdentifier="com.microsoft.VSCode"
+declare -x __CF_USER_TEXT_ENCODING="0x1F5:0x0:0x2"
+'
+Got (minishell):
+'>>minishell$ export
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.SMyuCeEX5I/Listeners
+VSCODE_INJECTION=1
+GIT_ASKPASS=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh
+TERM_PROGRAM_VERSION=1.96.2
+ZDOTDIR=/Users/litsa
+DISPLAY=/private/tmp/com.apple.launchd.lXk8gmTj8v/org.xquartz:0
+TERM_PROGRAM=vscode
+VSCODE_GIT_IPC_HANDLE=/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/vscode-git-89829aba2e.sock
+TERM=xterm-256color
+VSCODE_GIT_ASKPASS_NODE=/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)
+COMMAND_MODE=unix2003
+HOMEBREW_PREFIX=/usr/local
+XPC_SERVICE_NAME=0
+COLORTERM=truecolor
+MallocNanoZone=0
+SHLVL=2
+LSCOLORS=Gxfxcxdxbxegedabagacad
+VSCODE_GIT_ASKPASS_EXTRA_ARGS=
+ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+USER=litsa
+HOME=/Users/litsa
+LANG=en_US.UTF-8
+TMPDIR=/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/
+LS_COLORS=di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
+HOMEBREW_REPOSITORY=/usr/local/Homebrew
+XPC_FLAGS=0x0
+__CF_USER_TEXT_ENCODING=0x1F5:0x0:0x2
+PATH=/Library/Frameworks/Python.framework/Versions/3.13/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/litsa/.cargo/bin:/Users/litsa/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand:/Users/litsa/Library/Python/3.9/bin:/Users/litsa/.local/bin
+PWD=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2
+ZSH=/Users/litsa/.oh-my-zsh
+__CFBundleIdentifier=com.microsoft.VSCode
+_=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester
+LESS=-R
+INFOPATH=/usr/local/share/info:
+HOMEBREW_CELLAR=/usr/local/Cellar
+USER_ZDOTDIR=/Users/litsa
+SHELL=/bin/zsh
+VSCODE_GIT_ASKPASS_MAIN=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js
+PAGER=less
+LOGNAME=litsa
+
+Testing: Export Single Var... [0;32mPASSED[0m
+Testing: Export Empty Var... [0;32mPASSED[0m
+Testing: Export First Step... [0;32mPASSED[0m
+Testing: Export Second Step... [0;32mPASSED[0m
+
+4. Testing: Export Third Step... <export>after various exports [0;31mFAILED[0m
+Expected (bash):
+'declare -x COLORTERM="truecolor"
+declare -x COMMAND_MODE="unix2003"
+declare -x DISPLAY="/private/tmp/com.apple.launchd.lXk8gmTj8v/org.xquartz:0"
+declare -x GIT_ASKPASS="/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh"
+declare -x HOME="/Users/litsa"
+declare -x HOMEBREW_CELLAR="/usr/local/Cellar"
+declare -x HOMEBREW_PREFIX="/usr/local"
+declare -x HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+declare -x INFOPATH="/usr/local/share/info:"
+declare -x LANG="en_US.UTF-8"
+declare -x LESS="-R"
+declare -x LOGNAME="litsa"
+declare -x LSCOLORS="Gxfxcxdxbxegedabagacad"
+declare -x LS_COLORS="di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+declare -x MallocNanoZone="0"
+declare -x OLDPWD
+declare -x ORIGINAL_XDG_CURRENT_DESKTOP="undefined"
+declare -x PAGER="less"
+declare -x PATH="/Library/Frameworks/Python.framework/Versions/3.13/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/litsa/.cargo/bin:/Users/litsa/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand:/Users/litsa/Library/Python/3.9/bin:/Users/litsa/.local/bin"
+declare -x PWD="/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2"
+declare -x SHELL="/bin/zsh"
+declare -x SHLVL="2"
+declare -x SSH_AUTH_SOCK="/private/tmp/com.apple.launchd.SMyuCeEX5I/Listeners"
+declare -x TERM="xterm-256color"
+declare -x TERM_PROGRAM="vscode"
+declare -x TERM_PROGRAM_VERSION="1.96.2"
+declare -x TMPDIR="/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/"
+declare -x USER="litsa"
+declare -x USER_ZDOTDIR="/Users/litsa"
+declare -x VSCODE_GIT_ASKPASS_EXTRA_ARGS=""
+declare -x VSCODE_GIT_ASKPASS_MAIN="/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js"
+declare -x VSCODE_GIT_ASKPASS_NODE="/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)"
+declare -x VSCODE_GIT_IPC_HANDLE="/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/vscode-git-89829aba2e.sock"
+declare -x VSCODE_INJECTION="1"
+declare -x XPC_FLAGS="0x0"
+declare -x XPC_SERVICE_NAME="0"
+declare -x ZDOTDIR="/Users/litsa"
+declare -x ZSH="/Users/litsa/.oh-my-zsh"
+declare -x _="/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester"
+declare -x __CFBundleIdentifier="com.microsoft.VSCode"
+declare -x __CF_USER_TEXT_ENCODING="0x1F5:0x0:0x2"
+'
+Got (minishell):
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.SMyuCeEX5I/Listeners
+VSCODE_INJECTION=1
+GIT_ASKPASS=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass.sh
+TERM_PROGRAM_VERSION=1.96.2
+ZDOTDIR=/Users/litsa
+DISPLAY=/private/tmp/com.apple.launchd.lXk8gmTj8v/org.xquartz:0
+TERM_PROGRAM=vscode
+VSCODE_GIT_IPC_HANDLE=/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/vscode-git-89829aba2e.sock
+TERM=xterm-256color
+VSCODE_GIT_ASKPASS_NODE=/Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Plugin).app/Contents/MacOS/Code Helper (Plugin)
+COMMAND_MODE=unix2003
+HOMEBREW_PREFIX=/usr/local
+XPC_SERVICE_NAME=0
+COLORTERM=truecolor
+MallocNanoZone=0
+SHLVL=2
+LSCOLORS=Gxfxcxdxbxegedabagacad
+VSCODE_GIT_ASKPASS_EXTRA_ARGS=
+ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+USER=litsa
+HOME=/Users/litsa
+LANG=en_US.UTF-8
+TMPDIR=/var/folders/6x/rkyg9qsd48l097mr2xl274rw0000gn/T/
+LS_COLORS=di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
+HOMEBREW_REPOSITORY=/usr/local/Homebrew
+XPC_FLAGS=0x0
+__CF_USER_TEXT_ENCODING=0x1F5:0x0:0x2
+PATH=/Library/Frameworks/Python.framework/Versions/3.13/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/litsa/.cargo/bin:/Users/litsa/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand:/Users/litsa/Library/Python/3.9/bin:/Users/litsa/.local/bin
+PWD=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2
+ZSH=/Users/litsa/.oh-my-zsh
+__CFBundleIdentifier=com.microsoft.VSCode
+_=/Users/litsa/Library/Mobile Documents/com~apple~CloudDocs/Documents/IT/C/42 common core/minishell/mini-shell/minishell-tester2/./minishell_tester
+LESS=-R
+INFOPATH=/usr/local/share/info:
+HOMEBREW_CELLAR=/usr/local/Cellar
+USER_ZDOTDIR=/Users/litsa
+SHELL=/bin/zsh
+VSCODE_GIT_ASKPASS_MAIN=/Applications/Visual Studio Code.app/Contents/Resources/app/extensions/git/dist/askpass-main.js
+PAGER=less
+LOGNAME=litsa
+
+Testing: Export with Environment Var... [0;32mPASSED[0m
+Testing: Export Complex Vars First... [0;32mPASSED[0m
+Testing: Export Complex Vars Second... [0;32mPASSED[0m
+Testing: Export Update Var First... [0;32mPASSED[0m
+Testing: Export Update Var Second... [0;32mPASSED[0m
+Testing: Export Update Var Third... [0;32mPASSED[0m
+
+Test Summary: 15/19 tests completed
