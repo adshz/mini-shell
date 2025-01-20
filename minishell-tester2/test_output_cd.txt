@@ -1,0 +1,60 @@
+Starting Minishell Tests
+
+results for CD:
+1. all passed!
+2. note: bash output has name of programme, so we could output: minishell: cd: Eyooooo: No such file or directory
+3. minishell problem with exiting:
+    minishell: tcsetattr: Failed to restore terminal settings
+    not exiting cleanly, does not restore the terminal to it's original state.
+    I don't know if it's a problem that will get picked up in evaluation.
+    I don't seem to have that error in my basic minishell, but not sure exacly what it is yet.
+
+Testing: CD Root Directory... [0;32mPASSED[0m
+Testing: CD Home... [0;32mPASSED[0m
+Testing: CD Empty... [0;32mPASSED[0m
+Testing: CD Desktop... [0;32mPASSED[0m
+Testing: Unset HOME CD First... [0;32mPASSED[0m
+Testing: Unset HOME CD Second... [0;32mPASSED[0m
+Testing: Export HOME CD First... [0;32mPASSED[0m
+Testing: Export HOME CD Second... [0;32mPASSED[0m
+Testing: CD Invalid Directory... [0;31mFAILED[0m
+Expected (bash):
+'bash: line 0: cd: Eyooooo: No such file or directory
+'
+Got (minishell):
+'>>minishell$ cd Eyooooo
+cd: Eyooooo: No such file or directory
+>>minishell$ exit
+exit
+minishell: tcsetattr: Failed to restore terminal settings
+'
+Testing: CD Previous Directory Multiple First... [0;31mFAILED[0m
+Expected (bash):
+'bash: line 0: cd: OLDPWD not set
+'
+Got (minishell):
+'>>minishell$ cd -
+cd: OLDPWD not set
+>>minishell$ exit
+exit
+minishell: tcsetattr: Failed to restore terminal settings
+'
+Testing: CD Previous Directory Multiple Second... [0;31mFAILED[0m
+Expected (bash):
+'bash: line 0: cd: OLDPWD not set
+'
+Got (minishell):
+'>>minishell$ cd -
+cd: OLDPWD not set
+>>minishell$ exit
+exit
+minishell: tcsetattr: Failed to restore terminal settings
+'
+Testing: CD with Extra Args... [0;32mPASSED[0m
+Testing: Complex CD with Removal First... [0;32mPASSED[0m
+Testing: Complex CD with Removal Second... [0;32mPASSED[0m
+Testing: Complex CD with Removal Third... [0;32mPASSED[0m
+Testing: Complex CD with Removal Fourth... [0;32mPASSED[0m
+Testing: Complex CD with Removal Fifth... [0;32mPASSED[0m
+
+Test Summary: 14/17 tests completed
