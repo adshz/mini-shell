@@ -1,0 +1,66 @@
+Starting Minishell Tests
+
+2 tests failed:
+1. exit code error
+2. wrong error message
+
+Testing: Exit with String... <exit banana> [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: line 0: exit: banana: numeric argument required
+'
+Got (minishell):
+minishell: banana: numeric argument required
+'
+1. [0;31mFAILED[0m
+Expected exit code: 255
+Got exit code: 2
+
+Testing: Exit with Number... [0;32mPASSED[0m
+Testing: Exit with Quoted Number... [0;32mPASSED[0m
+
+Testing: Non-Existent Directory CD First... [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: line 0: cd: Weyooooo: No such file or directory
+'
+Got (minishell):
+cd: Weyooooo: No such file or directory
+
+Testing: Non-Existent Directory CD Second... [0;32mPASSED[0m
+
+Testing: Random Command First... [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: random_cmd: command not found
+'
+Got (minishell):
+minishell: random_cmd: Command not found
+
+Testing: Random Command Second... [0;32mPASSED[0m
+
+2. Testing: Non-Executable File... <./file_that_is_not_an_executable> [0;31mFAILED[0m
+Expected (bash):
+'bash: ./file_that_is_not_an_executable: No such file or directory
+'
+Got (minishell):
+minishell: ./file_that_is_not_an_executable: Command not found
+
+Testing: Command Not Found First... [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: notarealcommand: command not found
+'
+Got (minishell):
+minishell: notarealcommand: Command not found
+
+Testing: Command Not Found Second... [0;32mPASSED[0m
+Testing: Permission Denied First... [0;32mPASSED[0m
+Testing: Permission Denied Second... [0;32mPASSED[0m
+
+Testing: Permission Denied Third... [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: ./test.sh: Permission denied
+'
+Got (minishell):
+minishell: ./test.sh: Permission denied
+
+Testing: Permission Denied Fourth... [0;32mPASSED[0m
+
+Test Summary: 8/14 tests completed
