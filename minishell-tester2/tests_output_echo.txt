@@ -1,0 +1,45 @@
+Starting Minishell Tests
+
+2 tests fail, see details: (one false fail)
+
+Testing: Echo Empty... [0;32mPASSED[0m
+Testing: Echo Non-Existing Var... [0;32mPASSED[0m
+Testing: Echo PATH... [0;32mPASSED[0m
+Testing: Echo Home Symbol... [0;32mPASSED[0m
+Testing: Echo Multiple -n... [0;32mPASSED[0m
+Testing: Echo Mixed -n... [0;32mPASSED[0m
+Testing: Echo Var Complex... [0;32mPASSED[0m
+
+1. Testing: Echo Multiple Var Types... <echo '$USER'> [0;31mFAILED[0m
+Expected (bash):
+$USER
+Got (minishell):
+litsa
+
+Testing: Echo Double Quote Var... [0;32mPASSED[0m
+
+2. Testing: Echo Multiple Vars... <echo $? "$?" '$?> [0;31mFAILED[0m
+Expected (bash):
+0 0 $?
+Got (minishell):
+0 0 0
+
+Testing: Echo Quoted Combination... [0;32mPASSED[0m
+Testing: Echo Nested Quotes... [0;32mPASSED[0m
+
+Testing: Echo Prefix -n... <-n echo> [0;31mFAILED[0m - PASSED!
+Expected (bash):
+bash: -n: command not found
+
+Got (minishell):
+minishell: -n: Command not found
+[0;31mFAILED[0m
+Expected exit code: 2
+Got exit code: 127
+
+Testing: Echo Postfix -n... [0;32mPASSED[0m
+Testing: Echo Empty Quotes... [0;32mPASSED[0m
+Testing: Echo Quotes with Escaping... [0;32mPASSED[0m
+Testing: Echo Nested Quotes Variant... [0;32mPASSED[0m
+
+Test Summary: 14/17 tests completed
