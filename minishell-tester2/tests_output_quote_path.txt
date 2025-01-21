@@ -1,0 +1,29 @@
+Starting Minishell Tests
+
+1 test failed, see below for details. Also wrong exit code.
+1. command <$cmd -la>
+2. exit code for the above command
+
+Testing: Complex Quote Nesting... [0;32mPASSED[0m
+Testing: Nested Quote Expansion... [0;32mPASSED[0m
+Testing: Complex Var Expansion First... [0;32mPASSED[0m
+Testing: Complex Var Expansion Second... [0;32mPASSED[0m
+Testing: Var Export with Spaces First... [0;32mPASSED[0m
+Testing: Var Export with Spaces Second... [0;32mPASSED[0m
+Testing: Full Path LS... [0;32mPASSED[0m
+Testing: Full Path LS Options... [0;32mPASSED[0m
+Testing: Dynamic Command First... [0;32mPASSED[0m
+
+1. Testing: Dynamic Command Second... <$cmd -la> [0;31mFAILED[0m
+Expected (bash):
+'bash: -la: command not found
+'
+Got (minishell):
+'
+>>minishell$
+'
+2. [0;31mFAILED[0m
+Expected exit code: 127
+Got exit code: 0
+
+Test Summary: 9/10 tests completed
