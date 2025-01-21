@@ -1,0 +1,69 @@
+Starting Minishell Tests
+
+3 tests failed:
+1. only exit code error
+2. $ Alone
+2. exit code error for that too
+3. $path/ls -l
+3. exit code error for that too
+
+Testing: Redirect and Pipe First... [0;32mPASSED[0m
+Testing: Redirect and Pipe Second... [0;32mPASSED[0m
+
+1. Testing: Redirect and Pipe Third... <| cat output.txt> [0;31mFAILED[0m
+Expected (bash):
+'bash: -c: syntax error near unexpected token `|'
+'
+Got (minishell):
+'minishell: syntax error near unexpected token `|'
+'
+1. [0;31mFAILED[0m
+Expected exit code: 2
+Got exit code: 0
+
+Testing: Multiple Redirects First... [0;32mPASSED[0m
+Testing: Multiple Redirects Second... [0;32mPASSED[0m
+Testing: Multiple Redirects Third... <test1> [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: test1: command not found
+'
+Got (minishell):
+'minishell: test1: Command not found
+'
+Testing: Append Redirection First... [0;32mPASSED[0m
+Testing: Append Redirection Second... [0;32mPASSED[0m
+Testing: Append Redirection Third... [0;32mPASSED[0m
+Testing: Input Output Combination... [0;31mFAILED[0m PASSED!
+Expected (bash):
+'bash: test: No such file or directory
+'
+Got (minishell):
+'minishell: test: No such file or directory
+'
+
+2. Testing: Dollar Sign Alone... <"$"> [0;31mFAILED[0m
+Expected (bash):
+'bash: $: command not found
+'
+Got (minishell):
+'>>minishell$
+'
+2. [0;31mFAILED[0m
+Expected exit code: 127
+Got exit code: 0
+
+Testing: Dynamic Path Execution First... [0;32mPASSED[0m
+
+3. Testing: Dynamic Path Execution Second... <$path/ls -l> [0;31mFAILED[0m
+Expected (bash):
+'bash: /ls: No such file or directory
+'
+Got (minishell):
+'
+>>minishell$ 
+'
+3. [0;31mFAILED[0m
+Expected exit code: 127
+Got exit code: 0
+
+Test Summary: 8/13 tests completed
