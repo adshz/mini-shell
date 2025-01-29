@@ -43,7 +43,7 @@ SRCS		:=	\
 				signals/ft_signals.c \
 				executor/executor.c \
 				executor/pipe_handler.c \
-				executor/redirections.c \
+				executor/redirections_executor.c \
 				builtins/builtins.c \
 				builtins/ft_pwd.c \
 				builtins/ft_echo.c \
