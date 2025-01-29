@@ -34,12 +34,7 @@ typedef struct s_ast_node
     struct s_ast_node   *right;
 } t_ast_node;
 
-typedef struct s_env
-{
-    char *key;
-    char *value;
-    struct s_env *next;
-} t_env;
+
 
 typedef struct s_minishell
 {

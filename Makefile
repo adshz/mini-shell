@@ -66,7 +66,6 @@ SRCS		:=	\
 				hashtable/hashtable_collision.c \
 				utils/string_utils.c \
 				utils/error_handler.c \
-				utils/env_utils.c \
 				utils/command_utils.c \
 				utils/cleanup.c \
 				utils/command_cleanup.c \
