@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   core.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 15:57:55 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/21 17:04:58 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 23:25:03 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,18 @@
 # include "shell.h"
 # include <signal.h>
 
-extern volatile sig_atomic_t g_signal_status;
+extern volatile sig_atomic_t	g_signal_status;
 
 /* Signal handling functions */
-void    setup_signals(void);
-void    setup_terminal_settings(void);
+void	setup_signals(void);
+void	setup_terminal_settings(void);
 
 /* Shell initialization functions */
-int     init_terminal(t_shell *shell);
-int     init_environment(t_shell *shell, char **envp);
-int     init_env(t_shell *shell, char **envp);
-int     init_io(t_shell *shell);
-void    init_env_vars(t_shell *shell, char **argv);
+int		init_terminal(t_shell *shell);
+int		init_environment(t_shell *shell, char **envp);
+int		init_env(t_shell *shell, char **envp);
+int		init_io(t_shell *shell);
+void	init_env_vars(t_shell *shell, char **argv);
 
 /* Core structure initialisation */
 /**
@@ -52,7 +52,7 @@ void    init_env_vars(t_shell *shell, char **argv);
  * @param envp  Array of environment variables
  * @return SUCCESS if initialization succeeds, ERROR otherwise
  */
-int     init_shell(t_shell *shell, char *argv[], char *envp[]);
+int	init_shell(t_shell *shell, char *argv[], char *envp[]);
 
 /* AST building and parsing */
 /**
@@ -61,7 +61,7 @@ int     init_shell(t_shell *shell, char *argv[], char *envp[]);
  * @param shell Pointer to shell structure
  * @return true if parsing and AST building succeed, false otherwise
  */
-bool    parse_and_build_ast(t_shell *shell);
+bool	parse_and_build_ast(t_shell *shell);
 
 /**
  * @brief Main shell interactive loop
@@ -74,10 +74,10 @@ bool    parse_and_build_ast(t_shell *shell);
  *
  * @param shell Pointer to shell structure
  */
-void    interactive_loop(t_shell *shell);
+void	interactive_loop(t_shell *shell);
 
 /* Signal handling */
-/**
+/*
  * @brief Initializes signal handlers for the shell
  *
  * Sets up handlers for:
@@ -85,9 +85,7 @@ void    interactive_loop(t_shell *shell);
  * - SIGQUIT (Ctrl+\)
  * - Other relevant signals
  */
-void    init_signals(void);
+void	init_signals(void);
 void	handle_sigint(int sig);
-
-
 
 #endif

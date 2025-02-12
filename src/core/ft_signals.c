@@ -3,21 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   ft_signals.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:16:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 16:41:18 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 23:28:50 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "shell.h"
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
 
-extern volatile sig_atomic_t g_signal_status;
+extern volatile sig_atomic_t	g_signal_status;
 
-
-
+#define SIG_HEREDOC_MODE 1
+#define SIG_HEREDOC_INT 2
+#define SIG_NONE 0
 /**
  * @brief Disables the echoing of control characters in terminal
  *
