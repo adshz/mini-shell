@@ -3,16 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ast_builder.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 15:51:59 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:59 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/28 13:38:10 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/28 13:38:24 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <stdlib.h>
 #include "parser.h"
-#include "libft.h"
-#include <stdio.h>
 
 t_ast_node	*create_ast_node(t_ast_type type, char *value)
 {
@@ -36,37 +33,6 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 		}
 	}
 	return (node);
-}
-
-void	free_ast(t_ast_node *node)
-{
-	if (!node)
-		return ;
-	if (node->type == AST_PIPE)
-	{
-		free_ast(node->left);
-		free_ast(node->right);
-	}
-	else if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT ||
-			node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
-	{
-		free_ast(node->left);
-		if (node->value)
-			free(node->value);
-	}
-	else if (node->type == AST_COMMAND)
-	{
-		if (node->value)
-			free(node->value);
-		if (node->args)
-		{
-			char **args = node->args;
-			while (*args)
-				free(*args++);
-			free(node->args);
-		}
-	}
-	free(node);
 }
 
 t_ast_type	get_ast_type(t_token_type type)

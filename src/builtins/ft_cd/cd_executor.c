@@ -1,0 +1,54 @@
+#include "cd.h"
+
+int     builtin_cd(t_shell *shell, t_ast_node *node)
+{
+        char    *path;
+        char    *expanded_path;
+        int     ret;
+
+        if (!node->args[1])
+                path = get_home_path(shell);
+        else if (ft_strcmp(node->args[1], "-") == 0)
+                path = get_oldpwd_path(shell);
+        else
+        {
+                // First expand tilde if present
+                if (node->args[1][0] == '~')
+                {
+                        expanded_path = expand_tilde(shell, node->args[1]);
+                        if (!expanded_path)
+                                return (1);
+                }
+                else
+                {
+                        expanded_path = handle_path(shell, node->args[1]);
+                        if (!expanded_path)
+                                return (1);
+                }
+                ret = handle_cd_path(shell, expanded_path);
+                free(expanded_path);
+                return ret;
+        }
+        if (!path)
+                return (1);
+        return (handle_cd_path(shell, path));
+}
+
+int     handle_cd_path(t_shell *shell, const char *path)
+{
+        char    *old_pwd;
+
+        old_pwd = getcwd(NULL, 0);
+        if (!old_pwd)
+        {
+                ft_putendl_fd(ERR_GETCWD ERR_NO_FILE, STDERR_FILENO);
+                return (1);
+        }
+        if (chdir(path) == -1)
+        {
+                free(old_pwd);
+                return (handle_cd_error(path, path));
+        }
+        cleanup_path(old_pwd, path, shell);
+        return (0);
+}

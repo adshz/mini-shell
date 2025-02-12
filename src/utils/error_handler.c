@@ -13,7 +13,6 @@
 #include "errors.h"
 #include "libft.h"
 
-/* Legacy error handling function */
 int	print_error(char *cmd, char *msg, int error_code)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
@@ -30,22 +29,21 @@ int	print_error(char *cmd, char *msg, int error_code)
 static const char	*get_error_message(t_error_type error)
 {
 	static const char	*messages[] = {
-		[ERR_NONE] = "Success",
-		[ERR_MALLOC_NEW] = MSG_MALLOC,
-		[ERR_SYNTAX_NEW] = MSG_SYNTAX,
-		[ERR_CMD_NOT_FOUND_NEW] = MSG_CMD_NOT_FOUND,
-		[ERR_PERMISSION_NEW] = MSG_PERMISSION,
-		[ERR_FILE_NOT_FOUND] = MSG_NO_SUCH_FILE,
-		[ERR_PIPE] = "Pipe error",
-		[ERR_FORK] = "Fork error",
-		[ERR_DUP] = "Dup error",
-		[ERR_EXEC] = "Execution error"
+		[ERROR_NONE] = "Success",
+		[ERROR_MALLOC] = MSG_MALLOC,
+		[ERROR_SYNTAX] = MSG_SYNTAX,
+		[ERROR_CMD_NOT_FOUND] = MSG_CMD_NOT_FOUND,
+		[ERROR_PERMISSION] = MSG_PERMISSION,
+		[ERROR_FILE_NOT_FOUND] = MSG_NO_SUCH_FILE,
+		[ERROR_PIPE] = "Pipe error",
+		[ERROR_FORK] = "Fork error",
+		[ERROR_DUP] = "Dup error",
+		[ERROR_EXEC] = "Execution error"
 	};
-
 	return (messages[error]);
 }
 
-void	print_error_new(t_error_type error, const char *detail)
+static void	handle_error_helper(t_error_type error, const char *detail)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (detail)
@@ -61,16 +59,16 @@ void	handle_error(t_shell *shell, t_error_type error, const char *detail)
 	int	status;
 
 	status = 1;
-	if (error == ERR_CMD_NOT_FOUND_NEW)
+	if (error == ERROR_CMD_NOT_FOUND)
 		status = ERR_CMD_NOT_FOUND;
-	else if (error == ERR_PERMISSION_NEW)
+	else if (error == ERROR_PERMISSION)
 		status = ERR_PERMISSION;
 	shell->exit_status = status;
-	print_error_new(error, detail);
+	handle_error_helper(error, detail);
 }
 
 int	set_error_status(t_shell *shell, int status)
 {
 	shell->exit_status = status;
-	return (ERROR);
+	return (SHELL_ERROR);
 } 

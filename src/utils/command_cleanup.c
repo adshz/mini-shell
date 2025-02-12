@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "libft.h"
 
 void cleanup_current_command(t_shell *shell)
 {

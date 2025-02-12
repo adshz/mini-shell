@@ -1,105 +1,49 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/29 14:36:50 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/29 14:45:55 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "builtins.h"
-#include "libft.h"
-#include <string.h>
-#include <unistd.h>
 
-static const char **get_builtins(void)
+static const char	**get_builtins(void)
 {
-    static const char *builtins[] = {
-        "echo",
-        "cd",
-        "pwd",
-        "export",
-        "unset",
-        "env",
-        "exit",
-        NULL
-    };
-    return builtins;
+	static const char	*builtins[8];
+
+	builtins[0] = "echo";
+	builtins[1] = "cd";
+	builtins[2] = "pwd";
+	builtins[3] = "export";
+	builtins[4] = "unset";
+	builtins[5] = "env";
+	builtins[6] = "exit";
+	builtins[7] = NULL;
+	return (builtins);
 }
 
-bool is_builtin(const char *cmd)
+bool	is_builtin(const char *cmd)
 {
-    int i;
-    const char **builtins;
+	int			i;
+	const char	**builtins;
 
-    if (!cmd)
-        return false;
-    
-    i = 0;
-    builtins = get_builtins();
-    while (builtins[i])
-    {
-        if (ft_strcmp((char *)cmd, (char *)builtins[i]) == 0)
-        {
-            if (ft_strcmp(cmd, "env") == 0)
-                return false;
-            return true;
-        }
-        i++;
-    }
-    return false;
-}
-
-int execute_builtin(t_shell *shell, t_ast_node *node)
-{
-    if (!node || !node->value)
-        return 1;
-
-    if (ft_strcmp(node->value, "echo") == 0)
-        return ft_echo(shell, node);
-    if (ft_strcmp(node->value, "cd") == 0)
-        return builtin_cd(shell, node);
-    if (ft_strcmp(node->value, "pwd") == 0)
-        return builtin_pwd(shell, node);
-    if (ft_strcmp(node->value, "export") == 0)
-        return builtin_export(shell, node);
-    if (ft_strcmp(node->value, "unset") == 0)
-        return builtin_unset(shell, node);
-    if (ft_strcmp(node->value, "env") == 0)
-        return builtin_env(shell, node);
-    if (ft_strcmp(node->value, "exit") == 0)
-        return builtin_exit(shell, node);
-
-    return 1;
-}
-
-char *find_command(t_shell *shell, const char *cmd)
-{
-	char	*path;
-	char	**paths;
-	char	*full_path;
-	int		i;
-
-	if (!cmd || !shell)
-		return (NULL);
-	if (cmd[0] == '/' || cmd[0] == '.')
-		return (ft_strdup(cmd));
-	path = hashmap_get(shell->env, "PATH");
-	if (!path)
-	{
-		handle_error(shell, ERR_FILE_NOT_FOUND, "PATH");
-		return (NULL);
-	}
-	paths = ft_split(path, ':');
-	if (!paths)
-	{
-		handle_error(shell, ERR_MALLOC, NULL);
-		return (NULL);
-	}
+	if (!cmd)
+		return (false);
 	i = 0;
-	while (paths[i])
+	builtins = get_builtins();
+	while (builtins[i])
 	{
-		full_path = ft_strjoin3(paths[i], "/", cmd);
-		if (full_path && access(full_path, X_OK) == 0)
+		if (ft_strcmp((char *)cmd, (char *)builtins[i]) == 0)
 		{
-			ft_free_array(paths);
-			return (full_path);
+			if (ft_strcmp(cmd, "env") == 0)
+				return (false);
+			return (true);
 		}
-		free(full_path);
 		i++;
 	}
-	ft_free_array(paths);
-	handle_error(shell, ERR_CMD_NOT_FOUND, cmd);
-	return (NULL);
-} 
+	return (false);
+}

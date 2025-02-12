@@ -11,12 +11,9 @@
 /* ************************************************************************** */
 
 #include "shell.h"
-#include "lexer.h"
-#include "parser.h"
-#include "libft.h"
-#include "utils.h"
-#include <stdlib.h>
-#include <unistd.h>
+#include "lexer/lexer.h"
+#include "parser/parser.h"
+#include "utils/utils.h"
 
 // Main cleanup function
 void cleanup_shell(t_shell *shell)
@@ -24,12 +21,28 @@ void cleanup_shell(t_shell *shell)
     if (!shell)
         return;
     
-    rl_clear_history();
-    cleanup_terminal_state(shell);
-    
+    // First, clear any command-specific resources
     if (shell->ast || shell->tokens || shell->line)
         cleanup_current_command(shell);
-        
-    cleanup_env_and_cmds(shell);
+    
+    // Then clean up command list which might reference env vars
+    if (shell->cmds)
+    {
+        ft_lstclear(&shell->cmds, &free_cmd);
+        shell->cmds = NULL;
+    }
+    
+    // Clean up process state (pids, history, etc)
     cleanup_process_state(shell);
+    
+    // Clean up environment last since other components might reference it
+    if (shell->env)
+    {
+        hashmap_destroy(shell->env);
+        shell->env = NULL;
+    }
+    
+    // Finally restore terminal state
+    rl_clear_history();
+    cleanup_terminal_state(shell);
 }

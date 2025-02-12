@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 20:30:39 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 20:30:39 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/29 17:49:03 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/29 17:49:06 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "shell.h"
 #include "builtins.h"
 #include "libft.h"

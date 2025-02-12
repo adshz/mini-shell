@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ft_export.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 20:30:39 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 20:30:39 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/29 17:49:25 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/29 17:49:29 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "shell.h"
 #include "builtins.h"
-#include "expander.h"
+#include "expander/expander.h"
+#include "utils/utils.h"
 #include <stdio.h>
+#include "shell.h"
+#include "builtin_utils.h"
 
 static void print_env_var(const char *key, const char *value)
 {
@@ -26,47 +27,113 @@ static void print_env_var(const char *key, const char *value)
     ft_putchar_fd('\n', STDOUT_FILENO);
 }
 
-static bool is_valid_identifier(const char *str)
+static void handle_expanded_value(t_shell *shell, char *key, char *value)
 {
-    int i;
-    const char *start;
+    char *expanded_value;
 
-    if (!str || !*str)
-        return false;
-
-    // Skip quotes if present
-    start = str;
-    if (*start == '"' && str[ft_strlen(str) - 1] == '"')
-        start++;
-    else if (*start == '\'' && str[ft_strlen(str) - 1] == '\'')
-        start++;
-
-    // Empty string or empty quotes
-    if (!*start || *start == '"' || *start == '\'')
-        return false;
-
-    // First character must be letter or underscore
-    if (!ft_isalpha(*start) && *start != '_' && *start != '$')  // Allow $ for variable expansion
-        return false;
-
-    // Rest of the characters must be alphanumeric or underscore until '='
-    i = 1;
-    while (start[i] && start[i] != '=')
+    if (value[0] == '$')
     {
-        if (!ft_isalnum(start[i]) && start[i] != '_')
-            return false;
-        i++;
+        expanded_value = expand_simple_variable(shell, value + 1);
+        if (expanded_value)
+        {
+            hashmap_set(shell->env, key, expanded_value);
+            free(expanded_value);
+        }
+        else
+            hashmap_set(shell->env, key, "");
     }
-    return true;
+    else
+        hashmap_set(shell->env, key, value);
 }
 
-static void export_variable(t_shell *shell, char *arg)
+static char *handle_quoted_value(char *value)
+{
+    size_t val_len;
+    char *unquoted;
+
+    ft_putstr_fd("\nDEBUG [handle_quoted_value]: Input value: [", STDERR_FILENO);
+    ft_putstr_fd(value, STDERR_FILENO);
+    ft_putstr_fd("]\n", STDERR_FILENO);
+
+    val_len = ft_strlen(value);
+    // Only remove double quotes, preserve single quotes in all cases
+    if (val_len >= 2 && value[0] == '"' && value[val_len - 1] == '"')
+    {
+        unquoted = ft_substr(value, 1, val_len - 2);
+        ft_putstr_fd("DEBUG [handle_quoted_value]: Removed double quotes: [", STDERR_FILENO);
+        ft_putstr_fd(unquoted, STDERR_FILENO);
+        ft_putstr_fd("]\n", STDERR_FILENO);
+        return unquoted;
+    }
+    // For all other cases, including single quotes, preserve as is
+    unquoted = ft_strdup(value);
+    ft_putstr_fd("DEBUG [handle_quoted_value]: Preserving value as is: [", STDERR_FILENO);
+    ft_putstr_fd(unquoted, STDERR_FILENO);
+    ft_putstr_fd("]\n", STDERR_FILENO);
+    return unquoted;
+}
+
+static void handle_export_no_equals(t_shell *shell, char *arg)
+{
+    char *expanded_key;
+    char *value;
+
+    if (arg[0] == '$')
+    {
+        expanded_key = expand_simple_variable(shell, arg + 1);
+        if (expanded_key)
+        {
+            value = hashmap_get(shell->env, expanded_key);
+            if (value)
+                hashmap_set(shell->env, expanded_key, value);
+            free(expanded_key);
+        }
+    }
+    else
+    {
+        value = hashmap_get(shell->env, arg);
+        if (value)
+            hashmap_set(shell->env, arg, value);
+    }
+}
+
+static void export_with_value(t_shell *shell, char *key, char *value)
+{
+    char *unquoted_value;
+
+    ft_putstr_fd("\nDEBUG [export_with_value]: Processing key: [", STDERR_FILENO);
+    ft_putstr_fd(key, STDERR_FILENO);
+    ft_putstr_fd("], value: [", STDERR_FILENO);
+    if (value)
+        ft_putstr_fd(value, STDERR_FILENO);
+    else
+        ft_putstr_fd("NULL", STDERR_FILENO);
+    ft_putstr_fd("]\n", STDERR_FILENO);
+
+    if (!value)
+    {
+        ft_putstr_fd("DEBUG [export_with_value]: Setting empty value\n", STDERR_FILENO);
+        hashmap_set(shell->env, key, "");
+    }
+    else
+    {
+        unquoted_value = handle_quoted_value(value);
+        ft_putstr_fd("DEBUG [export_with_value]: After quote handling: [", STDERR_FILENO);
+        ft_putstr_fd(unquoted_value, STDERR_FILENO);
+        ft_putstr_fd("]\n", STDERR_FILENO);
+        handle_expanded_value(shell, key, unquoted_value);
+    }
+}
+
+static void process_export_argument(t_shell *shell, char *arg)
 {
     char *equals;
     char *key;
     char *value;
-    char *expanded_value;
-    char *expanded_key = NULL;
+
+    ft_putstr_fd("\nDEBUG [export]: Processing argument: [", STDERR_FILENO);
+    ft_putstr_fd(arg, STDERR_FILENO);
+    ft_putstr_fd("]\n", STDERR_FILENO);
 
     equals = ft_strchr(arg, '=');
     if (equals)
@@ -74,67 +141,34 @@ static void export_variable(t_shell *shell, char *arg)
         key = ft_substr(arg, 0, equals - arg);
         value = ft_strdup(equals + 1);
 
-        // Handle variable expansion in key
-        if (key[0] == '$')
-        {
-            expanded_key = expand_simple_variable(shell, key + 1);
-            if (expanded_key)
-            {
-                free(key);
-                key = expanded_key;
-            }
-        }
+        ft_putstr_fd("DEBUG [export]: Found key: [", STDERR_FILENO);
+        ft_putstr_fd(key, STDERR_FILENO);
+        ft_putstr_fd("], value: [", STDERR_FILENO);
+        ft_putstr_fd(value, STDERR_FILENO);
+        ft_putstr_fd("]\n", STDERR_FILENO);
 
-        if (key && value && is_valid_identifier(key))
-        {
-            // Remove surrounding quotes from value if present
-            size_t val_len = ft_strlen(value);
-            if (val_len >= 2 && ((value[0] == '"' && value[val_len - 1] == '"') ||
-                                (value[0] == '\'' && value[val_len - 1] == '\'')))
-            {
-                char *unquoted = ft_substr(value, 1, val_len - 2);
-                free(value);
-                value = unquoted;
-            }
+        export_with_value(shell, key, value);
 
-            if (value[0] == '$')
-            {
-                expanded_value = expand_simple_variable(shell, value + 1);
-                if (expanded_value)
-                {
-                    hashmap_set(shell->env, key, expanded_value);
-                    free(expanded_value);
-                }
-                else
-                    hashmap_set(shell->env, key, "");
-            }
-            else
-                hashmap_set(shell->env, key, value);
-        }
+        // Debug: verify the value was stored
+        char *stored_value = hashmap_get(shell->env, key);
+        ft_putstr_fd("DEBUG [export]: After storing - Key: [", STDERR_FILENO);
+        ft_putstr_fd(key, STDERR_FILENO);
+        ft_putstr_fd("], Stored value: [", STDERR_FILENO);
+        if (stored_value)
+            ft_putstr_fd(stored_value, STDERR_FILENO);
         else
-        {
-            ft_putstr_fd("export: '", STDERR_FILENO);
-            ft_putstr_fd(arg, STDERR_FILENO);
-            ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-        }
+            ft_putstr_fd("NULL", STDERR_FILENO);
+        ft_putstr_fd("]\n", STDERR_FILENO);
+
         free(key);
         free(value);
     }
     else if (is_valid_identifier(arg))
     {
-        // Handle variable expansion in key for export without value
-        if (arg[0] == '$')
-        {
-            expanded_key = expand_simple_variable(shell, arg + 1);
-            if (expanded_key)
-            {
-                value = hashmap_get(shell->env, expanded_key);
-                if (value)
-                    hashmap_set(shell->env, expanded_key, ft_strdup(value));
-                free(expanded_key);
-            }
-        }
-        // Otherwise, just mark for export without setting a value
+        ft_putstr_fd("DEBUG [export]: No equals sign, handling as identifier only: [", STDERR_FILENO);
+        ft_putstr_fd(arg, STDERR_FILENO);
+        ft_putstr_fd("]\n", STDERR_FILENO);
+        handle_export_no_equals(shell, arg);
     }
     else
     {
@@ -144,47 +178,59 @@ static void export_variable(t_shell *shell, char *arg)
     }
 }
 
+static bool check_expanded_arg(t_shell *shell, char *arg)
+{
+    char *expanded_arg;
+    bool result;
+
+    result = true;
+    if (arg[0] == '$')
+    {
+        expanded_arg = expand_simple_variable(shell, arg + 1);
+        if (!expanded_arg || !*expanded_arg)
+        {
+            hashmap_iterate(shell->env, print_env_var);
+            free(expanded_arg);
+            result = false;
+        }
+        else
+            free(expanded_arg);
+    }
+    return (result);
+}
+
+static int handle_invalid_identifier(char *arg)
+{
+    ft_putstr_fd("export: '", STDERR_FILENO);
+    ft_putstr_fd(arg, STDERR_FILENO);
+    ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+    return (1);
+}
+
 int builtin_export(t_shell *shell, t_ast_node *node)
 {
     int i;
-    int ret;
-    char *expanded_arg;
+    int status;
 
     if (!node->args[1])
     {
         hashmap_iterate(shell->env, print_env_var);
-        return 0;
+        return (0);
     }
 
+    status = 0;
     i = 1;
-    ret = 0;
     while (node->args[i])
     {
-        // If argument starts with $, try to expand it
-        if (node->args[i][0] == '$')
-        {
-            expanded_arg = expand_simple_variable(shell, node->args[i] + 1);
-            // If expansion fails (variable is empty or undefined), show all variables
-            if (!expanded_arg || !*expanded_arg)
-            {
-                hashmap_iterate(shell->env, print_env_var);
-                free(expanded_arg);
-                return 0;
-            }
-            free(expanded_arg);
-        }
-
+        if (!check_expanded_arg(shell, node->args[i]))
+            return (0);
         if (!is_valid_identifier(node->args[i]))
-        {
-            ft_putstr_fd("export: '", STDERR_FILENO);
-            ft_putstr_fd(node->args[i], STDERR_FILENO);
-            ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-            return 1;  // Stop processing and return error
-        }
-        export_variable(shell, node->args[i]);
+            status = handle_invalid_identifier(node->args[i]);
+        else
+            process_export_argument(shell, node->args[i]);
         i++;
     }
-    return ret;
+    return (status);
 }
 
 

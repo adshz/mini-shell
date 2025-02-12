@@ -3,74 +3,64 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 20:30:39 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 20:30:39 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/29 17:53:05 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/29 17:53:08 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "shell.h"
-#include "builtins.h"
+#include "builtin_utils.h"
+#include "expander/expander.h"
 
-static bool is_readonly_var(const char *var)
+static bool is_readonly_var(const char *name)
 {
-    const char *readonly_vars[] = {
-        "SHLVL",
-        NULL
-    };
-    int i;
-
-    i = 0;
-    while (readonly_vars[i])
-    {
-        if (ft_strcmp((char *)var, (char *)readonly_vars[i]) == 0)
-            return true;
-        i++;
-    }
-    return false;
+	return (ft_strcmp(name, "PWD") == 0 || \
+			ft_strcmp(name, "OLDPWD") == 0 || \
+			ft_strcmp(name, "PATH") == 0);
 }
 
-static bool is_valid_identifier(const char *str)
+static char *expand_var_name(t_shell *shell, const char *arg)
 {
-    int i;
-
-    if (!str || !*str || (!ft_isalpha(*str) && *str != '_'))
-        return false;
-    i = 1;
-    while (str[i])
-    {
-        if (!ft_isalnum(str[i]) && str[i] != '_')
-            return false;
-        i++;
-    }
-    return true;
+    if (!arg || !*arg)
+        return NULL;
+    if (arg[0] == '$')
+        return expand_simple_variable(shell, arg + 1);
+    return ft_strdup(arg);
 }
 
 int builtin_unset(t_shell *shell, t_ast_node *node)
 {
-    int i;
-    int status;
+	int i;
+	int status;
+	char *expanded_name;
 
-    if (!node->args[1])
-        return 0;
+	if (!node->args[1])
+		return 0;
 
-    status = 0;
-    i = 1;
-    while (node->args[i])
-    {
-        if (!is_valid_identifier(node->args[i]))
-        {
-            ft_putstr_fd("unset: '", STDERR_FILENO);
-            ft_putstr_fd(node->args[i], STDERR_FILENO);
-            ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-            status = 1;
-        }
-        else if (!is_readonly_var(node->args[i]))
-            hashmap_remove(shell->env, node->args[i]);
-        i++;
-    }
-    return status;
+	status = 0;
+	i = 1;
+	while (node->args[i])
+	{
+		expanded_name = expand_var_name(shell, node->args[i]);
+		if (!expanded_name)
+		{
+			i++;
+			continue;
+		}
+		if (!is_valid_identifier(expanded_name))
+		{
+			ft_putstr_fd("unset: '", STDERR_FILENO);
+			ft_putstr_fd(expanded_name, STDERR_FILENO);
+			ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+			status = 1;
+		}
+		else if (!is_readonly_var(expanded_name))
+			hashmap_remove(shell->env, expanded_name);
+		free(expanded_name);
+		i++;
+	}
+	return status;
 }
 
 

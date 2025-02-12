@@ -3,50 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   shell.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/08 14:44:07 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:03 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/21 17:03:45 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/22 15:35:40 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef SHELL_H
 # define SHELL_H
-# include "libft.h"
-// delete it later
+
+
 # include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdbool.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-# include <sys/wait.h>
-# include <sys/types.h>
 # include "libft.h"
-# include <signal.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <sys/stat.h>
-# include <limits.h>
-# include <termios.h>
-# include <stdbool.h>
 # include "types.h"
-# include "parser.h"
-# include "hashtable.h"
-# include "signals.h"
 # include "errors.h"
-# include "utils.h"
+# include "../src/core/core.h"
+# include "../src/lexer/lexer.h"
+# include "../src/parser/parser.h"
+# include "../src/executor/executor.h"
+# include "../src/hashtable/hashtable.h"
+# include "../src/expander/expander.h"
+# include "../src/builtins/builtins.h"
+# include "../src/utils/utils.h"
 
-# define PROMPT "minishell$ "
-/* Configure Return values for readability */
-# define SUCCESS 0
-# define ERROR 1
-# define SYNTAX_ERROR 2
-
-/* Global variables */
-extern int	g_signal;
-
-/* Core functions */
-void	init_shell(t_shell *shell, char *argv[], char *envp[]);
-void	cleanup_shell(t_shell *shell);
-void	free_history(char **history);
-
+extern t_shell *g_shell;
 #endif

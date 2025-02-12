@@ -1,5 +1,7 @@
 #include "shell.h"
 #include "errors.h"
+#include "libft.h"
+
 void cleanup_terminal_state(t_shell *shell)
 {
     tcgetattr(STDIN_FILENO, &shell->term_settings);

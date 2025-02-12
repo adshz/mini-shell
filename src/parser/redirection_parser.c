@@ -3,164 +3,164 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_parser.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 15:51:59 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:59 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/28 12:49:40 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/28 12:52:47 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "parser.h"
-#include "libft.h"
+#include "lexer/lexer.h"
+#include "shell.h"
 
-static int check_input_file(const char *filename)
+/**
+ * @brief Handles word token processing
+ * @param current Current token
+ * @param prev_type Previous token type
+ * @param result Current result tree
+ * @param tokens Token stream
+ * @param shell Shell instance
+ * @return Updated result tree or NULL on failure
+ */
+static t_ast_node	*handle_word_token(t_token **current, \
+									t_token_type *prev_type, \
+									t_ast_node *result, t_token **tokens, \
+									t_shell *shell)
 {
-	if (access(filename, F_OK) == -1)
-		return (0);
-	if (access(filename, R_OK) == -1)
-		return (0);
-	return (1);
+	t_ast_node	*cmd_node;
+
+	if ((*current)->next && is_redirection_token((*current)->next->type))
+	{
+		*prev_type = (*current)->type;
+		*current = (*current)->next;
+		*tokens = *current;
+		return (result);
+	}
+	if (is_redirection_token(*prev_type))
+	{
+		*prev_type = (*current)->type;
+		*current = (*current)->next;
+		*tokens = *current;
+		return (result);
+	}
+	cmd_node = create_command_from_token(*current);
+	if (!cmd_node)
+	{
+		shell->exit_status = 258;
+		return (NULL);
+	}
+	result = attach_command_node(result, cmd_node);
+	*prev_type = (*current)->type;
+	*current = (*current)->next;
+	*tokens = *current;
+	return (result);
 }
 
-t_ast_node	*handle_redirection(t_ast_node *left, t_token **tokens)
+/**
+ * @brief Handles redirection token processing
+ * @param current Current token
+ * @param prev_type Previous token type
+ * @param result Current result tree
+ * @param tokens Token stream
+ * @param shell Shell instance
+ * @return Updated result tree or NULL on failure
+ */
+static t_ast_node	*handle_redirection_token(t_token **current,
+										t_token_type *prev_type,
+										t_ast_node *result,
+										t_token **tokens,
+										t_shell *shell)
 {
-	t_token *current = *tokens;
-	t_ast_node *result = left;
-	t_token_type prev_type = TOKEN_EOF;
+	t_ast_node	*new_result;
+	t_token		*next_token;
 
-	while (current)
+	if ((*current)->type == TOKEN_HEREDOC)
 	{
-		// Handle command tokens
-		if (current->type == TOKEN_WORD)
+		next_token = (*current)->next;
+		if (!next_token || next_token->type != TOKEN_WORD)
 		{
-			// Skip if this is a filename for a redirection
-			if (current->next && is_redirection_token(current->next->type))
-			{
-				// This is a command followed by a redirection, don't skip
-			}
-			else if (is_redirection_token(prev_type))
-			{
-				// This is a filename after a redirection, skip it
-				prev_type = current->type;
-				current = current->next;
-				*tokens = current;
-				continue;
-			}
-
-			// Create command node
-			t_ast_node *cmd_node = create_ast_node(AST_COMMAND, current->value);
-			if (!cmd_node)
-				return NULL;
-			
-			cmd_node->args = malloc(sizeof(char *) * 2);
-			if (!cmd_node->args)
-			{
-				free_ast(cmd_node);
-				return NULL;
-			}
-			cmd_node->args[0] = ft_strdup(current->value);
-			cmd_node->args[1] = NULL;
-
-			// If we have a redirection node, set the command as its left child
-			if (result)
-			{
-				// Find the deepest left node to attach the command
-				t_ast_node *current_node = result;
-				while (current_node->left)
-					current_node = current_node->left;
-				current_node->left = cmd_node;
-			}
-			else
-			{
-				result = cmd_node;
-			}
-			
-			prev_type = current->type;
-			current = current->next;
-			*tokens = current;
-			continue;
+			shell->exit_status = 258;
+			return (NULL);
 		}
-
-		// Handle redirection tokens
-		if (is_redirection_token(current->type))
+		if (!result)
 		{
-			t_ast_node *redir_node;
-			
-			// Check for consecutive redirection operators
-			if (current->next && is_redirection_token(current->next->type))
+			t_token *cmd_token = next_token->next;
+			while (cmd_token && !is_redirection_token(cmd_token->type))
+				cmd_token = cmd_token->next;
+			if (cmd_token && cmd_token->next && cmd_token->next->type == TOKEN_WORD)
 			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `", STDERR_FILENO);
-				if (current->next->type == TOKEN_REDIRECT_OUT)
-					ft_putstr_fd(">", STDERR_FILENO);
-				else if (current->next->type == TOKEN_REDIRECT_IN)
-					ft_putstr_fd("<", STDERR_FILENO);
-				else if (current->next->type == TOKEN_APPEND)
-					ft_putstr_fd(">>", STDERR_FILENO);
-				else if (current->next->type == TOKEN_HEREDOC)
-					ft_putstr_fd("<<", STDERR_FILENO);
-				ft_putendl_fd("'", STDERR_FILENO);
-				return NULL;
-			}
-
-			// Move to the file name token
-			t_token *file_token = current->next;
-			if (!file_token || file_token->type != TOKEN_WORD)
-			{
-				ft_putendl_fd("minishell: syntax error near unexpected token `newline'", STDERR_FILENO);
-				return NULL;
-			}
-
-			// For input redirection, check if file exists and is readable
-			if (current->type == TOKEN_REDIRECT_IN)
-			{
-				check_input_file(file_token->value);  // Just check and print error, don't return
-			}
-
-			if (current->type == TOKEN_REDIRECT_OUT)
-				redir_node = create_ast_node(AST_REDIR_OUT, NULL);
-			else if (current->type == TOKEN_REDIRECT_IN)
-				redir_node = create_ast_node(AST_REDIR_IN, NULL);
-			else if (current->type == TOKEN_APPEND)
-				redir_node = create_ast_node(AST_REDIR_APPEND, NULL);
-			else if (current->type == TOKEN_HEREDOC)
-			{
-				redir_node = create_ast_node(AST_HEREDOC, file_token->value);  // Store delimiter in node value
-				if (!redir_node)
-					return (NULL);
-			}
-			else
-				redir_node = create_ast_node(AST_HEREDOC, NULL);
-
-			if (!redir_node)
-				return (NULL);
-
-			// Create file/delimiter node only for non-heredoc redirections
-			t_ast_node *file_node = NULL;
-			if (current->type != TOKEN_HEREDOC)
-			{
-				file_node = create_ast_node(AST_COMMAND, file_token->value);
-				if (!file_node)
+				result = create_command_from_token(cmd_token->next);
+				if (!result)
 				{
-					free_ast(redir_node);
+					shell->exit_status = 258;
 					return (NULL);
 				}
 			}
-
-			// Set up redirection node
-			redir_node->left = result;  // Previous node (command) becomes left child
-			if (file_node)
-				redir_node->right = file_node;  // File becomes right child (only for non-heredoc)
-			result = redir_node;  // This redirection becomes the new root
-
-			// Move to next token
-			prev_type = current->type;
-			*tokens = file_token->next;
-			current = *tokens;
-			continue;
 		}
-
-		// If we get here, we've found a token we don't handle
-		break;
+		new_result = process_redirection(*current, result);
+		if (!new_result)
+		{
+			shell->exit_status = 258;
+			return (NULL);
+		}
+		*prev_type = (*current)->type;
+		if (next_token && next_token->next)
+		{
+			*tokens = next_token->next;
+			*current = *tokens;
+		}
+		else
+		{
+			*tokens = NULL;
+			*current = NULL;
+		}
+		return new_result;
 	}
+	new_result = process_redirection(*current, result);
+	if (!new_result)
+	{
+		shell->exit_status = 258;
+		return (NULL);
+	}
+	*prev_type = (*current)->type;
+	*tokens = (*current)->next->next;
+	*current = *tokens;
+	return (new_result);
+}
 
-	return result;
-} 
+/**
+ * @brief Parses a redirection construct and builds its AST
+ * @param left Left subtree to attach
+ * @param tokens Token stream
+ * @param shell Shell instance
+ * @return Complete redirection AST or NULL on failure
+ * 
+ * Builds an AST for a redirection construct, handling both the redirection
+ * operator and its target (file or heredoc delimiter).
+ */
+t_ast_node	*parse_redirection_construct(t_ast_node *left, t_token **tokens, \
+t_shell *shell)
+{
+	t_token			*current;
+	t_ast_node		*result;
+	t_token_type	prev_type;
+
+	current = *tokens;
+	result = left;
+	prev_type = TOKEN_EOF;
+	while (current)
+	{
+		if (current->type == TOKEN_WORD)
+			result = handle_word_token(&current, &prev_type, result, tokens, shell);
+		else if (is_redirection_token(current->type))
+			result = handle_redirection_token(&current, &prev_type, result, tokens, shell);
+		else
+			break;
+		if (!result)
+		{
+			shell->exit_status = 258;
+			return (NULL);
+		}
+	}
+	return (result);
+}

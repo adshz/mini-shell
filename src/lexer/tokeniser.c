@@ -3,246 +3,184 @@
 /*                                                        :::      ::::::::   */
 /*   tokeniser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 15:51:23 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:23 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/27 17:09:49 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/27 17:57:54 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer.h"
-#include "shell.h"
-#include "libft.h"
+#include <stdio.h>
 
-static t_tokenizer_state get_next_state(t_tokenizer_state current_state, char c)
+/**
+ * @brief Adds a new token to the end of token list
+ *
+ * Maintains the linked list structure of tokens by:
+ * - Handling empty list case (head is NULL)
+ * - Traversing to end of existing list
+ * - Attaching new token
+ *
+ * @param head      Current head of token list
+ * @param new_token Token to add to the list
+ * @return Updated head of token list, or NULL on failure
+ *
+ * @note Safe to call with NULL head (creates new list)
+ * @note Returns NULL if new_token is NULL
+ * @note Sets new_token->prev to NULL when creating new list
+ * @note Sets new_token->next to NULL for last token in list
+ */
+static t_token	*add_token_to_list(t_token *head, t_token *new_token)
 {
-	static int was_backslash;
-
-	was_backslash = 0;
-	if (current_state == STATE_IN_BACKSLASH)
-	{
-		was_backslash = 0;
-		return (STATE_NORMAL);
-	}
-	if (current_state == STATE_NORMAL)
-	{
-		if (c == '\\')
-		{
-			was_backslash = 1;
-			return (STATE_IN_BACKSLASH);
-		}
-		if (c == '\'')
-			return (STATE_IN_SINGLE_QUOTE);
-		if (c == '\"')
-			return (STATE_IN_DOUBLE_QUOTE);
-	}
-	else if (current_state == STATE_IN_DOUBLE_QUOTE)
-	{
-		if (c == '\\' && !was_backslash)
-		{
-			was_backslash = 1;
-			return (STATE_IN_BACKSLASH);
-		}
-		if (c == '\"' && !was_backslash)
-			return (STATE_NORMAL);
-		was_backslash = 0;
-	}
-	else if (current_state == STATE_IN_SINGLE_QUOTE && c == '\'')
-		return (STATE_NORMAL);
-	was_backslash = 0;
-	return (current_state);
-}
-
-static size_t	get_token_length_with_state(const char *input)
-{
-	size_t			len;
-	t_tokenizer_state	state;
-
-	len = 0;
-	state = STATE_NORMAL;
-	while (input[len])
-	{
-		if (state == STATE_NORMAL && input[len] == '\\')
-		{
-			if (input[len + 1])
-			{
-				len += 2;
-				continue;
-			}
-		}
-		state = get_next_state(state, input[len]);
-		if (state == STATE_NORMAL)
-		{
-			if (len > 0 && (input[len] == '"' || input[len] == '\''))
-			{
-				len++;
-				if (input[len] && !ft_isspace(input[len]) && !is_special_char(input[len]))
-					break;
-				continue;
-			}
-			if (ft_isspace(input[len]) && len > 0)
-				break;
-			if (len == 0 && is_special_char(input[len]))
-			{
-				if ((input[len] == '|' && input[len + 1] == '|') ||
-					(input[len] == '&' && input[len + 1] == '&') ||
-					(input[len] == '<' && input[len + 1] == '<') ||
-					(input[len] == '>' && input[len + 1] == '>'))
-					return (2);
-				return (1);
-			}
-			if (len > 0 && is_special_char(input[len]))
-				break;
-		}
-		len++;
-	}
-	return (len);
-}
-
-static char *extract_token(const char *input, size_t len)
-{
-	char	*result;
-	size_t	i;
-	size_t	j;
-	t_tokenizer_state state;
-
-	result = malloc(len + 1);
-	if (!result)
-		return (NULL);
-	i = 0;
-	j = 0;
-	state = STATE_NORMAL;
-
-	while (i < len)
-	{
-		if (state == STATE_IN_DOUBLE_QUOTE)
-		{
-			if (input[i] == '\\')
-			{
-				if (i + 1 < len && input[i + 1] == '"')
-				{
-					i++;
-					result[j++] = input[i];
-				}
-				else
-					result[j++] = input[i];
-				i++;
-				continue;
-			}
-		}
-		else if (input[i] == '\\' && state == STATE_NORMAL)
-		{
-			i++;
-			if (i < len)
-				result[j++] = input[i++];
-			continue;
-		}
-
-		if (input[i] == '"' && state == STATE_NORMAL)
-		{
-			state = STATE_IN_DOUBLE_QUOTE;
-			result[j++] = input[i];  // Keep the quote
-		}
-		else if (input[i] == '"' && state == STATE_IN_DOUBLE_QUOTE)
-		{
-			state = STATE_NORMAL;
-			result[j++] = input[i];  // Keep the quote
-		}
-		else if (input[i] == '\'' && state == STATE_NORMAL)
-		{
-			state = STATE_IN_SINGLE_QUOTE;
-			result[j++] = input[i];  // Keep the quote
-		}
-		else if (input[i] == '\'' && state == STATE_IN_SINGLE_QUOTE)
-		{
-			state = STATE_NORMAL;
-			result[j++] = input[i];  // Keep the quote
-		}
-		else
-			result[j++] = input[i];
-		i++;
-	}
-	result[j] = '\0';
-	return (result);
-}
-
-t_token *tokenise(const char *input)
-{
-	t_token	*head;
 	t_token	*current;
-	size_t	len;
-	char	*value;
-	t_token_type type;
 
-	ft_putstr_fd("\n[DEBUG] Tokenizing input: '", STDERR_FILENO);
-	ft_putstr_fd((char *)input, STDERR_FILENO);
-	ft_putendl_fd("'", STDERR_FILENO);
+	if (!new_token)
+		return (NULL);
+	if (!head)
+	{
+		new_token->prev = NULL;
+		return (new_token);
+	}
+	current = head;
+	while (current->next)
+		current = current->next;
+	current->next = new_token;
+	new_token->prev = current;
+	new_token->next = NULL;
+	return (head);
+}
 
-	head = NULL;
-	current = NULL;
+/**
+ * @brief Creates a single token from input string
+ *
+ * Process:
+ * 1. Extracts token value from input
+ * 2. Determines token type
+ * 3. Creates token structure
+ *
+ * @param input Input string to process
+ * @param len   Length of token to extract
+ * @return New token structure, or NULL on failure
+ *
+ * @note Handles memory cleanup on failure
+ * @note Returns NULL for EOF tokens
+ * @see extract_token() for token value extraction
+ * @see get_token_type() for token type determination
+ */
+static t_token	*process_single_token(const char *input, size_t len)
+{
+	t_token	*new_token;
+	char		*value;
+
+	value = extract_token(input, len);
+	if (!value)
+		return (NULL);
+	new_token = create_token(get_token_type(value), value);
+	if (!new_token)
+	{
+		free(value);
+		return (NULL);
+	}
+	return (new_token);
+}
+
+
+
+/**
+ * @brief Creates and adds a new token to the token list
+ *
+ * Handles the token creation process by:
+ * 1. Creating a new token from input
+ * 2. Adding it to the existing token list
+ * 3. Managing memory cleanup on failures
+ *
+ * @param input Input string to process
+ * @param len   Length of token to extract
+ * @param head  Current head of token list
+ * @return Updated head of token list, or NULL on failure
+ *
+ * @note Frees existing token list on process_single_token failure
+ * @note Frees new token on add_token_to_list failure
+ * @see process_single_token() for token creation
+ * @see add_token_to_list() for list management
+ */
+static t_token	*handle_token_creation(const char *input, size_t len, \
+t_token *head)
+{
+	t_token	*new_token;
+
+	new_token = process_single_token(input, len);
+	if (!new_token)
+	{
+		free_tokens(head);
+		return (NULL);
+	}
+	head = add_token_to_list(head, new_token);
+	if (!head)
+	{
+		free_tokens(new_token);
+		return (NULL);
+	}
+	return (head);
+}
+
+/**
+ * @brief Process input string and build token list
+ *
+ * @param input Input string to process
+ * @param head Current head of token list
+ * @return Updated head of token list, or NULL on failure
+ */
+static t_token *process_input_tokens(const char *input, t_token *head)
+{
+	size_t len;
+
 	while (*input)
 	{
-		while (ft_isspace(*input))
-			input++;
+		input = skip_whitespace(input);
 		if (!*input)
 			break;
-
-			ft_putstr_fd("[DEBUG] Processing segment: '", STDERR_FILENO);
-			ft_putstr_fd((char *)input, STDERR_FILENO);
-			ft_putendl_fd("'", STDERR_FILENO);
-
 		len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
-
-		ft_putstr_fd("[DEBUG] Token length: ", STDERR_FILENO);
-		ft_putnbr_fd(len, STDERR_FILENO);
-		ft_putchar_fd('\n', STDERR_FILENO);
-
-		value = extract_token(input, len);
-		if (!value)
-		{
-			free_tokens(head);
-			return (NULL);
-		}
-
-		ft_putstr_fd("[DEBUG] Extracted token: '", STDERR_FILENO);
-		ft_putstr_fd(value, STDERR_FILENO);
-		ft_putendl_fd("'", STDERR_FILENO);
-
-		type = get_token_type(value);
-		if (type == TOKEN_EOF)  // Stop on syntax error
-		{
-			free(value);
-			free_tokens(head);
-			return (NULL);
-		}
-
-		t_token *new_token = create_token(type, value);
-		free(value);
-		if (!new_token)
-		{
-			free_tokens(head);
-			return (NULL);
-		}
-
-		ft_putstr_fd("[DEBUG] Created token with value: '", STDERR_FILENO);
-		ft_putstr_fd(new_token->value, STDERR_FILENO);
-		ft_putendl_fd("'", STDERR_FILENO);
-
+		head = handle_token_creation(input, len, head);
 		if (!head)
-		{
-			head = new_token;
-			current = head;
-		}
-		else
-		{
-			current->next = new_token;
-			current = new_token;
-		}
-
+			return (NULL);
 		input += len;
 	}
-
-	ft_putendl_fd("[DEBUG] Tokenization complete", STDERR_FILENO);
 	return (head);
+}
+
+/**
+ * @brief Tokenizes input string into linked list of tokens
+ *
+ * Main tokenization process:
+ * 1. Skips whitespace
+ * 2. Determines token length
+ * 3. Processes individual tokens via handle_token_creation
+ * 4. Builds token list
+ *
+ * Used by the parser to break command line into processable tokens
+ * for AST construction.
+ *
+ * @param input Command line string to tokenize
+ * @return Head of token list, or NULL on failure
+ *
+ * @note Handles memory cleanup on any failure
+ * @note Returns NULL for empty input
+ * @see handle_token_creation() for token creation and list management
+ * @see process_single_token() for individual token creation
+ * @see add_token_to_list() for list building
+ *
+ * Example token sequence:
+ * "ls -l | grep foo" becomes:
+ * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
+ */
+t_token *tokenise(const char *input)
+{
+	t_token *head;
+
+	if (!input)
+		return (NULL);
+	head = NULL;
+	return (process_input_tokens(input, head));
 }

@@ -2,6 +2,20 @@
 #include "libft.h"
 #include <stdlib.h>
 
+bool is_only_whitespace(const char *str)
+{
+    if (!str)
+        return true;
+    
+    while (*str)
+    {
+        if (!ft_isspace(*str))
+            return false;
+        str++;
+    }
+    return true;
+}
+
 static int is_in_single_quotes(const char *str, int pos) {
     int quote_count = 0;
     
@@ -43,12 +57,7 @@ char *ft_strjoin3(const char *s1, const char *s2, const char *s3)
     return (result);
 } 
 
-int is_special_char(char c) {
-    return (c == '|' || c == '<' || c == '>' || c == ' ' || 
-            c == '\t' || c == '\n' || c == ';' || c == '&');
-}
-
-char *handle_quotes(const char *input)
+char *process_quoted_string(const char *input)
 {
     int     len;
     char    *result;
