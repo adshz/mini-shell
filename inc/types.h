@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 17:09:43 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 18:55:47 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 18:33:25 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef TYPES_H
 # define TYPES_H
 
@@ -20,11 +21,10 @@
 # include "../src/hashtable/hashtable.h"
 
 /* Forward declarations */
-struct s_ast_node;
-typedef struct s_ast_node t_ast_node;
+struct						s_ast_node;
+typedef struct s_ast_node	t_ast_node;
 
 /*########################################*/
-
 
 /*
  * Environment Structure
@@ -37,8 +37,7 @@ typedef struct s_ast_node t_ast_node;
 // }	t_env;
 
 // use t_hash_item as t_env
-typedef t_hash_item t_env;
-
+typedef t_hash_item			t_env;
 
 /* Shell Structure */
 /**

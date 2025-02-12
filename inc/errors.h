@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   errors.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:57:11 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/23 15:58:32 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 18:22:22 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef ERRORS_H
 # define ERRORS_H
 # define PROMPT "minishell$ "
@@ -68,7 +69,7 @@ typedef enum e_rror_type
 }	t_error_type;
 
 /* Error handling functions */
-void    handle_error(t_shell *shell, t_error_type error, const char *detail);
-int     set_error_status(t_shell *shell, int status);
-int     print_error(char *cmd, char *msg, int error_code);
+void	handle_error(t_shell *shell, t_error_type error, const char *detail);
+int		set_error_status(t_shell *shell, int status);
+int		print_error(char *cmd, char *msg, int error_code);
 #endif
