@@ -22,8 +22,15 @@
  */
 #ifndef CORE_H
 # define CORE_H
-
+// Signal states for global signal handling
+# define SIG_NONE 0          // No signal/normal operation
+# define SIG_HEREDOC_MODE 1  // Currently in heredoc mode
+# define SIG_HEREDOC_INT 2   // Heredoc was interrupted
+# define SIG_REGULAR_INT 3   // Regular interrupt
 # include "shell.h"
+# include <signal.h>
+
+extern volatile sig_atomic_t g_signal_status;
 
 /* Signal handling functions */
 void    setup_signals(void);
@@ -80,5 +87,7 @@ void    interactive_loop(t_shell *shell);
  */
 void    init_signals(void);
 void	handle_sigint(int sig);
+
+
 
 #endif

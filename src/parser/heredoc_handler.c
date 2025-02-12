@@ -54,23 +54,40 @@ t_ast_node *create_default_heredoc_command(void)
 
 t_ast_node *handle_heredoc_command(t_token **tokens, t_shell *shell)
 {
-	t_token *tmp;
-	t_token *next_token;
-	t_token *last_word;
+	t_token *heredoc_token;
+	t_token *delimiter_token;
 	t_ast_node *node;
 
-	tmp = *tokens;
-	while (tmp && tmp->next && tmp->next->type == TOKEN_WORD)
-		tmp = tmp->next;
-	next_token = tmp->next;
-	last_word = find_last_word_token(*tokens);
-	*tokens = next_token;
-	if (last_word)
-		node = create_command_from_word(last_word);
-	else
-		node = create_default_heredoc_command();
+	// Save the heredoc token
+	heredoc_token = *tokens;
+	
+	// Check for delimiter token
+	delimiter_token = heredoc_token->next;
+	if (!delimiter_token || delimiter_token->type != TOKEN_WORD)
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'", STDERR_FILENO);
+		shell->exit_status = 258;
+		return (NULL);
+	}
+
+	// Create default cat command for heredoc
+	node = create_default_heredoc_command();
 	if (!node)
 		return (NULL);
-	*tokens = tmp;
-	return (process_final_redirection(node, tokens, shell));
+
+	// Create and process the heredoc redirection
+	t_ast_node *redir_node = create_redirection_node(TOKEN_HEREDOC, delimiter_token->value);
+	if (!redir_node)
+	{
+		free_ast(node);
+		return (NULL);
+	}
+
+	// Set up the AST structure
+	redir_node->left = node;
+
+	// Move past the heredoc and delimiter tokens
+	*tokens = delimiter_token->next;
+
+	return redir_node;
 } 

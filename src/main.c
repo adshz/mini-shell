@@ -12,7 +12,7 @@
 #include "shell.h"
 #include "types.h"
 
-t_shell *g_shell;  // Define the global variable
+volatile sig_atomic_t	g_signal_status = 0;
 
 /**
  * @brief Validates command line arguments for the shell
@@ -62,7 +62,6 @@ int	main(int argc, char *argv[], char **envp)
 	int		exit_status;
 
 	validate_args(argc, argv);
-	g_shell = &shell;  // Set the global shell pointer
 	if (init_shell(&shell, argv, envp) != SHELL_SUCCESS)
 	{
 		ft_putendl_fd("Shell Initialisation Failure", STDERR_FILENO);

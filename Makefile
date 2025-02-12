@@ -23,7 +23,7 @@ ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
 CC			:=	cc
-CFLAGS		:=	-Wall -Werror -Wextra -g3
+CFLAGS		:=	-Wall -Werror -Wextra -g -fsanitize=address
 INCLUDE		:=	-I./inc \
                 -I./libft/inc \
                 -I./src \
@@ -82,7 +82,11 @@ SRCS		:=	\
 				executor/command_expander/command_name_expander_var_expansion.c \
 				executor/env_executor/env_array_creator.c \
 				executor/env_executor/env_string_utils.c \
+				executor/env_executor/env_array_string_helper.c \
 				executor/env_executor/env_variable_handler.c \
+				executor/env_executor/env_hashmap_handler.c \
+				executor/env_executor/env_item_processor.c \
+				executor/env_executor/env_mem_utils.c \
 				executor/pipe_handler/pipe_child.c \
 				executor/pipe_handler/pipe_executor.c \
 				executor/pipe_handler/pipe_setup.c \
@@ -150,7 +154,7 @@ MKFL		:=	--no-print-directory
 
 READLINE_DIR := $(shell brew --prefix readline)
 CFLAGS += -I$(READLINE_DIR)/include
-LDFLAGS += -L$(READLINE_DIR)/lib -lreadline
+LDFLAGS += -L$(READLINE_DIR)/lib -lreadline -fsanitize=address
 LIBFT_PATH  := ./libft
 LIBFT       := $(LIBFT_PATH)/libft.a
 ALL_LIBS    := $(LIBFT) $(LDFLAGS)
@@ -167,7 +171,7 @@ banner:
 		@echo "| /_____/     /____/_/ /_/_____/_____/_____/ | "
 		@echo "|____________________________________________| "
 		@echo "                                              "
-		@echo "$(RED)minishell  (.)(.)                       "
+		@echo "$(RED)minihell   (.)(.)                       "
 		@echo "        \\ /  ()  \\                          "
 		@echo "        _ \\ '--' / _                         "
 		@echo "       { '-\`\"\"\"\"\"\`-' }                 "

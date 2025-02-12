@@ -14,7 +14,10 @@
 #include <termios.h>
 #include <unistd.h>
 
-extern t_shell *g_shell;
+extern volatile sig_atomic_t g_signal_status;
+
+
+
 /**
  * @brief Disables the echoing of control characters in terminal
  *
@@ -35,26 +38,24 @@ static void	disable_ctrl_char_echo(void)
  * @brief Signal handler for SIGINT (Ctrl+C)
  *
  * Handles interrupt signal by:
- * 1. Setting global signal flag
+ * 1. Setting global signal status
  * 2. Printing newline
- * 3. Clearing and redisplaying prompt if in interactive mode
+ * 3. Handling heredoc mode specially
+ * 4. Clearing and redisplaying prompt if in interactive mode
  *
  * @param signum Signal number (SIGINT)
- *
- * @note Uses readline functions to handle prompt redisplay
- * @note Only redraws prompt if running in interactive terminal
  */
 void	handle_sigint(int sig)
 {
 	(void)sig;
-	g_shell->signal = SIGINT;
 	write(STDERR_FILENO, "\n", 1);
-	if (g_shell->in_heredoc)
+	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
-		g_shell->heredoc_sigint = true;
+		g_signal_status = SIG_HEREDOC_INT;
 		close(STDIN_FILENO);
-		return;
+		return ;
 	}
+	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
@@ -69,19 +70,14 @@ void	handle_sigint(int sig)
  *
  * Also:
  * - Disables control character echo
- * - Initializes global signal flag
+ * - Initializes global signal status
  * - Uses SA_RESTART to automatically restart interrupted system calls
- *
- * @note Uses sigaction for reliable signal handling
- * @note Global signal flag is used for signal state tracking
- * @note Ctrl+D (EOF) handling is not done here as it's not a signal
- *       It's handled in interactive_loop through readline() return value
  */
 void	init_signals(void)
 {
 	struct sigaction	sa;
 
-	g_shell->signal = 0;
+	g_signal_status = SIG_NONE;
 	disable_ctrl_char_echo();
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);

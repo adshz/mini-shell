@@ -42,36 +42,46 @@ int	handle_heredoc(t_ast_node *node, t_shell *shell)
 	t_heredoc_content hdc;
 	int		result;
 
-	shell->in_heredoc = 1;
+	ft_putstr_fd("\n=== Starting Heredoc Processing ===\n", STDERR_FILENO);
 	content = NULL;
+	g_signal_status = SIG_HEREDOC_MODE;  // Enter heredoc mode
+	ft_putstr_fd("Set g_signal_status to SIG_HEREDOC_MODE\n", STDERR_FILENO);
+	(void)shell;  // We don't use shell anymore
 	
 	if (validate_and_init(node, &content, &content_size, &content_capacity))
 	{
 		ft_putstr_fd("DEBUG: Validation or initialization failed\n", STDERR_FILENO);
-		shell->in_heredoc = 0;
+		g_signal_status = SIG_NONE;  // Exit heredoc mode
 		return (1);
 	}
 	
 	hdc.content = &content;
 	hdc.content_size = &content_size;
 	hdc.content_capacity = &content_capacity;
-	hdc.shell = shell;
+	hdc.shell = shell;  // Keep shell pointer for heredoc state
 	
+	ft_putstr_fd("Starting to read heredoc content...\n", STDERR_FILENO);
 	result = read_heredoc_content(node, &hdc);
-	shell->in_heredoc = 0;
+	ft_putstr_fd("Finished reading heredoc content, result: ", STDERR_FILENO);
+	ft_putnbr_fd(result, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	
-	if (result != 0)
+	// Check for interruption or error
+	if (result != 0 || g_signal_status == SIG_HEREDOC_INT)
 	{
-		if (content)
-			free(content);
+		ft_putstr_fd("Heredoc was interrupted or had an error\n", STDERR_FILENO);
+		g_signal_status = SIG_NONE;  // Reset signal state
 		return (1);
 	}
 
+	ft_putstr_fd("Initializing heredoc data...\n", STDERR_FILENO);
 	// Initialize heredoc_data with the necessary information
 	t_heredoc_data data;
 	if (init_heredoc_data(&data, node->right->value) != 0)
 	{
-		free(content);
+		ft_putstr_fd("Failed to initialize heredoc data\n", STDERR_FILENO);
+		cleanup_heredoc_resources(&hdc);
+		g_signal_status = SIG_NONE;  // Reset signal state
 		return (1);
 	}
 
@@ -79,24 +89,32 @@ int	handle_heredoc(t_ast_node *node, t_shell *shell)
 	data.content_fd = open(data.content_path, O_WRONLY);
 	if (data.content_fd == -1)
 	{
+		ft_putstr_fd("Failed to open temporary file\n", STDERR_FILENO);
 		cleanup_heredoc_data(&data);
-		free(content);
+		cleanup_heredoc_resources(&hdc);
+		g_signal_status = SIG_NONE;  // Reset signal state
 		return (1);
 	}
 
+	ft_putstr_fd("Writing content to temporary file...\n", STDERR_FILENO);
 	if (write(data.content_fd, content, content_size) == -1)
 	{
+		ft_putstr_fd("Failed to write content\n", STDERR_FILENO);
 		close(data.content_fd);
 		cleanup_heredoc_data(&data);
-		free(content);
+		cleanup_heredoc_resources(&hdc);
+		g_signal_status = SIG_NONE;  // Reset signal state
 		return (1);
 	}
 
 	close(data.content_fd);
-	free(content);
 
+	ft_putstr_fd("Setting up pipe...\n", STDERR_FILENO);
 	// Now setup the pipe with the properly initialized data
 	result = setup_pipe_and_write(&data);
 	cleanup_heredoc_data(&data);
+	cleanup_heredoc_resources(&hdc);  // Clean up heredoc resources at the end
+	g_signal_status = SIG_NONE;  // Reset signal state
+	ft_putstr_fd("=== Heredoc Processing Complete ===\n\n", STDERR_FILENO);
 	return (result);
 }

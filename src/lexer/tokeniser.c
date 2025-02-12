@@ -66,12 +66,12 @@ static t_token	*add_token_to_list(t_token *head, t_token *new_token)
  * @see extract_token() for token value extraction
  * @see get_token_type() for token type determination
  */
-static t_token	*process_single_token(const char *input, size_t len)
+static t_token	*process_single_token(const char *input, size_t len, t_shell *shell)
 {
 	t_token	*new_token;
-	char		*value;
+	char	*value;
 
-	value = extract_token(input, len);
+	value = extract_token(input, len, shell);
 	if (!value)
 		return (NULL);
 	new_token = create_token(get_token_type(value), value);
@@ -82,8 +82,6 @@ static t_token	*process_single_token(const char *input, size_t len)
 	}
 	return (new_token);
 }
-
-
 
 /**
  * @brief Creates and adds a new token to the token list
@@ -103,12 +101,11 @@ static t_token	*process_single_token(const char *input, size_t len)
  * @see process_single_token() for token creation
  * @see add_token_to_list() for list management
  */
-static t_token	*handle_token_creation(const char *input, size_t len, \
-t_token *head)
+static t_token	*handle_token_creation(const char *input, size_t len, t_token *head, t_shell *shell)
 {
 	t_token	*new_token;
 
-	new_token = process_single_token(input, len);
+	new_token = process_single_token(input, len, shell);
 	if (!new_token)
 	{
 		free_tokens(head);
@@ -130,7 +127,7 @@ t_token *head)
  * @param head Current head of token list
  * @return Updated head of token list, or NULL on failure
  */
-static t_token *process_input_tokens(const char *input, t_token *head)
+static t_token *process_input_tokens(const char *input, t_token *head, t_shell *shell)
 {
 	size_t len;
 
@@ -142,7 +139,7 @@ static t_token *process_input_tokens(const char *input, t_token *head)
 		len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
-		head = handle_token_creation(input, len, head);
+		head = handle_token_creation(input, len, head, shell);
 		if (!head)
 			return (NULL);
 		input += len;
@@ -175,12 +172,12 @@ static t_token *process_input_tokens(const char *input, t_token *head)
  * "ls -l | grep foo" becomes:
  * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
  */
-t_token *tokenise(const char *input)
+t_token *tokenise(const char *input, t_shell *shell)
 {
 	t_token *head;
 
 	if (!input)
 		return (NULL);
 	head = NULL;
-	return (process_input_tokens(input, head));
+	return (process_input_tokens(input, head, shell));
 }

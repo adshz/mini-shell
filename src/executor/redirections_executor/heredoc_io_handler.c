@@ -94,7 +94,7 @@ static int	process_line(char *line, t_ast_node *node, t_heredoc_content *hdc)
 	return (0);  // Continue reading
 }
 
-static void	cleanup_heredoc_resources(t_heredoc_content *hdc)
+void	cleanup_heredoc_resources(t_heredoc_content *hdc)
 {
 	if (hdc && hdc->content && *hdc->content)
 	{
@@ -109,29 +109,50 @@ int	read_heredoc_content(t_ast_node *node, t_heredoc_content *hdc)
 	char	*line;
 	int		result;
 
+	ft_putstr_fd("\n=== Reading Heredoc Content ===\n", STDERR_FILENO);
+	ft_putstr_fd("Delimiter: [", STDERR_FILENO);
+	ft_putstr_fd(node->right->value, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+
 	while (1)
 	{
-		if (hdc->shell->heredoc_sigint)
-			return (cleanup_and_error(-1, NULL, *hdc->content, "interrupted"));
+		if (g_signal_status == SIG_HEREDOC_INT)
+		{
+			ft_putstr_fd("Heredoc interrupted by signal\n", STDERR_FILENO);
+			cleanup_heredoc_resources(hdc);
+			return (-1);
+		}
 		write(STDOUT_FILENO, "> ", 2);
 		line = get_next_line(STDIN_FILENO);
 		
-		if (!line || hdc->shell->heredoc_sigint)
+		if (!line)
 		{
-			if (line)
-				free(line);
-			return (cleanup_and_error(-1, NULL, *hdc->content, "no input or interrupted"));
+			ft_putstr_fd("EOF received, ending heredoc\n", STDERR_FILENO);
+			cleanup_heredoc_resources(hdc);
+			return (0);  // EOF is a valid way to end heredoc
+		}
+		
+		if (g_signal_status == SIG_HEREDOC_INT)
+		{
+			ft_putstr_fd("Heredoc interrupted after reading line\n", STDERR_FILENO);
+			free(line);
+			cleanup_heredoc_resources(hdc);
+			return (-1);
 		}
 
 		result = process_line(line, node, hdc);
 		if (result < 0)  // Error case
-			return (cleanup_and_error(-1, NULL, *hdc->content, "process line failed"));
+		{
+			ft_putstr_fd("Error processing line\n", STDERR_FILENO);
+			cleanup_heredoc_resources(hdc);
+			return (-1);
+		}
 		if (result > 0)  // Delimiter found
 		{
-			cleanup_heredoc_resources(hdc);  // Clean up normally on success
+			ft_putstr_fd("Delimiter found, ending heredoc\n", STDERR_FILENO);
+			g_signal_status = SIG_NONE;  // Reset signal state on success
 			return (0);
 		}
 	}
-	return (0);
 }
 

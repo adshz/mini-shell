@@ -14,13 +14,18 @@
 
 # include "libft.h"
 # include "shell.h"
+# include "core/core.h"
 # include "errors.h"
 # include <sys/wait.h>
 # include <errno.h>
 # include "types.h"
 # include "expander/expander.h"
 # include <signal.h>
+#include "hashtable/hashtable.h"
+#include <stdlib.h>   // for malloc
+#include <stdint.h>   // for SIZE_MAX
 
+extern volatile sig_atomic_t g_signal_status;
 void debug_heredoc_state(t_ast_node *node, const char *line, const char *stage);
 
 typedef struct s_heredoc_content
@@ -41,6 +46,7 @@ typedef struct s_heredoc_data
 /* Heredoc data management */
 int		init_heredoc_data(t_heredoc_data *data, const char *delimiter);
 void	cleanup_heredoc_data(t_heredoc_data *data);
+void	cleanup_heredoc_resources(t_heredoc_content *hdc);
 
 /* Command execution */
 int		execute_ast(t_shell *shell, t_ast_node *node);
@@ -69,9 +75,12 @@ void    add_command_history(t_shell *shell, void *ast);
 int	iterate_hash_buckets(t_hashmap *env, char **env_array);
 int	process_bucket_items(char **env_array, size_t *index, t_hash_item *item);
 int	add_env_item(char **env_array, size_t *index, t_hash_item *item);
-
+int	add_env_item(char **env_array, size_t *index, t_hash_item *item);
+int	process_all_hash_buckets(t_hashmap *env, char **env_array, size_t *array_index);
+void cleanup_partial_array(char **array, size_t count);
+int	validate_hashmap(t_hashmap *env, char **env_array);
 int	handle_variable_assignment(t_shell *shell, const char *assignment);
-
+int	is_pointer_valid(void *ptr);
 int	handle_expanded_command(char *expanded, char *dollar_pos, t_ast_node *node);
 
 int	handle_tilde_directory(const char *expanded);

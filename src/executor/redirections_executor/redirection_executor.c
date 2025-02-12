@@ -13,11 +13,12 @@
 
 int	handle_signal_interrupt(t_shell *shell)
 {
-	if (shell->signal == SIGINT)
+	if (g_signal_status == SIGINT)
 	{
 		shell->signint_child = false;
 		shell->in_heredoc = false;
 		shell->exit_status = 130;
+		g_signal_status = SIG_NONE;
 		return (130);
 	}
 	return (0);
@@ -43,8 +44,9 @@ int	execute_child_process(t_shell *shell, t_ast_node *node)
 	t_ast_node	*cmd_node;
 
 	setup_redirections(shell, node);
-	if (shell->signal == SIGINT || shell->exit_status == 130)
+	if (g_signal_status == SIGINT || shell->exit_status == 130)
 	{
+		g_signal_status = SIG_NONE;
 		shell->signint_child = false;
 		exit(130);
 	}
@@ -60,10 +62,12 @@ int	handle_redirection_parent_process(t_shell *shell, int status)
 {
 	if (WIFEXITED(status))
 	{
-		if (shell->heredoc_sigint)
+		if (g_signal_status == SIG_HEREDOC_INT)
 		{
 			shell->signal = 0;
-			shell->heredoc_sigint = false;
+            shell->heredoc_sigint = false;
+			g_signal_status = SIG_NONE;
+			shell->exit_status = 130;
 			return (130);
 		}
 		return ((status >> 8) & 0xff);

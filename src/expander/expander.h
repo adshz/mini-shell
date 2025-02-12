@@ -6,6 +6,10 @@
 # include <unistd.h>
 # include "libft.h"
 
+/* Forward declarations */
+struct s_shell;
+typedef struct s_shell t_shell;
+
 char **expand_command(t_shell *shell, const char *cmd);
 char *expand_simple_variable(t_shell *shell, const char *arg);
 char *expand_variable(t_shell *shell, const char *var_name);

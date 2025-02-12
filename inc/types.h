@@ -88,6 +88,4 @@ typedef struct s_shell
 	bool			in_double_quotes;
 }	t_shell;
 
-extern t_shell *g_shell;  // Add this back for signal handling
-
 #endif

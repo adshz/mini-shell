@@ -31,5 +31,4 @@
 # include "../src/builtins/builtins.h"
 # include "../src/utils/utils.h"
 
-extern t_shell *g_shell;
 #endif

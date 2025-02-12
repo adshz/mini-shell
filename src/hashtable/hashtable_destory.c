@@ -82,7 +82,6 @@ void	hashmap_destroy(t_hashmap *table)
 		free_item_chain(table->items[i]);
 		i++;
 	}
-	free(table->items[i]);
+	free(table->items);
 	free(table);
-	return ;
 }
