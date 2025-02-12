@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   shell.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 17:03:45 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/22 15:35:40 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 18:26:43 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef SHELL_H
 # define SHELL_H
-
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -31,5 +31,5 @@
 # include "../src/builtins/builtins.h"
 # include "../src/utils/utils.h"
 
-extern t_shell *g_shell;
+extern t_shell	*g_shell;
 #endif
