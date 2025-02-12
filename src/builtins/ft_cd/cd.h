@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.h                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/12 19:14:56 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/12 19:15:29 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CD_H
 # define CD_H
 
@@ -16,10 +28,10 @@
 # define ERR_NO_FILE "No such file or directory"
 
 /* Internal CD functions */
-void    update_pwd_vars(t_shell *shell, char *old_pwd);
-int     handle_cd_error(const char *path, const char *arg);
-void    cleanup_path(char *path, const char *arg, t_shell *shell);
-char    *expand_tilde(t_shell *shell, const char *arg);
-char    *handle_path(t_shell *shell, char *arg);
+void	update_pwd_vars(t_shell *shell, char *old_pwd);
+int		handle_cd_error(const char *path, const char *arg);
+void	cleanup_path(char *path, const char *arg, t_shell *shell);
+char	*expand_tilde(t_shell *shell, const char *arg);
+char	*handle_path(t_shell *shell, char *arg);
 
 #endif
