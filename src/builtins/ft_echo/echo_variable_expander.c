@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo_variable_expander.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/12 21:39:45 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/12 21:40:06 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./echo.h"
 
-static char *handle_special_cases(t_shell *shell, const char *arg)
+static char	*handle_special_cases(t_shell *shell, const char *arg)
 {
 	if (!arg)
 		return (NULL);
@@ -21,7 +33,7 @@ static void process_dollar_sign(t_shell *shell, const char *arg,
 		result[state->j++] = arg[state->i++];
 }
 
-static void process_current_char(t_shell *shell, const char *arg,
+static void	process_current_char(t_shell *shell, const char *arg,
 	char *result, t_expansion_state *state)
 {
 	if (state->is_command_name && state->i == 0)
