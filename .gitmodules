@@ -1,7 +1,3 @@
-[submodule "tests/ft_test"]
-    path = tests/ft_test
-    url = https://github.com/adshz/ft_test
-
 [submodule "external"]
     path = external
     url = https://github.com/ThrowTheSwitch/Unity.git
