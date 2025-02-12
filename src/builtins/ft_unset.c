@@ -3,41 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:53:05 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 17:53:08 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 23:09:27 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "shell.h"
+
 #include "builtin_utils.h"
 #include "expander/expander.h"
 
-static bool is_readonly_var(const char *name)
+static bool	is_readonly_var(const char *name)
 {
 	return (ft_strcmp(name, "PWD") == 0 || \
 			ft_strcmp(name, "OLDPWD") == 0 || \
 			ft_strcmp(name, "PATH") == 0);
 }
 
-static char *expand_var_name(t_shell *shell, const char *arg)
+static char	*expand_var_name(t_shell *shell, const char *arg)
 {
-    if (!arg || !*arg)
-        return NULL;
-    if (arg[0] == '$')
-        return expand_simple_variable(shell, arg + 1);
-    return ft_strdup(arg);
+	if (!arg || !*arg)
+		return (NULL);
+	if (arg[0] == '$')
+		return (expand_simple_variable(shell, arg + 1));
+	return (ft_strdup(arg));
 }
 
-int builtin_unset(t_shell *shell, t_ast_node *node)
+int	builtin_unset(t_shell *shell, t_ast_node *node)
 {
-	int i;
-	int status;
-	char *expanded_name;
+	int		i;
+	int		status;
+	char	*expanded_name;
 
 	if (!node->args[1])
-		return 0;
-
+		return (0);
 	status = 0;
 	i = 1;
 	while (node->args[i])
@@ -46,7 +45,7 @@ int builtin_unset(t_shell *shell, t_ast_node *node)
 		if (!expanded_name)
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		if (!is_valid_identifier(expanded_name))
 		{
@@ -60,7 +59,5 @@ int builtin_unset(t_shell *shell, t_ast_node *node)
 		free(expanded_name);
 		i++;
 	}
-	return status;
+	return (status);
 }
-
-

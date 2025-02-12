@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:49:03 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 17:49:06 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/12 23:05:51 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "shell.h"
+
 #include "builtins.h"
 #include "libft.h"
 #include <unistd.h>
@@ -56,8 +56,6 @@ char	*ft_pwd(t_shell *shell)
 	pwd = get_pwd_from_cwd();
 	if (pwd)
 		return (pwd);
-	
-	// Only fall back to PWD from env if getcwd fails
 	return (get_pwd_from_env(shell));
 }
 
@@ -73,4 +71,3 @@ int	builtin_pwd(t_shell *shell, t_ast_node *node)
 	free(pwd);
 	return (0);
 }
-
