@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_path_check.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:54:46 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:55:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 09:08:04 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
@@ -47,7 +47,8 @@ int	handle_direct_path(t_shell *shell, const char *cmd)
 	if (access(cmd, F_OK) == 0)
 	{
 		if (access(cmd, X_OK) != 0)
-			return (print_error((char *)cmd, strerror(errno), ERR_NOT_EXECUTABLE));
+			return (print_error((char *)cmd,
+					strerror(errno), ERR_NOT_EXECUTABLE));
 		return (0);
 	}
 	shell->exit_status = 127;

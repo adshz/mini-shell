@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   command_process_handler.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:04:41 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:05:20 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 09:14:14 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../executor.h"
+#include "executor/executor.h"
 
 int	execute_command_with_path(t_shell *shell, t_ast_node *node, \
 	char *cmd_path)
@@ -30,7 +30,6 @@ int	execute_command_with_path(t_shell *shell, t_ast_node *node, \
 		return (execute_command_child(node, cmd_path, env_array));
 	return (handle_parent_process(shell, pid, cmd_path, env_array));
 }
-
 
 int	handle_parent_process(t_shell *shell, pid_t pid, \
 	char *cmd_path, char **env_array)

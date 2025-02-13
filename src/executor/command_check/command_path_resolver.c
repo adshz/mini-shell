@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_path_resolver.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:56:36 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:56:47 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 09:07:25 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
@@ -27,7 +27,7 @@ char	*find_command(t_shell *shell, const char *cmd)
 	if (!paths)
 		return (NULL);
 	return (search_in_paths(shell, paths, cmd));
-} 
+}
 
 char	**split_path_env(t_shell *shell, const char *path)
 {
