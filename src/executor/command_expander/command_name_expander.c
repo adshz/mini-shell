@@ -1,9 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_name_expander.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 10:12:58 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/13 11:29:31 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor/executor.h"
 #include <stdatomic.h>
 
 // Handles the core command name expansion logic
-
-
 // entry point for command name expansion is expand_command_args
 // it will call handle_variable_expansion where the command name is expanded
 // handle_variable_expansion will call expand_command_name_with_var
@@ -25,8 +35,6 @@
 //
 // and then call process_remaining_args to process the rest of the arguments
 //// process_remaining_args will call process_single_arg_expansion to process the rest 
-
-
 /*
 * expand_command_name_with_var
 * ├── cmd_handle_prefix_extraction
@@ -55,28 +63,28 @@
 * - Responsibility: Combine expanded value with suffix
 * - Output: final expanded string
 */
-static int cmd_handle_suffix_combination(char **expanded, char *var_end)
+static int	cmd_handle_suffix_combination(char **expanded,
+		char *var_end)
 {
-    char *suffix;
-    char *temp;
+	char	*suffix;
+	char	*temp;
 
-    suffix = ft_strdup(var_end);
-    if (!suffix)
-        return (1);
-
-    if (*suffix)
-    {
-        temp = *expanded;
-        *expanded = ft_strjoin(*expanded, suffix);
-        free(temp);
-        if (!*expanded)
-        {
-            free(suffix);
-            return (1);
-        }
-    }
-    free(suffix);
-    return (0);
+	suffix = ft_strdup(var_end);
+	if (!suffix)
+		return (1);
+	if (*suffix)
+	{
+		temp = *expanded;
+		*expanded = ft_strjoin(*expanded, suffix);
+		free(temp);
+		if (!*expanded)
+		{
+			free(suffix);
+			return (1);
+		}
+	}
+	free(suffix);
+	return (0);
 }
 
 /* expand command name with variable expand_command_name_with_var
@@ -86,11 +94,11 @@ static int cmd_handle_suffix_combination(char **expanded, char *var_end)
 * - Responsibility: Split and rebuild command array
 * - Output: updated command array
 */
-static int cmd_process_expanded_value(char *expanded, char *prefix, t_ast_node *node)
+static int	cmd_process_expanded_value(char *expanded,
+		char *prefix, t_ast_node *node)
 {
-	char **split_parts;
-	char *final_command;
-
+	char	**split_parts;
+	char	*final_command;
 	// Split expanded value into parts
 	split_parts = ft_split(expanded, ' ');
 	free(expanded);
@@ -106,7 +114,7 @@ static int cmd_process_expanded_value(char *expanded, char *prefix, t_ast_node *
 		free(prefix);
 		free(split_parts[0]);
 		split_parts[0] = final_command;
-    }
+	}
 	return (build_new_args_array(node, split_parts));
 }
 
@@ -118,34 +126,36 @@ static int cmd_process_expanded_value(char *expanded, char *prefix, t_ast_node *
 * Phase 3: suffix combination (cmd_handle_suffix_combination)
 * Phase 4: process expanded value (cmd_process_expanded_value)
 */
-int expand_command_name_with_var(t_shell *shell, t_ast_node *node, char *dollar_pos)
+int	expand_command_name_with_var(t_shell *shell,
+		t_ast_node *node, char *dollar_pos)
 {
-    char *prefix;
-    char *expanded;
-    char *var_end;
-    int ret;
+	char	*prefix;
+	char	*expanded;
+	char	*var_end;
+	int		ret;
 
-    prefix = NULL;
-    expanded = NULL;
-    var_end = NULL;
-
-    ft_putstr_fd("DEBUG: Command name contains variable\n", STDERR_FILENO);
-    
-    ret = cmd_handle_prefix_extraction(node->args[0], dollar_pos, &prefix);
-    if (ret)
-        return (ret);
-    expanded = cmd_handle_variable_expansion(shell, dollar_pos, &var_end);
-    if (!expanded)
-    {
-        free(prefix);
-        return (1);
-    }
-    if (cmd_handle_suffix_combination(&expanded, var_end))
-    {
-        free(prefix);
-        free(expanded);
-        return (1);
-    }
-    return (cmd_process_expanded_value(expanded, prefix, node));
+	prefix = NULL;
+	expanded = NULL;
+	var_end = NULL;
+	ft_putstr_fd("DEBUG: Command name contains variable\n",
+		STDERR_FILENO);
+	ret = cmd_handle_prefix_extraction(node->args[0],
+			dollar_pos, &prefix);
+	if (ret)
+		return (ret);
+	expanded = cmd_handle_variable_expansion(shell,
+			dollar_pos, &var_end);
+	if (!expanded)
+	{
+		free(prefix);
+		return (1);
+	}
+	if (cmd_handle_suffix_combination(&expanded, var_end))
+	{
+		free(prefix);
+		free(expanded);
+		return (1);
+	}
+	return (cmd_process_expanded_value(expanded,
+			prefix, node));
 }
-
