@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/29 15:20:45 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../executor.h"
+#include "executor/executor.h"
 #include "builtins/builtins.h"
 
 void	handle_child_error(const char *cmd)

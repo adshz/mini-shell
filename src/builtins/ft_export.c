@@ -147,7 +147,7 @@ static void	process_export_argument(t_shell *shell, char *arg)
 		ft_putstr_fd(value, STDERR_FILENO);
 		ft_putstr_fd("]\n", STDERR_FILENO);
 		export_with_value(shell, key, value);
-		*stored_value = hashmap_get(shell->env, key);
+		stored_value = hashmap_get(shell->env, key);
 		ft_putstr_fd("DEBUG [export]: After storing - Key: [", STDERR_FILENO);
 		ft_putstr_fd(key, STDERR_FILENO);
 		ft_putstr_fd("], Stored value: [", STDERR_FILENO);

@@ -55,4 +55,4 @@ void	handle_variable(t_shell *shell, const char *arg, char *result, t_expansion_
 			state->was_quoted_var = 1;
 		state->i += var_len;
 	}
-} 
+}

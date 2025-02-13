@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer.h"
-#include "builtins/ft_echo/echo.h"
+
 /**
  * @brief Initializes token extraction state
  * 
@@ -87,93 +87,10 @@ static void process_normal_char(char *result, size_t *j, char current_char, \
 }
 
 /**
- * @brief Expands variables in a token value
- * 
- * @param shell Shell context for variable lookup
- * @param value Original token value
- * @return Expanded value or NULL on error
- */
-static char *expand_token_variables(t_shell *shell, const char *value)
-{
-	char *dollar_pos;
-	char *expanded;
-	char *result;
-	
-	if (!value || !*value)
-		return ft_strdup("");
-		
-	// If no $ sign, return copy of original
-	if (!ft_strchr(value, '$'))
-		return ft_strdup(value);
-		
-	dollar_pos = ft_strchr(value, '$');
-	if (!dollar_pos)
-		return ft_strdup(value);
-		
-	// Handle special case $?
-	if (dollar_pos[1] == '?')
-	{
-		char exit_str[12];
-		ft_itoa_buf(shell->exit_status, exit_str);
-		return ft_strdup(exit_str);
-	}
-	
-	// Extract variable name
-	char *var_end = dollar_pos + 1;
-	while (*var_end && (ft_isalnum(*var_end) || *var_end == '_'))
-		var_end++;
-	
-	char *var_name = ft_substr(dollar_pos + 1, 0, var_end - (dollar_pos + 1));
-	if (!var_name)
-		return NULL;
-		
-	// Get variable value
-	expanded = expand_simple_variable(shell, var_name);
-	free(var_name);
-	
-	if (!expanded)
-		return ft_strdup("");  // Variable not found
-		
-	// Handle prefix if any
-	if (dollar_pos > value)
-	{
-		char *prefix = ft_substr(value, 0, dollar_pos - value);
-		if (!prefix)
-		{
-			free(expanded);
-			return NULL;
-		}
-		result = ft_strjoin(prefix, expanded);
-		free(prefix);
-		free(expanded);
-		
-		// Handle suffix if any
-		if (*var_end)
-		{
-			expanded = result;
-			result = ft_strjoin(expanded, var_end);
-			free(expanded);
-		}
-		return result;
-	}
-	
-	// Handle suffix if any
-	if (*var_end)
-	{
-		result = ft_strjoin(expanded, var_end);
-		free(expanded);
-		return result;
-	}
-	
-	return expanded;
-}
-
-/**
  * @brief Extracts token from input string handling quotes and escapes
  *
  * @param input Input string to extract from
  * @param len Length of token to extract
- * @param shell Shell context for variable lookup
  * 
  * @return char* Returns:
  *         - Newly allocated string containing the extracted token
@@ -189,7 +106,7 @@ static char *expand_token_variables(t_shell *shell, const char *value)
  * @note Caller must free returned string
  * @see get_next_state() for state tracking details
  */
-char	*extract_token(const char *input, size_t len, t_shell *shell)
+char	*extract_token(const char *input, size_t len)
 {
 	char				*result;
 	size_t				i;
@@ -209,15 +126,5 @@ char	*extract_token(const char *input, size_t len, t_shell *shell)
 		i++;
 	}
 	result[j] = '\0';
-	
-	// If we're in normal state and there's a $ in the token,
-	// perform variable expansion
-	if (state == STATE_NORMAL && ft_strchr(result, '$'))
-	{
-		char *expanded = expand_token_variables(shell, result);
-		free(result);
-		return expanded;
-	}
-	
-	return result;
+	return (result);
 } 

@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/12 23:36:48 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "shell_interface.h"
 #include "shell.h"
 #include "libft.h"
 #include "utils/utils.h"

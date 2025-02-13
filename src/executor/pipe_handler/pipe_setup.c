@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/29 15:20:33 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../executor.h"
+#include "executor/executor.h"
 #include "errors.h"
 
 int	setup_pipe(int pipe_fd[2])

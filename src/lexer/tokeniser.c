@@ -66,12 +66,12 @@ static t_token	*add_token_to_list(t_token *head, t_token *new_token)
  * @see extract_token() for token value extraction
  * @see get_token_type() for token type determination
  */
-static t_token	*process_single_token(const char *input, size_t len, t_shell *shell)
+static t_token	*process_single_token(const char *input, size_t len)
 {
 	t_token	*new_token;
 	char	*value;
 
-	value = extract_token(input, len, shell);
+	value = extract_token(input, len);
 	if (!value)
 		return (NULL);
 	new_token = create_token(get_token_type(value), value);
@@ -101,11 +101,11 @@ static t_token	*process_single_token(const char *input, size_t len, t_shell *she
  * @see process_single_token() for token creation
  * @see add_token_to_list() for list management
  */
-static t_token	*handle_token_creation(const char *input, size_t len, t_token *head, t_shell *shell)
+static t_token	*handle_token_creation(const char *input, size_t len, t_token *head)
 {
 	t_token	*new_token;
 
-	new_token = process_single_token(input, len, shell);
+	new_token = process_single_token(input, len);
 	if (!new_token)
 	{
 		free_tokens(head);
@@ -127,7 +127,7 @@ static t_token	*handle_token_creation(const char *input, size_t len, t_token *he
  * @param head Current head of token list
  * @return Updated head of token list, or NULL on failure
  */
-static t_token *process_input_tokens(const char *input, t_token *head, t_shell *shell)
+static t_token *process_input_tokens(const char *input, t_token *head)
 {
 	size_t len;
 
@@ -139,7 +139,7 @@ static t_token *process_input_tokens(const char *input, t_token *head, t_shell *
 		len = get_token_length_with_state(input);
 		if (len == 0)
 			break;
-		head = handle_token_creation(input, len, head, shell);
+		head = handle_token_creation(input, len, head);
 		if (!head)
 			return (NULL);
 		input += len;
@@ -172,12 +172,12 @@ static t_token *process_input_tokens(const char *input, t_token *head, t_shell *
  * "ls -l | grep foo" becomes:
  * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
  */
-t_token *tokenise(const char *input, t_shell *shell)
+t_token *tokenise(const char *input)
 {
 	t_token *head;
 
 	if (!input)
 		return (NULL);
 	head = NULL;
-	return (process_input_tokens(input, head, shell));
+	return (process_input_tokens(input, head));
 }

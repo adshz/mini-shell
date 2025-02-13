@@ -21,8 +21,8 @@ static void	print_env_var(const char *key, const char *value)
 	char	*key_copy;
 	char	*value_copy;
 
-	*key_copy = ft_strdup(key);
-	*value_copy = ft_strdup(value);
+	key_copy = ft_strdup(key);
+	value_copy = ft_strdup(value);
 	ft_putstr_fd(key_copy, STDOUT_FILENO);
 	ft_putstr_fd("=", STDOUT_FILENO);
 	ft_putendl_fd(value_copy, STDOUT_FILENO);

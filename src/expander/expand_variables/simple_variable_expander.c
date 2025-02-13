@@ -53,7 +53,7 @@ static char *get_variable_value(t_shell *shell, const char *var_name)
     if (!var_value)
     {
         ft_putstr_fd("DEBUG: Variable not found in env\n", STDERR_FILENO);
-        return NULL;
+        return (ft_strdup(""));
     }
     
     ft_putstr_fd("DEBUG: Found raw value: [", STDERR_FILENO);

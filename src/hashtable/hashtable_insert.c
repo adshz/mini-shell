@@ -42,6 +42,7 @@ static t_hash_item	*create_new_item(char *key, char *value)
 		free(new_key);
 		free(new_value);
 		free(new_item);
+		return (NULL);
 	}
 	new_item->key = new_key;
 	new_item->value = new_value;

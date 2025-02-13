@@ -29,6 +29,7 @@
 # define SIG_REGULAR_INT 3   // Regular interrupt
 # include "shell.h"
 # include <signal.h>
+# include "lexer/lexer.h"
 
 extern volatile sig_atomic_t	g_signal_status;
 

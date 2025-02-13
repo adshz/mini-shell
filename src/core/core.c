@@ -31,7 +31,7 @@
  */
 static bool	build_ast_tree(t_shell *shell)
 {
-	shell->tokens = tokenise(shell->line, shell);
+	shell->tokens = tokenise(shell->line);
 	if (!shell->tokens)
 	{
 		ft_putendl_fd("minishell: tokenisation failed", STDERR_FILENO);

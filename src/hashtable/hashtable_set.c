@@ -17,10 +17,12 @@ static int update_item_value(t_hash_item *item, const char *value)
 {
     char *new_value;
 
-    free(item->value);
+    if (!item || !value)
+        return (-1);
     new_value = ft_strdup(value);
     if (!new_value)
         return (-1);
+    free(item->value);
     item->value = new_value;
     return (0);
 }
@@ -29,11 +31,14 @@ static t_hash_item *create_item(const char *key, const char *value)
 {
     t_hash_item *new_item;
 
+    if (!key || !value)
+        return (NULL);
     new_item = (t_hash_item *)malloc(sizeof(t_hash_item));
     if (!new_item)
         return (NULL);
     new_item->key = ft_strdup(key);
     new_item->value = ft_strdup(value);
+    new_item->next = NULL;
     if (!new_item->key || !new_item->value)
     {
         free(new_item->key);
@@ -50,7 +55,7 @@ void hashmap_set(t_hashmap *table, const char *key, const char *value)
     t_hash_item *item;
     t_hash_item *new_item;
 
-    if (!table || !key)
+    if (!table || !key || !value)
         return;
     index = hash_function(key, table->size);
     item = table->items[index];

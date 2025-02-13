@@ -15,9 +15,9 @@
 # include "libft.h"
 # include <stdbool.h>
 
-/* Forward declarations */
-struct s_shell;
-typedef struct s_shell t_shell;
+/* Forward declarations - No longer needed since we removed shell dependency */
+// struct s_shell;
+// typedef struct s_shell t_shell;
 
 /* Tokeniser States */
 /**
@@ -101,7 +101,7 @@ typedef struct s_token
  * @param input Command line to tokenize
  * @return Head of token list or NULL on error
  */
-t_token				*tokenise(const char *input, t_shell *shell);
+t_token				*tokenise(const char *input);
 
 /* Token Creation and Management */
 /**
@@ -155,7 +155,7 @@ size_t				get_token_length_with_state(const char *input);
  * @param len Length to extract
  * @return New string containing token or NULL on error
  */
-char				*extract_token(const char *input, size_t len, t_shell *shell);
+char				*extract_token(const char *input, size_t len);
 
 /* State Transitions */
 /**

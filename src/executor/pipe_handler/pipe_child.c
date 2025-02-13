@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/13 15:24:30 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "executor/executor.h"
 #include "parser/parser.h"
 
 void	execute_left_child(t_shell *shell, t_ast_node *node, int pipe_fd[2])

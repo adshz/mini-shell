@@ -22,10 +22,17 @@ static bool	is_readonly_var(const char *name)
 
 static char	*expand_var_name(t_shell *shell, const char *arg)
 {
+	char	*expanded;
+
 	if (!arg || !*arg)
 		return (NULL);
 	if (arg[0] == '$')
-		return (expand_simple_variable(shell, arg + 1));
+	{
+		expanded = expand_simple_variable(shell, arg + 1);
+		if (!expanded)
+			return (ft_strdup(arg + 1));
+		return (expanded);
+	}
 	return (ft_strdup(arg));
 }
 
