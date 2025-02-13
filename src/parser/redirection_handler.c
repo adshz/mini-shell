@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_handler.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/07 10:00:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:27:33 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 
 int	is_redirection_token(t_token_type type)
@@ -35,4 +36,4 @@ t_ast_node	*process_final_redirection(t_ast_node *node, \
 	if (*tokens && is_redirection_token((*tokens)->type))
 		return (parse_redirection_construct(node, tokens, shell));
 	return (node);
-} 
+}

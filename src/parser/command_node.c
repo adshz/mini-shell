@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   command_node.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/07 10:00:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:37:46 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 
-int count_command_args(t_token *tokens)
+int	count_command_args(t_token *tokens)
 {
-	int count;
+	int	count;
 
 	count = 0;
 	while (tokens && tokens->type == TOKEN_WORD)
@@ -24,9 +25,9 @@ int count_command_args(t_token *tokens)
 	return (count);
 }
 
-t_ast_node *create_command_from_word(t_token *word_token)
+t_ast_node	*create_command_from_word(t_token *word_token)
 {
-	t_ast_node *node;
+	t_ast_node	*node;
 
 	node = init_command_node(word_token, 1);
 	if (!node)
@@ -39,9 +40,10 @@ t_ast_node *create_command_from_word(t_token *word_token)
 	return (node);
 }
 
-t_ast_node *create_regular_command(t_token **tokens, t_token *start, int arg_count)
+t_ast_node	*create_regular_command(t_token **tokens,
+		t_token *start, int arg_count)
 {
-	t_ast_node *node;
+	t_ast_node	*node;
 
 	node = init_command_node(start, arg_count);
 	if (!node)
@@ -53,4 +55,4 @@ t_ast_node *create_regular_command(t_token **tokens, t_token *start, int arg_cou
 	}
 	skip_processed_args(tokens, arg_count);
 	return (node);
-} 
+}
