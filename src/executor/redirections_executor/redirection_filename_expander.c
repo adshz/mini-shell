@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_filename_expander.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:22:35 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:23:09 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 17:01:01 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
 
-char	*expand_redirection_filename_variable(t_shell *shell, const char *filename)
+char	*expand_redirection_filename_variable(t_shell *shell,
+		const char *filename)
 {
 	if (filename[0] != '$')
 		return (NULL);

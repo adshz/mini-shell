@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_content_handler.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:58:16 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:58:23 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 16:36:11 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
@@ -25,7 +25,6 @@ static void	init_template(char *template, int index)
 		template[i] = base[i];
 		i++;
 	}
-	// Add index as a 6-digit number
 	template[i++] = '0' + ((index / 100000) % 10);
 	template[i++] = '0' + ((index / 10000) % 10);
 	template[i++] = '0' + ((index / 1000) % 10);
@@ -40,7 +39,6 @@ static int	create_temp_file(char *template)
 	int	fd;
 	int	i;
 
-	// Check if /tmp is accessible
 	if (access("/tmp", W_OK) == -1)
 	{
 		ft_putstr_fd("DEBUG: /tmp directory is not writable\n", STDERR_FILENO);
@@ -75,7 +73,6 @@ int	init_heredoc_content(char **content)
 	ft_putstr_fd("DEBUG: Created temp file: [", STDERR_FILENO);
 	ft_putstr_fd(template, STDERR_FILENO);
 	ft_putstr_fd("]\n", STDERR_FILENO);
-	
 	close(fd);
 	*content = ft_strdup(template);
 	if (!*content)
@@ -116,7 +113,6 @@ static int	write_line_to_fd(int fd, char *line)
 	ft_putstr_fd("DEBUG: Writing line to fd: [", STDERR_FILENO);
 	ft_putstr_fd(line, STDERR_FILENO);
 	ft_putstr_fd("]\n", STDERR_FILENO);
-	
 	write_result = write(fd, line, ft_strlen(line));
 	if (write_result == -1)
 	{
@@ -142,7 +138,6 @@ int	append_line_to_content(char **content, size_t *content_size, \
 	ft_putstr_fd("DEBUG: Appending line to content file: [", STDERR_FILENO);
 	ft_putstr_fd(*content, STDERR_FILENO);
 	ft_putstr_fd("]\n", STDERR_FILENO);
-	
 	(void)content_capacity;
 	(void)content_size;
 	fd = open(*content, O_WRONLY | O_APPEND);
@@ -152,11 +147,9 @@ int	append_line_to_content(char **content, size_t *content_size, \
 		return (print_error("heredoc", "failed to open temp file", 1));
 	}
 	ft_putstr_fd("DEBUG: Opened temp file for appending\n", STDERR_FILENO);
-	
 	len = ft_strlen(line);
 	if (len > 0 && line[len - 1] == '\n')
 		line[len - 1] = '\0';
-	
 	if (write_line_to_fd(fd, line) == -1)
 	{
 		close(fd);
@@ -164,24 +157,21 @@ int	append_line_to_content(char **content, size_t *content_size, \
 		return (print_error("heredoc", "write failed", 1));
 	}
 	ft_putstr_fd("DEBUG: Successfully wrote line to temp file\n", STDERR_FILENO);
-	
 	close(fd);
 	return (0);
 }
 
-int init_heredoc_data(t_heredoc_data *data, const char *delimiter)
+int	init_heredoc_data(t_heredoc_data *data, const char *delimiter)
 {
-	char template[21];
-	int fd;
+	char	template[21];
+	int		fd;
 
 	if (!data || !delimiter)
 		return (1);
-	
 	fd = create_temp_file(template);
 	if (fd == -1)
 		return (1);
 	close(fd);
-
 	data->content_path = ft_strdup(template);
 	if (!data->content_path)
 	{
@@ -193,10 +183,10 @@ int init_heredoc_data(t_heredoc_data *data, const char *delimiter)
 	return (0);
 }
 
-void cleanup_heredoc_data(t_heredoc_data *data)
+void	cleanup_heredoc_data(t_heredoc_data *data)
 {
 	if (!data)
-		return;
+		return ;
 	if (data->content_fd != -1)
 		close(data->content_fd);
 	if (data->content_path)

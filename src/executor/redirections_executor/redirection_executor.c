@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_executor.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:21:20 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/29 15:22:19 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 17:00:05 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
@@ -65,7 +65,7 @@ int	handle_redirection_parent_process(t_shell *shell, int status)
 		if (g_signal_status == SIG_HEREDOC_INT)
 		{
 			shell->signal = 0;
-            shell->heredoc_sigint = false;
+			shell->heredoc_sigint = false;
 			g_signal_status = SIG_NONE;
 			shell->exit_status = 130;
 			return (130);
