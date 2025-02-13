@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   history.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 15:51:23 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/18 15:51:23 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 22:29:57 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "shell.h"
+
 #include <stdlib.h>
 
 void	free_history(char **history)
@@ -25,4 +25,4 @@ void	free_history(char **history)
 		i++;
 	}
 	free(history);
-} 
+}
