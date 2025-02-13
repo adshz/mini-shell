@@ -6,10 +6,11 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 18:35:07 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 18:38:16 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/13 20:55:11 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer.h"
 
 /**
  * @brief Handles transitions from normal state

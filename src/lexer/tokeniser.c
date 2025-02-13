@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:09:49 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 18:50:27 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/13 20:57:04 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,8 @@ static t_token	*process_single_token(const char *input, size_t len)
  * @see process_single_token() for token creation
  * @see add_token_to_list() for list management
  */
-static t_token	*handle_token_creation(const char *input, size_t len, t_token *head)
+static t_token	*handle_token_creation(const char *input,
+			size_t len, t_token *head)
 {
 	t_token	*new_token;
 
@@ -128,7 +129,7 @@ static t_token	*handle_token_creation(const char *input, size_t len, t_token *he
  * @param head Current head of token list
  * @return Updated head of token list, or NULL on failure
  */
-static t_token *process_input_tokens(const char *input, t_token *head)
+static t_token	*process_input_tokens(const char *input, t_token *head)
 {
 	size_t	len;
 
@@ -145,7 +146,7 @@ static t_token *process_input_tokens(const char *input, t_token *head)
 			return (NULL);
 		input += len;
 	}
-	return (head);
+	return (head) ;
 }
 
 /**
@@ -173,7 +174,7 @@ static t_token *process_input_tokens(const char *input, t_token *head)
  * "ls -l | grep foo" becomes:
  * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
  */
-t_token *tokenise(const char *input)
+t_token	*tokenise(const char *input)
 {
 	t_token	*head;
 
