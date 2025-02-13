@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_item_processor.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 15:09:00 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/13 15:11:42 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor/executor.h"
 
 static t_hash_item	*get_next_valid_item(t_hash_item *current)
@@ -7,10 +19,8 @@ static t_hash_item	*get_next_valid_item(t_hash_item *current)
 	next = current->next;
 	if (!next)
 		return (NULL);
-	
 	if (!is_pointer_valid(next) || next == current)
 		return (NULL);
-	
 	return (next);
 }
 
@@ -34,14 +44,13 @@ static int	is_hash_item_valid(t_hash_item *item)
 	return (1);
 }
 
-static int	process_single_item(char **env_array, size_t *index, t_hash_item *current)
+static int	process_single_item(char **env_array,
+		size_t *index, t_hash_item *current)
 {
 	if (!is_pointer_valid(current))
 		return (0);
-	
 	if (!is_hash_item_valid(current))
 		return (0);
-	
 	if (!add_env_item(env_array, index, current))
 	{
 		ft_putendl_fd("Error: Failed to add env item", 2);
@@ -52,7 +61,7 @@ static int	process_single_item(char **env_array, size_t *index, t_hash_item *cur
 
 int	process_bucket_items(char **env_array, size_t *index, t_hash_item *item)
 {
-    t_hash_item	*current;
+	t_hash_item	*current;
 	size_t		items_processed;
 
 	if (!env_array || !index || !item)

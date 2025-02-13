@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_hashmap_handler.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 11:58:52 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/13 15:07:43 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor/executor.h"
 
 // iterate_hash_buckets -> validate_hashmap
@@ -17,7 +29,8 @@ int	validate_hashmap(t_hashmap *env, char **env_array)
 	return (1);
 }
 
-static int	process_hash_bucket(char **env_array, size_t *array_index, t_hash_item *bucket)
+static int	process_hash_bucket(char **env_array, size_t *array_index,
+		t_hash_item *bucket)
 {
 	if (bucket && !process_bucket_items(env_array, array_index, bucket))
 	{
@@ -28,7 +41,8 @@ static int	process_hash_bucket(char **env_array, size_t *array_index, t_hash_ite
 }
 
 // iterate_hash_buckets -> process_all_hash_buckets
-int	process_all_hash_buckets(t_hashmap *env, char **env_array, size_t *array_index)
+int	process_all_hash_buckets(t_hashmap *env,
+		char **env_array, size_t *array_index)
 {
 	size_t	i;
 

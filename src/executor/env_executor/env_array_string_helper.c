@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_array_string_helper.c                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 11:57:27 by evmouka           #+#    #+#             */
+/*   Updated: 2025/02/13 11:58:20 by evmouka          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor/executor.h"
 
-static int	validate_env_params(char **env_array, size_t *index, t_hash_item *item)
+static int	validate_env_params(char **env_array, size_t *index,
+		t_hash_item *item)
 {
 	if (!env_array || !index || !item)
 	{
@@ -30,7 +43,8 @@ static int	validate_env_item(t_hash_item *item)
 	return (1);
 }
 
-static int	create_and_add_env_string(char **env_array, size_t *index, t_hash_item *item)
+static int	create_and_add_env_string(char **env_array, size_t *index,
+		t_hash_item *item)
 {
 	char	*env_str;
 
