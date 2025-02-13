@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   tokeniser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:09:49 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 17:57:54 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 18:50:27 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "lexer.h"
 #include <stdio.h>
 
@@ -66,7 +67,8 @@ static t_token	*add_token_to_list(t_token *head, t_token *new_token)
  * @see extract_token() for token value extraction
  * @see get_token_type() for token type determination
  */
-static t_token	*process_single_token(const char *input, size_t len, t_shell *shell)
+static t_token	*process_single_token(const char *input,
+			size_t len, t_shell *shell)
 {
 	t_token	*new_token;
 	char	*value;
@@ -101,7 +103,8 @@ static t_token	*process_single_token(const char *input, size_t len, t_shell *she
  * @see process_single_token() for token creation
  * @see add_token_to_list() for list management
  */
-static t_token	*handle_token_creation(const char *input, size_t len, t_token *head, t_shell *shell)
+static t_token	*handle_token_creation(const char *input,
+			size_t len, t_token *head, t_shell *shell)
 {
 	t_token	*new_token;
 
@@ -127,18 +130,19 @@ static t_token	*handle_token_creation(const char *input, size_t len, t_token *he
  * @param head Current head of token list
  * @return Updated head of token list, or NULL on failure
  */
-static t_token *process_input_tokens(const char *input, t_token *head, t_shell *shell)
+static t_token	*process_input_tokens(const char *input,
+			t_token *head, t_shell *shell)
 {
-	size_t len;
+	size_t	len;
 
 	while (*input)
 	{
 		input = skip_whitespace(input);
 		if (!*input)
-			break;
+			break ;
 		len = get_token_length_with_state(input);
 		if (len == 0)
-			break;
+			break ;
 		head = handle_token_creation(input, len, head, shell);
 		if (!head)
 			return (NULL);
@@ -172,9 +176,9 @@ static t_token *process_input_tokens(const char *input, t_token *head, t_shell *
  * "ls -l | grep foo" becomes:
  * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
  */
-t_token *tokenise(const char *input, t_shell *shell)
+t_token	*tokenise(const char *input, t_shell *shell)
 {
-	t_token *head;
+	t_token	*head;
 
 	if (!input)
 		return (NULL);

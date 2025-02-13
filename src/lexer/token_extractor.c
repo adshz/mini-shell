@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   token_extractor.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/07 10:00:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 19:06:28 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "lexer.h"
 #include "builtins/ft_echo/echo.h"
 /**
@@ -27,10 +28,11 @@
  * Allocates memory and initializes all counters and states
  * needed for token extraction process.
  */
-static char *init_token_extraction(size_t len, size_t *i, size_t *j, \
-								t_tokeniser_state *state, t_tokeniser_state *prev_state)
+static char	*init_token_extraction(size_t len,
+				size_t *i, size_t *j, t_tokeniser_state *state,
+				t_tokeniser_state *prev_state)
 {
-	char *result;
+	char	*result;
 
 	result = (char *)malloc(len + 1);
 	if (!result)
@@ -55,7 +57,7 @@ static char *init_token_extraction(size_t len, size_t *i, size_t *j, \
  * - Copies characters inside single quotes (except the quotes themselves)
  * - Skips quote characters
  */
-static void process_quoted_char(char *result, size_t *j, char current_char, \
+static void	process_quoted_char(char *result, size_t *j, char current_char, \
 							t_tokeniser_state prev_state)
 {
 	if (prev_state == STATE_IN_DOUBLE_QUOTE && current_char != '"')
@@ -78,8 +80,9 @@ static void process_quoted_char(char *result, size_t *j, char current_char, \
  * - Skips quote characters
  * - Only processes when both current and previous states are normal
  */
-static void process_normal_char(char *result, size_t *j, char current_char, \
-							t_tokeniser_state state, t_tokeniser_state prev_state)
+static void	process_normal_char(char *result, size_t *j, char current_char,
+							t_tokeniser_state state,
+							t_tokeniser_state prev_state)
 {
 	if (state == STATE_NORMAL && prev_state == STATE_NORMAL && \
 		current_char != '\'' && current_char != '"')
@@ -93,79 +96,61 @@ static void process_normal_char(char *result, size_t *j, char current_char, \
  * @param value Original token value
  * @return Expanded value or NULL on error
  */
-static char *expand_token_variables(t_shell *shell, const char *value)
+static char	*expand_token_variables(t_shell *shell, const char *value)
 {
-	char *dollar_pos;
-	char *expanded;
-	char *result;
-	
+	char	*dollar_pos;
+	char	*expanded;
+	char	*result;
+
 	if (!value || !*value)
-		return ft_strdup("");
-		
-	// If no $ sign, return copy of original
+		return (ft_strdup(""));
 	if (!ft_strchr(value, '$'))
-		return ft_strdup(value);
-		
+		return (ft_strdup(value));
 	dollar_pos = ft_strchr(value, '$');
 	if (!dollar_pos)
-		return ft_strdup(value);
-		
-	// Handle special case $?
+		return (ft_strdup(value));
 	if (dollar_pos[1] == '?')
 	{
-		char exit_str[12];
+		char	exit_str[12];
 		ft_itoa_buf(shell->exit_status, exit_str);
-		return ft_strdup(exit_str);
+		return (ft_strdup(exit_str));
 	}
-	
-	// Extract variable name
-	char *var_end = dollar_pos + 1;
+	char	*var_end = dollar_pos + 1;
 	while (*var_end && (ft_isalnum(*var_end) || *var_end == '_'))
 		var_end++;
-	
-	char *var_name = ft_substr(dollar_pos + 1, 0, var_end - (dollar_pos + 1));
+	char	*var_name = ft_substr(dollar_pos + 1, 0, var_end - (dollar_pos + 1));
 	if (!var_name)
-		return NULL;
-		
-	// Get variable value
+		return (NULL);
 	expanded = expand_simple_variable(shell, var_name);
 	free(var_name);
-	
 	if (!expanded)
-		return ft_strdup("");  // Variable not found
-		
-	// Handle prefix if any
+		return (ft_strdup(""));
 	if (dollar_pos > value)
 	{
-		char *prefix = ft_substr(value, 0, dollar_pos - value);
+		char	*prefix = ft_substr(value, 0, dollar_pos - value);
 		if (!prefix)
 		{
 			free(expanded);
-			return NULL;
+			return (NULL);
 		}
 		result = ft_strjoin(prefix, expanded);
 		free(prefix);
 		free(expanded);
-		
-		// Handle suffix if any
 		if (*var_end)
 		{
 			expanded = result;
 			result = ft_strjoin(expanded, var_end);
 			free(expanded);
 		}
-		return result;
+		return (result);
 	}
-	
-	// Handle suffix if any
 	if (*var_end)
 	{
 		result = ft_strjoin(expanded, var_end);
 		free(expanded);
-		return result;
+		return (result);
 	}
-	
-	return expanded;
+	return (expanded);
 }
 
 /**
@@ -209,15 +194,11 @@ char	*extract_token(const char *input, size_t len, t_shell *shell)
 		i++;
 	}
 	result[j] = '\0';
-	
-	// If we're in normal state and there's a $ in the token,
-	// perform variable expansion
 	if (state == STATE_NORMAL && ft_strchr(result, '$'))
 	{
-		char *expanded = expand_token_variables(shell, result);
+		char	*expanded = expand_token_variables(shell, result);
 		free(result);
-		return expanded;
+		return (expanded);
 	}
-	
-	return result;
-} 
+	return (result);
+}
