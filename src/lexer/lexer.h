@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 17:09:24 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 18:51:39 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 19:10:09 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef LEXER_H
 # define LEXER_H
 # include <stdlib.h>
@@ -169,7 +170,7 @@ t_tokeniser_state	get_next_state(t_tokeniser_state current_state, char c);
 t_tokeniser_state	handle_normal_state(char c);
 t_tokeniser_state	handle_double_quote_state(char c, \
 												int *was_backslash);
-int	is_operator(const char *str);
+int					is_operator(const char *str);
 
 /**
  * @brief Advances input pointer past whitespace characters
@@ -179,5 +180,5 @@ int	is_operator(const char *str);
  * @note Safe to call with NULL input
  * @see process_input_tokens() for token processing in tokeniser.c
  */
-const char	*skip_whitespace(const char *input);
+const char			*skip_whitespace(const char *input);
 #endif

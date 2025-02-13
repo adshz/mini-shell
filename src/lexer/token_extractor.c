@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   token_extractor.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/07 10:00:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 19:06:28 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "lexer.h"
 
 /**
@@ -27,10 +28,11 @@
  * Allocates memory and initializes all counters and states
  * needed for token extraction process.
  */
-static char *init_token_extraction(size_t len, size_t *i, size_t *j, \
-								t_tokeniser_state *state, t_tokeniser_state *prev_state)
+static char	*init_token_extraction(size_t len,
+				size_t *i, size_t *j, t_tokeniser_state *state,
+				t_tokeniser_state *prev_state)
 {
-	char *result;
+	char	*result;
 
 	result = (char *)malloc(len + 1);
 	if (!result)
@@ -55,7 +57,7 @@ static char *init_token_extraction(size_t len, size_t *i, size_t *j, \
  * - Copies characters inside single quotes (except the quotes themselves)
  * - Skips quote characters
  */
-static void process_quoted_char(char *result, size_t *j, char current_char, \
+static void	process_quoted_char(char *result, size_t *j, char current_char, \
 							t_tokeniser_state prev_state)
 {
 	if (prev_state == STATE_IN_DOUBLE_QUOTE && current_char != '"')
@@ -78,8 +80,9 @@ static void process_quoted_char(char *result, size_t *j, char current_char, \
  * - Skips quote characters
  * - Only processes when both current and previous states are normal
  */
-static void process_normal_char(char *result, size_t *j, char current_char, \
-							t_tokeniser_state state, t_tokeniser_state prev_state)
+static void	process_normal_char(char *result, size_t *j, char current_char,
+							t_tokeniser_state state,
+							t_tokeniser_state prev_state)
 {
 	if (state == STATE_NORMAL && prev_state == STATE_NORMAL && \
 		current_char != '\'' && current_char != '"')

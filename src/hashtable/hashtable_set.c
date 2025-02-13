@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   hashtable_set.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 16:44:29 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/19 16:44:29 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 18:29:15 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hashtable.h"
 #include "libft.h"
 
-static int update_item_value(t_hash_item *item, const char *value)
+static int	update_item_value(t_hash_item *item, const char *value)
 {
-    char *new_value;
+	char	*new_value;
 
     if (!item || !value)
         return (-1);
@@ -27,9 +27,9 @@ static int update_item_value(t_hash_item *item, const char *value)
     return (0);
 }
 
-static t_hash_item *create_item(const char *key, const char *value)
+static t_hash_item	*create_item(const char *key, const char *value)
 {
-    t_hash_item *new_item;
+	t_hash_item	*new_item;
 
     if (!key || !value)
         return (NULL);
@@ -49,11 +49,11 @@ static t_hash_item *create_item(const char *key, const char *value)
     return (new_item);
 }
 
-void hashmap_set(t_hashmap *table, const char *key, const char *value)
+void	hashmap_set(t_hashmap *table, const char *key, const char *value)
 {
-    size_t index;
-    t_hash_item *item;
-    t_hash_item *new_item;
+	size_t		index;
+	t_hash_item	*item;
+	t_hash_item	*new_item;
 
     if (!table || !key || !value)
         return;
