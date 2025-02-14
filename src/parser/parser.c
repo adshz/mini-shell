@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "parser.h"
 #include "lexer/lexer.h"
-
+#include "expander/expander.h"
 /**
  * @brief Processes multiple consecutive redirection tokens
  * @param node Current AST node (usually a command node)
@@ -54,6 +54,104 @@ t_ast_node	*process_consecutive_redirections(t_ast_node *node, \
 }
 
 /**
+ * @brief Handles expansion of variables in a token value
+ * 
+ * Processes a token value that contains variables ($ syntax):
+ * - For pure variable tokens ($VAR)
+ * - For mixed tokens (prefix$VAR)
+ * 
+ * @param shell Shell context for variable lookup
+ * @param value Token value to process
+ * @return Expanded string or NULL on error
+ */
+static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
+{
+	char	*expanded_value;
+	char	*dollar_pos;
+	char	*prefix;
+	char	*final_value;
+	char	*remaining_expanded; // added
+
+	ft_putstr_fd("\nDEBUG: parse_handle_variable_expansion called with value: [", STDERR_FILENO);
+	ft_putstr_fd(value, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+
+	if (!value)
+		return (NULL);
+
+	// Handle pure variable case (starts with $)
+	if (value[0] == '$')
+	{
+		ft_putstr_fd("DEBUG: Pure variable expansion (starts with $)\n", STDERR_FILENO);
+		expanded_value = expand_simple_variable(shell, value + 1);
+		if (!expanded_value)
+		{
+			ft_putstr_fd("DEBUG: Variable expansion returned NULL, using empty string\n", STDERR_FILENO);
+			expanded_value = ft_strdup("");
+		}
+		
+		// Check for more variables after the first expansion
+		dollar_pos = ft_strchr(value + 1, '$');
+		if (dollar_pos)
+		{
+			ft_putstr_fd("DEBUG: Found another $ after expansion, recursively expanding\n", STDERR_FILENO);
+			remaining_expanded = parse_handle_variable_expansion(shell, dollar_pos);
+			if (remaining_expanded)
+			{
+				final_value = ft_strjoin(expanded_value, remaining_expanded);
+				free(expanded_value);
+				free(remaining_expanded);
+				expanded_value = final_value;
+			}
+		}
+
+		ft_putstr_fd("DEBUG: Final expansion result: [", STDERR_FILENO);
+		ft_putstr_fd(expanded_value, STDERR_FILENO);
+		ft_putstr_fd("]\n", STDERR_FILENO);
+		return (expanded_value);
+	}
+
+	// Handle mixed case ($ in middle of string)
+	dollar_pos = ft_strchr(value, '$');
+	if (!dollar_pos)
+	{
+		ft_putstr_fd("DEBUG: No $ found in value, returning copy\n", STDERR_FILENO);
+		return (ft_strdup(value));
+	}
+	
+	ft_putstr_fd("DEBUG: Mixed variable expansion ($ in middle)\n", STDERR_FILENO);
+	prefix = ft_substr(value, 0, dollar_pos - value);
+	if (!prefix)
+	{
+		ft_putstr_fd("DEBUG: Failed to extract prefix\n", STDERR_FILENO);
+		return (NULL);
+	}
+
+	// Recursively expand the rest of the string starting from the $
+	remaining_expanded = parse_handle_variable_expansion(shell, dollar_pos);
+	if (!remaining_expanded)
+	{
+		free(prefix);
+		return (NULL);
+	}
+
+	final_value = ft_strjoin(prefix, remaining_expanded);
+	free(prefix);
+	free(remaining_expanded);
+	
+	if (final_value)
+	{
+		ft_putstr_fd("DEBUG: Final mixed expansion result: [", STDERR_FILENO);
+		ft_putstr_fd(final_value, STDERR_FILENO);
+		ft_putstr_fd("]\n", STDERR_FILENO);
+	}
+	else
+		ft_putstr_fd("DEBUG: Failed to join prefix and expanded value\n", STDERR_FILENO);
+	
+	return (final_value);
+}
+
+/**
  * @brief Parses a shell expression from token stream
  *
  * An expression can be:
@@ -75,9 +173,38 @@ t_ast_node	*process_consecutive_redirections(t_ast_node *node, \
 t_ast_node	*parse_expression(t_token **tokens, t_shell *shell)
 {
 	t_ast_node	*node;
+	char		*expanded;
 
 	if (!tokens || !*tokens)
 		return (NULL);
+	/* debugg */
+	ft_putstr_fd("\nDEBUG: parse_expression checking for variables in token: [", STDERR_FILENO);
+	ft_putstr_fd((*tokens)->value, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+	/* debugg */
+	
+	// Only handle pure variable cases (starting with $)
+	if ((*tokens)->value[0] == '$')
+	{
+		ft_putstr_fd("DEBUG: Found pure variable token, expanding...\n", STDERR_FILENO);
+		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
+		if (!expanded)
+		{
+			ft_putstr_fd("DEBUG: Variable expansion failed\n", STDERR_FILENO);
+			return (NULL);
+		}
+		ft_putstr_fd("DEBUG: Expanded value: [", STDERR_FILENO);
+		ft_putstr_fd(expanded, STDERR_FILENO);
+		ft_putstr_fd("]\n", STDERR_FILENO);
+		
+		// Update the token's value instead of creating a new node
+		free((*tokens)->value);
+		(*tokens)->value = expanded;  // Transfer ownership of expanded string
+		ft_putstr_fd("DEBUG: Updated token value, continuing with pipeline parsing\n", STDERR_FILENO);
+	}
+	/* debugg */
+	ft_putstr_fd("DEBUG: Proceeding with pipeline parsing\n", STDERR_FILENO);
+	/* debugg */
 	node = parse_pipeline(tokens, shell);
 	if (!node)
 		return (NULL);
