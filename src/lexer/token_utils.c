@@ -32,6 +32,12 @@ t_token	*create_token(t_token_type type, const char *value)
 {
 	t_token	*token;
 
+	ft_putstr_fd("\nDEBUG [create_token]: Creating token with value: [", STDERR_FILENO);
+	ft_putstr_fd(value, STDERR_FILENO);
+	ft_putstr_fd("] and type: ", STDERR_FILENO);
+	ft_putnbr_fd(type, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+
 	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
@@ -44,6 +50,8 @@ t_token	*create_token(t_token_type type, const char *value)
 	}
 	token->next = NULL;
 	token->prev = NULL;
+
+	ft_putstr_fd("DEBUG [create_token]: Token created successfully\n", STDERR_FILENO);
 	return (token);
 }
 

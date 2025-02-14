@@ -41,7 +41,7 @@ t_tokeniser_state	handle_double_quote_state(char c, \
 	if (c == '\\' && !(*was_backslash))
 	{
 		*was_backslash = 1;
-		return (STATE_IN_BACKSLASH);
+		return (STATE_IN_DOUBLE_QUOTE);
 	}
 	if (c == '\"' && !(*was_backslash))
 		return (STATE_NORMAL);

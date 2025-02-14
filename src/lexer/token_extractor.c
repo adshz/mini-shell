@@ -59,8 +59,26 @@ static char	*init_token_extraction(size_t len,
 static void	process_quoted_char(char *result, size_t *j, char current_char, \
 							t_tokeniser_state prev_state)
 {
-	if (prev_state == STATE_IN_DOUBLE_QUOTE && current_char != '"')
-		result[(*j)++] = current_char;
+	static int was_backslash;
+
+	if (prev_state == STATE_IN_DOUBLE_QUOTE)
+	{
+		if (was_backslash)
+		{
+			if (current_char == 'n')
+			{
+				result[(*j)++] = '\\';
+				result[(*j)++] = 'n';
+			}
+			else
+				result[(*j)++] = current_char;
+			was_backslash = 0;
+		}
+		else if (current_char == '\\')
+			was_backslash = 1;
+		else if (current_char != '"')
+			result[(*j)++] = current_char;
+	}
 	else if (prev_state == STATE_IN_SINGLE_QUOTE && current_char != '\'')
 		result[(*j)++] = current_char;
 }

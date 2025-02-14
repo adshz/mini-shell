@@ -30,8 +30,13 @@ static t_ast_node	*handle_word_token(t_token **current, \
 {
 	t_ast_node	*cmd_node;
 
+	ft_putstr_fd("\nDEBUG [handle_word_token]: Processing word token: [", STDERR_FILENO);
+	ft_putstr_fd((*current)->value, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+
 	if ((*current)->next && is_redirection_token((*current)->next->type))
 	{
+		ft_putstr_fd("DEBUG [handle_word_token]: Next token is redirection\n", STDERR_FILENO);
 		*prev_type = (*current)->type;
 		*current = (*current)->next;
 		*tokens = *current;
@@ -39,6 +44,7 @@ static t_ast_node	*handle_word_token(t_token **current, \
 	}
 	if (is_redirection_token(*prev_type))
 	{
+		ft_putstr_fd("DEBUG [handle_word_token]: Previous token was redirection\n", STDERR_FILENO);
 		*prev_type = (*current)->type;
 		*current = (*current)->next;
 		*tokens = *current;
@@ -47,9 +53,11 @@ static t_ast_node	*handle_word_token(t_token **current, \
 	cmd_node = create_command_from_token(*current);
 	if (!cmd_node)
 	{
+		ft_putstr_fd("DEBUG [handle_word_token]: Failed to create command node\n", STDERR_FILENO);
 		shell->exit_status = 258;
 		return (NULL);
 	}
+	ft_putstr_fd("DEBUG [handle_word_token]: Created command node\n", STDERR_FILENO);
 	result = attach_command_node(result, cmd_node);
 	*prev_type = (*current)->type;
 	*current = (*current)->next;
@@ -75,8 +83,13 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 	t_ast_node	*new_result;
 	t_token		*next_token;
 
+	ft_putstr_fd("\nDEBUG [handle_redirection_token]: Processing redirection token: [", STDERR_FILENO);
+	ft_putstr_fd((*current)->value, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+
 	if ((*current)->type == TOKEN_HEREDOC)
 	{
+		ft_putstr_fd("DEBUG [handle_redirection_token]: Found heredoc token\n", STDERR_FILENO);
 		next_token = (*current)->next;
 		if (!next_token || next_token->type != TOKEN_WORD)
 		{
@@ -102,6 +115,7 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 		new_result = process_redirection(*current, result);
 		if (!new_result)
 		{
+			ft_putstr_fd("DEBUG [handle_redirection_token]: Failed to process redirection\n", STDERR_FILENO);
 			shell->exit_status = 258;
 			return (NULL);
 		}
@@ -121,9 +135,11 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 	new_result = process_redirection(*current, result);
 	if (!new_result)
 	{
+		ft_putstr_fd("DEBUG [handle_redirection_token]: Failed to process redirection\n", STDERR_FILENO);
 		shell->exit_status = 258;
 		return (NULL);
 	}
+	ft_putstr_fd("DEBUG [handle_redirection_token]: Successfully processed redirection\n", STDERR_FILENO);
 	*prev_type = (*current)->type;
 	*tokens = (*current)->next->next;
 	*current = *tokens;
@@ -147,24 +163,35 @@ t_shell *shell)
 	t_ast_node		*result;
 	t_token_type	prev_type;
 
+	ft_putstr_fd("\nDEBUG [parse_redirection_construct]: Starting redirection parsing\n", STDERR_FILENO);
 	current = *tokens;
 	result = left;
 	prev_type = TOKEN_EOF;
+
 	while (current)
 	{
+		ft_putstr_fd("DEBUG [parse_redirection_construct]: Processing token: [", STDERR_FILENO);
+		ft_putstr_fd(current->value, STDERR_FILENO);
+		ft_putstr_fd("] of type ", STDERR_FILENO);
+		ft_putnbr_fd(current->type, STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+
 		if (current->type == TOKEN_WORD)
-			result = handle_word_token(&current, &prev_type,
-					result, tokens, shell);
+			result = handle_word_token(&current, &prev_type, result, tokens, shell);
 		else if (is_redirection_token(current->type))
-			result = handle_redirection_token(&current, &prev_type,
-					result, tokens, shell);
+			result = handle_redirection_token(&current, &prev_type, result, tokens, shell);
 		else
-			break ;
+		{
+			ft_putstr_fd("DEBUG [parse_redirection_construct]: Found non-redirection token, breaking\n", STDERR_FILENO);
+			break;
+		}
 		if (!result)
 		{
+			ft_putstr_fd("DEBUG [parse_redirection_construct]: Failed to process token\n", STDERR_FILENO);
 			shell->exit_status = 258;
 			return (NULL);
 		}
 	}
+	ft_putstr_fd("DEBUG [parse_redirection_construct]: Finished redirection parsing\n", STDERR_FILENO);
 	return (result);
 }
