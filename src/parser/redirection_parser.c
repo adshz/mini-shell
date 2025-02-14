@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_parser.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:49:40 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 12:52:47 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:32:22 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 #include "lexer/lexer.h"
 #include "shell.h"
@@ -84,10 +85,11 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 		}
 		if (!result)
 		{
-			t_token *cmd_token = next_token->next;
+			t_token	*cmd_token = next_token->next;
 			while (cmd_token && !is_redirection_token(cmd_token->type))
 				cmd_token = cmd_token->next;
-			if (cmd_token && cmd_token->next && cmd_token->next->type == TOKEN_WORD)
+			if (cmd_token && cmd_token->next
+				&& cmd_token->next->type == TOKEN_WORD)
 			{
 				result = create_command_from_token(cmd_token->next);
 				if (!result)
@@ -114,7 +116,7 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 			*tokens = NULL;
 			*current = NULL;
 		}
-		return new_result;
+		return (new_result);
 	}
 	new_result = process_redirection(*current, result);
 	if (!new_result)
@@ -151,11 +153,13 @@ t_shell *shell)
 	while (current)
 	{
 		if (current->type == TOKEN_WORD)
-			result = handle_word_token(&current, &prev_type, result, tokens, shell);
+			result = handle_word_token(&current, &prev_type,
+					result, tokens, shell);
 		else if (is_redirection_token(current->type))
-			result = handle_redirection_token(&current, &prev_type, result, tokens, shell);
+			result = handle_redirection_token(&current, &prev_type,
+					result, tokens, shell);
 		else
-			break;
+			break ;
 		if (!result)
 		{
 			shell->exit_status = 258;

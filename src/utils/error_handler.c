@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 15:51:23 by szhong            #+#    #+#             */
-/*   Updated: 2024/12/19 17:59:49 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:58:37 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include <unistd.h>
 #include "errors.h"
 #include "libft.h"
@@ -29,17 +30,18 @@ int	print_error(char *cmd, char *msg, int error_code)
 static const char	*get_error_message(t_error_type error)
 {
 	static const char	*messages[] = {
-		[ERROR_NONE] = "Success",
-		[ERROR_MALLOC] = MSG_MALLOC,
-		[ERROR_SYNTAX] = MSG_SYNTAX,
-		[ERROR_CMD_NOT_FOUND] = MSG_CMD_NOT_FOUND,
-		[ERROR_PERMISSION] = MSG_PERMISSION,
-		[ERROR_FILE_NOT_FOUND] = MSG_NO_SUCH_FILE,
-		[ERROR_PIPE] = "Pipe error",
-		[ERROR_FORK] = "Fork error",
-		[ERROR_DUP] = "Dup error",
-		[ERROR_EXEC] = "Execution error"
+	[ERROR_NONE] = "Success",
+	[ERROR_MALLOC] = MSG_MALLOC,
+	[ERROR_SYNTAX] = MSG_SYNTAX,
+	[ERROR_CMD_NOT_FOUND] = MSG_CMD_NOT_FOUND,
+	[ERROR_PERMISSION] = MSG_PERMISSION,
+	[ERROR_FILE_NOT_FOUND] = MSG_NO_SUCH_FILE,
+	[ERROR_PIPE] = "Pipe error",
+	[ERROR_FORK] = "Fork error",
+	[ERROR_DUP] = "Dup error",
+	[ERROR_EXEC] = "Execution error"
 	};
+
 	return (messages[error]);
 }
 
@@ -71,4 +73,4 @@ int	set_error_status(t_shell *shell, int status)
 {
 	shell->exit_status = status;
 	return (SHELL_ERROR);
-} 
+}

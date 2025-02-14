@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   command_parser.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:43:36 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 12:43:45 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:39:15 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 #include "lexer/lexer.h"
 #include "shell.h"
@@ -17,11 +18,11 @@
  * @brief Main command parsing function
  * Delegates to appropriate handlers based on token type
  */
-t_ast_node *parse_command(t_token **tokens, t_shell *shell)
+t_ast_node	*parse_command(t_token **tokens, t_shell *shell)
 {
-	t_token *start;
-	t_ast_node *node;
-	int arg_count;
+	t_token		*start;
+	t_ast_node	*node;
+	int			arg_count;
 
 	if (!tokens || !*tokens)
 		return (NULL);

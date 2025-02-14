@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 18:47:52 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 18:55:44 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/13 21:15:40 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 #include "lexer/lexer.h"
 #include "expander/expander.h"
@@ -36,8 +37,8 @@
  * - Each '>' is a redirection node
  * - file1 and file2 are the redirection targets
  */
-t_ast_node	*process_consecutive_redirections(t_ast_node *node, \
-											t_token **tokens, \
+t_ast_node	*process_consecutive_redirections(t_ast_node *node,
+											t_token **tokens,
 											t_shell *shell)
 {
 	t_token	*current;
@@ -246,14 +247,13 @@ t_ast_node	*parse(t_token *tokens, t_shell *shell)
 	{
 		ft_putendl_fd("minishell: syntax error near unexpected token '|'", \
 				STDERR_FILENO);
-		shell->exit_status = 258;  // Set exit status for syntax error
+		shell->exit_status = 258;
 		return (NULL);
 	}
 	current = tokens;
 	ast = parse_expression(&current, shell);
 	if (!ast)
 	{
-		// Set exit status for syntax errors
 		if (current && is_redirection_token(current->type))
 			shell->exit_status = 258;
 		return (NULL);
@@ -261,7 +261,7 @@ t_ast_node	*parse(t_token *tokens, t_shell *shell)
 	if (current != NULL)
 	{
 		free_ast(ast);
-		shell->exit_status = 258;  // Set exit status for any trailing tokens
+		shell->exit_status = 258;
 		return (NULL);
 	}
 	return (ast);

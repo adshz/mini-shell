@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 19:06:28 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/13 20:57:37 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer.h"
@@ -129,4 +129,4 @@ char	*extract_token(const char *input, size_t len)
 	}
 	result[j] = '\0';
 	return (result);
-} 
+}
