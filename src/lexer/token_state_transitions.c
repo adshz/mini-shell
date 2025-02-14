@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/13 18:38:16 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "lexer/lexer.h"
 
 /**
  * @brief Handles transitions from normal state

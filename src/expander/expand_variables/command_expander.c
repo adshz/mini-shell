@@ -9,8 +9,8 @@
 /*   Updated: 2025/02/13 17:46:47 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "expander/expander.h"
+
 
 static char	**handle_variable_command(t_shell *shell, const char *cmd)
 {
@@ -21,7 +21,7 @@ static char	**handle_variable_command(t_shell *shell, const char *cmd)
 	char	*full_cmd;
 	size_t	prefix_len;
 
-	*prefix = NULL;
+	prefix = NULL;
 	if (cmd[0] != '$')
 	{
 		dollar_pos = ft_strchr(cmd, '$');

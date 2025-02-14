@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/13 18:38:57 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "lexer/lexer.h"
 
 /**
  * @brief Creates a new token with specified type and value

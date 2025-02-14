@@ -9,7 +9,6 @@
 /*   Updated: 2025/02/13 19:09:02 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "lexer.h"
 
 static size_t	handle_special_char(const char *input,
