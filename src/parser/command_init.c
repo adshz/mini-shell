@@ -91,10 +91,22 @@ int	fill_args(char **args, t_token *start, int arg_count)
 {
 	t_token	*current;
 	int		i;
+	int		allocated_size;
 
 	current = start;
 	i = 0;
-	while (i < arg_count)
+	// Get the actual allocated size from the node
+	allocated_size = arg_count;
+	if (start && start->value && ft_strcmp(start->value, "exit") == 0)
+	{
+		if (arg_count < 3)
+			allocated_size = 3;
+		else
+			allocated_size = arg_count;
+	}
+
+	// Fill arguments from tokens
+	while (i < arg_count && current)
 	{
 		args[i] = ft_strdup(current->value);
 		if (!args[i])
@@ -102,5 +114,15 @@ int	fill_args(char **args, t_token *start, int arg_count)
 		current = current->next;
 		i++;
 	}
+
+	// Initialize remaining slots to NULL
+	while (i < allocated_size)
+	{
+		args[i] = NULL;
+		i++;
+	}
+
+	// Ensure NULL termination
+	args[allocated_size] = NULL;
 	return (1);
 }

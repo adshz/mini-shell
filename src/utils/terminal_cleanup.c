@@ -29,7 +29,7 @@ void	cleanup_process_state(t_shell *shell)
 {
 	char	**tmp;
 
-	**tmp = NULL;
+	tmp = NULL;
 	if (shell->pids)
 	{
 		free(shell->pids);
