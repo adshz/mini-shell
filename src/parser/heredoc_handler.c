@@ -40,56 +40,118 @@ t_token	*find_last_word_token(t_token *start)
 	return (last_word);
 }
 
-t_ast_node	*create_default_heredoc_command(void)
+static t_ast_node	*cleanup_heredoc_nodes(t_ast_node *first_redir,
+	t_ast_node *command_node)
 {
-	t_token		*cat_token;
-	t_ast_node	*node;
+	if (first_redir)
+		free_ast(first_redir);
+	if (command_node)
+		free_ast(command_node);
+	return (NULL);
+}
 
-	cat_token = create_token(TOKEN_WORD, "cat");
-	if (!cat_token)
-		return (NULL);
-	node = init_command_node(cat_token, 1);
-	if (!node)
+static t_ast_node	*create_heredoc_chain(t_token **tokens,
+	t_ast_node *command_node, t_shell *shell)
+{
+	t_token		*current;
+	t_token		*delimiter;
+	t_ast_node	*first_redir;
+	int			count;
+
+	current = *tokens;
+	first_redir = NULL;
+	count = 0;
+
+	// First pass: Count heredocs and validate delimiters
+	t_token *check = current;
+	while (check && check->type == TOKEN_HEREDOC)
 	{
-		free_tokens(cat_token);
-		return (NULL);
+		count++;
+		if (!check->next || check->next->type != TOKEN_WORD)
+		{
+			ft_putstr_fd("Error: Missing or invalid delimiter\n", STDERR_FILENO);
+			shell->exit_status = 258;
+			return (cleanup_heredoc_nodes(first_redir, command_node));
+		}
+		check = check->next->next;
 	}
-	if (!fill_args(node->args, cat_token, 1))
+
+	ft_putstr_fd("\nProcessing heredocs in order (total: ", STDERR_FILENO);
+	ft_putnbr_fd(count, STDERR_FILENO);
+	ft_putstr_fd(")\n", STDERR_FILENO);
+
+	// Second pass: Create nodes in reverse order
+	while (count > 0)
 	{
-		free_tokens(cat_token);
-		free_ast(node);
-		return (NULL);
+		t_token *target = current;
+		int skip = (count - 1) * 2;  // Skip to the last unprocessed heredoc
+		while (skip > 0)
+		{
+			target = target->next->next;
+			skip -= 2;
+		}
+		delimiter = target->next;
+
+		ft_putstr_fd("\nCreating heredoc node #", STDERR_FILENO);
+		ft_putnbr_fd(count, STDERR_FILENO);
+		ft_putstr_fd(" with delimiter: [", STDERR_FILENO);
+		ft_putstr_fd(delimiter->value, STDERR_FILENO);
+		ft_putstr_fd("]\n", STDERR_FILENO);
+
+		t_ast_node *new_redir = create_redirection_node(TOKEN_HEREDOC,
+			delimiter->value);
+		if (!new_redir)
+		{
+			ft_putstr_fd("Failed to create redirection node\n", STDERR_FILENO);
+			return (cleanup_heredoc_nodes(first_redir, command_node));
+		}
+
+		if (!first_redir)
+		{
+			new_redir->left = command_node;
+			first_redir = new_redir;
+		}
+		else
+		{
+			new_redir->left = first_redir;
+			first_redir = new_redir;
+		}
+		count--;
 	}
-	free_tokens(cat_token);
-	return (node);
+
+	// Update tokens pointer to skip all processed heredocs
+	while (current && current->type == TOKEN_HEREDOC)
+	{
+		current = current->next->next;
+	}
+	*tokens = current;
+
+	ft_putstr_fd("\nHeredoc chain created successfully\n", STDERR_FILENO);
+	return (first_redir);
 }
 
 t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 {
-	t_token		*heredoc_token;
-	t_token		*delimiter_token;
-	t_ast_node	*node;
-	t_ast_node	*redir_node;
+	t_ast_node	*command_node;
+	t_ast_node	*heredoc_chain;
 
-	heredoc_token = *tokens;
-	delimiter_token = heredoc_token->next;
-	if (!delimiter_token || delimiter_token->type != TOKEN_WORD)
+	ft_putstr_fd("\n=== Starting Heredoc Command Parsing ===\n", STDERR_FILENO);
+	
+	command_node = create_default_heredoc_command();
+	if (!command_node)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
-			STDERR_FILENO);
-		shell->exit_status = 258;
+		ft_putstr_fd("Failed to create default heredoc command\n", STDERR_FILENO);
 		return (NULL);
 	}
-	node = create_default_heredoc_command();
-	if (!node)
-		return (NULL);
-	redir_node = create_redirection_node(TOKEN_HEREDOC, delimiter_token->value);
-	if (!redir_node)
+
+	heredoc_chain = create_heredoc_chain(tokens, command_node, shell);
+	if (!heredoc_chain)
 	{
-		free_ast(node);
+		ft_putstr_fd("Failed to create heredoc chain\n", STDERR_FILENO);
+		free_ast(command_node);
 		return (NULL);
 	}
-	redir_node->left = node;
-	*tokens = delimiter_token->next;
-	return (redir_node);
+
+	ft_putstr_fd("=== Heredoc Command Parsing Complete ===\n\n", STDERR_FILENO);
+	return (heredoc_chain);
 }

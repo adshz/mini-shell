@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "hashtable.h"
-#include <stdio.h>
 
 size_t	hashmap_size(t_hashmap *table)
 {
@@ -22,60 +21,50 @@ size_t	hashmap_size(t_hashmap *table)
 
 	if (!table)
 	{
-		fprintf(stderr, "DEBUG: Table pointer is NULL in hashmap_size\n");
+		ft_putendl_fd("Table pointer is NULL in hashmap_size", 2);
 		return (0);
 	}
-	fprintf(stderr, "DEBUG: Table pointer: %p\n", (void*)table);
-	fprintf(stderr, "DEBUG: Table size value: %zu\n", table->size);
-	fprintf(stderr, "DEBUG: Table items pointer: %p\n", (void*)table->items);
 	if (table->size == 0 || table->size > HASH_SIZE)
 	{
-		fprintf(stderr, "DEBUG: Invalid table size: %zu\n", table->size);
+		ft_putendl_fd("Invalid table size", 2);
 		return (0);
 	}
 	if (!table->items)
 	{
-		fprintf(stderr, "DEBUG: Items array is NULL in hashmap_size\n");
+		ft_putendl_fd("Items array is NULL in hashmap_size", 2);
 		return (0);
 	}
 	count = 0;
 	i = 0;
 	max_items_per_bucket = 1000;
-	fprintf(stderr, "DEBUG: Starting to iterate through hash table (size: %zu)\n", table->size);
 	while (i < table->size)
 	{
 		size_t	items_in_bucket = 0;
-		if (i % 100 == 0)
-			fprintf(stderr, "DEBUG: Processing bucket group %zu-%zu\n", i, i + 99);
 		current = table->items[i];
 		while (current != NULL)
 		{
 			if (items_in_bucket >= max_items_per_bucket)
 			{
-				fprintf(stderr, "DEBUG: Possible corrupted linked list in bucket %zu (too many items)\n", i);
+				ft_putendl_fd("Bucket corrupted: too many items", 2);
 				return (count);
 			}
 			if (!current->key || !current->value)
 			{
-				fprintf(stderr, "DEBUG: Found corrupted item in bucket %zu\n", i);
+				ft_putendl_fd("Encountered corrupted item", 2);
 				break ;
 			}
-			fprintf(stderr, "DEBUG: Found item in bucket %zu: key='%s', value='%s'\n", 
-				i, current->key, current->value);
 			count++;
 			items_in_bucket++;
-			if (current->next && (current->next == current || 
-					(void*)current->next < (void*)table || 
-					(void*)current->next > (void*)table
-					+ (HASH_SIZE * sizeof(t_hash_item*))))
+			if (current->next && (current->next == current ||
+				(void*)current->next < (void*)table ||
+				(void*)current->next > (void*)table + (HASH_SIZE * sizeof(t_hash_item*))))
 			{
-				fprintf(stderr, "DEBUG: Detected invalid next pointer in bucket %zu\n", i);
+				ft_putendl_fd("Invalid next pointer detected", 2);
 				break ;
 			}
 			current = current->next;
 		}
 		i++;
 	}
-	fprintf(stderr, "DEBUG: Counted %zu items in hash table\n", count);
 	return (count);
 }

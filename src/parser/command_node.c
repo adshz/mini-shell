@@ -46,7 +46,6 @@ t_ast_node	*create_regular_command(t_token **tokens,
 	t_ast_node	*node;
 	int         min_args;
 
-	// Ensure we allocate at least 3 slots for builtins that might need them
 	min_args = arg_count;
 	if (start && start->value && (ft_strcmp(start->value, "exit") == 0))
 	{

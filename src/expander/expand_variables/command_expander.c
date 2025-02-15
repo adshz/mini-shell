@@ -66,7 +66,7 @@ static char	**handle_regular_command(const char *cmd)
 
 	cmd_args = malloc(2 * sizeof(char *));
 	if (!cmd_args)
-		return NULL;
+		return (NULL);
 	cmd_args[0] = ft_strdup(cmd);
 	cmd_args[1] = NULL;
 	return (cmd_args);

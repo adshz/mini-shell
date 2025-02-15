@@ -167,19 +167,50 @@ int	init_heredoc_data(t_heredoc_data *data, const char *delimiter)
 	int		fd;
 
 	if (!data || !delimiter)
+	{
+		ft_putstr_fd("DEBUG: Invalid data or delimiter\n", STDERR_FILENO);
 		return (1);
+	}
+
+	// Clean up any existing data
+	if (data->content_path)
+	{
+		free(data->content_path);
+		data->content_path = NULL;
+	}
+	if (data->content_fd != -1)
+	{
+		close(data->content_fd);
+		data->content_fd = -1;
+	}
+
 	fd = create_temp_file(template);
 	if (fd == -1)
+	{
+		ft_putstr_fd("DEBUG: Failed to create temp file\n", STDERR_FILENO);
 		return (1);
+	}
 	close(fd);
+
 	data->content_path = ft_strdup(template);
 	if (!data->content_path)
 	{
+		ft_putstr_fd("DEBUG: Failed to duplicate template path\n", STDERR_FILENO);
 		unlink(template);
 		return (1);
 	}
+
 	data->delimiter = delimiter;
 	data->content_fd = -1;
+
+	ft_putstr_fd("DEBUG: Successfully initialized heredoc data\n", STDERR_FILENO);
+	ft_putstr_fd("DEBUG: Content path: [", STDERR_FILENO);
+	ft_putstr_fd(data->content_path, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+	ft_putstr_fd("DEBUG: Delimiter: [", STDERR_FILENO);
+	ft_putstr_fd(data->delimiter, STDERR_FILENO);
+	ft_putstr_fd("]\n", STDERR_FILENO);
+
 	return (0);
 }
 

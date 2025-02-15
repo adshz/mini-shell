@@ -82,50 +82,21 @@ int	is_operator(const char *str)
  */
 t_token_type	get_token_type(const char *value)
 {
-	ft_putstr_fd("\nDEBUG [get_token_type]: Determining type for value: [", STDERR_FILENO);
-	ft_putstr_fd(value, STDERR_FILENO);
-	ft_putstr_fd("]\n", STDERR_FILENO);
-
 	if (!value || !*value)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Empty value, returning TOKEN_EOF\n", STDERR_FILENO);
 		return (TOKEN_EOF);
-	}
 	if (ft_strcmp(value, "|") == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found PIPE token\n", STDERR_FILENO);
 		return (TOKEN_PIPE);
-	}
 	if (ft_strcmp(value, "<") == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found REDIRECT_IN token\n", STDERR_FILENO);
 		return (TOKEN_REDIRECT_IN);
-	}
 	if (ft_strcmp(value, ">") == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found REDIRECT_OUT token\n", STDERR_FILENO);
 		return (TOKEN_REDIRECT_OUT);
-	}
 	if (ft_strcmp(value, ">>") == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found APPEND token\n", STDERR_FILENO);
 		return (TOKEN_APPEND);
-	}
 	if (ft_strcmp(value, "<<") == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found HEREDOC token\n", STDERR_FILENO);
 		return (TOKEN_HEREDOC);
-	}
 	if (ft_strncmp(value, "&&", 2) == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found AND token\n", STDERR_FILENO);
 		return (TOKEN_AND);
-	}
 	if (ft_strncmp(value, "||", 2) == 0)
-	{
-		ft_putstr_fd("DEBUG [get_token_type]: Found OR token\n", STDERR_FILENO);
 		return (TOKEN_OR);
-	}
-	ft_putstr_fd("DEBUG [get_token_type]: No special token found, returning WORD\n", STDERR_FILENO);
 	return (TOKEN_WORD);
 }

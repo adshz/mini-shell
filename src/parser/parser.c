@@ -71,31 +71,21 @@ static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
 	char	*dollar_pos;
 	char	*prefix;
 	char	*final_value;
-	char	*remaining_expanded; // added
-
-	ft_putstr_fd("\nDEBUG: parse_handle_variable_expansion called with value: [", STDERR_FILENO);
-	ft_putstr_fd(value, STDERR_FILENO);
-	ft_putstr_fd("]\n", STDERR_FILENO);
+	char	*remaining_expanded;
 
 	if (!value)
 		return (NULL);
 
-	// Handle pure variable case (starts with $)
+	/* Pure variable case (token starts with '$') */
 	if (value[0] == '$')
 	{
-		ft_putstr_fd("DEBUG: Pure variable expansion (starts with $)\n", STDERR_FILENO);
 		expanded_value = expand_simple_variable(shell, value + 1);
 		if (!expanded_value)
-		{
-			ft_putstr_fd("DEBUG: Variable expansion returned NULL, using empty string\n", STDERR_FILENO);
 			expanded_value = ft_strdup("");
-		}
-		
-		// Check for more variables after the first expansion
+		/* Check for additional variables in the string */
 		dollar_pos = ft_strchr(value + 1, '$');
 		if (dollar_pos)
 		{
-			ft_putstr_fd("DEBUG: Found another $ after expansion, recursively expanding\n", STDERR_FILENO);
 			remaining_expanded = parse_handle_variable_expansion(shell, dollar_pos);
 			if (remaining_expanded)
 			{
@@ -105,55 +95,31 @@ static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
 				expanded_value = final_value;
 			}
 		}
-
-		ft_putstr_fd("DEBUG: Final expansion result: [", STDERR_FILENO);
-		ft_putstr_fd(expanded_value, STDERR_FILENO);
-		ft_putstr_fd("]\n", STDERR_FILENO);
 		return (expanded_value);
 	}
 
-	// Handle mixed case ($ in middle of string)
+	/* Mixed variable case ('$' in the middle) */
 	dollar_pos = ft_strchr(value, '$');
 	if (!dollar_pos)
-	{
-		ft_putstr_fd("DEBUG: No $ found in value, returning copy\n", STDERR_FILENO);
 		return (ft_strdup(value));
-	}
 	
-	ft_putstr_fd("DEBUG: Mixed variable expansion ($ in middle)\n", STDERR_FILENO);
 	prefix = ft_substr(value, 0, dollar_pos - value);
 	if (!prefix)
-	{
-		ft_putstr_fd("DEBUG: Failed to extract prefix\n", STDERR_FILENO);
 		return (NULL);
-	}
-
-	// Recursively expand the rest of the string starting from the $
 	remaining_expanded = parse_handle_variable_expansion(shell, dollar_pos);
 	if (!remaining_expanded)
 	{
 		free(prefix);
 		return (NULL);
 	}
-
 	final_value = ft_strjoin(prefix, remaining_expanded);
 	free(prefix);
 	free(remaining_expanded);
-	
-	if (final_value)
-	{
-		ft_putstr_fd("DEBUG: Final mixed expansion result: [", STDERR_FILENO);
-		ft_putstr_fd(final_value, STDERR_FILENO);
-		ft_putstr_fd("]\n", STDERR_FILENO);
-	}
-	else
-		ft_putstr_fd("DEBUG: Failed to join prefix and expanded value\n", STDERR_FILENO);
-	
 	return (final_value);
 }
 
 /**
- * @brief Parses a shell expression from token stream
+ * @brief Parses an expression from the token stream.
  *
  * An expression can be:
  * - Simple command: "echo hello"
@@ -178,34 +144,16 @@ t_ast_node	*parse_expression(t_token **tokens, t_shell *shell)
 
 	if (!tokens || !*tokens)
 		return (NULL);
-	/* debugg */
-	ft_putstr_fd("\nDEBUG: parse_expression checking for variables in token: [", STDERR_FILENO);
-	ft_putstr_fd((*tokens)->value, STDERR_FILENO);
-	ft_putstr_fd("]\n", STDERR_FILENO);
-	/* debugg */
-	
-	// Only handle pure variable cases (starting with $)
+	/* Only handle pure variable cases (starting with '$') */
 	if ((*tokens)->value[0] == '$')
 	{
-		ft_putstr_fd("DEBUG: Found pure variable token, expanding...\n", STDERR_FILENO);
 		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
 		if (!expanded)
-		{
-			ft_putstr_fd("DEBUG: Variable expansion failed\n", STDERR_FILENO);
 			return (NULL);
-		}
-		ft_putstr_fd("DEBUG: Expanded value: [", STDERR_FILENO);
-		ft_putstr_fd(expanded, STDERR_FILENO);
-		ft_putstr_fd("]\n", STDERR_FILENO);
-		
-		// Update the token's value instead of creating a new node
+		/* Update token value with expanded string */
 		free((*tokens)->value);
-		(*tokens)->value = expanded;  // Transfer ownership of expanded string
-		ft_putstr_fd("DEBUG: Updated token value, continuing with pipeline parsing\n", STDERR_FILENO);
+		(*tokens)->value = expanded;
 	}
-	/* debugg */
-	ft_putstr_fd("DEBUG: Proceeding with pipeline parsing\n", STDERR_FILENO);
-	/* debugg */
 	node = parse_pipeline(tokens, shell);
 	if (!node)
 		return (NULL);
@@ -245,8 +193,7 @@ t_ast_node	*parse(t_token *tokens, t_shell *shell)
 		return (NULL);
 	if (tokens->type == TOKEN_PIPE)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token '|'", \
-				STDERR_FILENO);
+		ft_putendl_fd("minishell: syntax error near unexpected token '|'", STDERR_FILENO);
 		shell->exit_status = 258;
 		return (NULL);
 	}

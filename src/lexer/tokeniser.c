@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "lexer/lexer.h"
-#include <stdio.h>
 
 /**
  * @brief Adds a new token to the end of token list
@@ -146,7 +145,7 @@ static t_token	*process_input_tokens(const char *input, t_token *head)
 			return (NULL);
 		input += len;
 	}
-	return (head) ;
+	return (head);
 }
 
 /**

@@ -38,18 +38,12 @@ typedef struct s_heredoc_content
 	t_shell	*shell;
 }	t_heredoc_content;
 
-typedef struct s_heredoc_data
-{
-	char		*content_path;
-	int			content_fd;
-	const char	*delimiter;
-}	t_heredoc_data;
-
 /* Heredoc data management */
 int		init_heredoc_data(t_heredoc_data *data, const char *delimiter);
 void	cleanup_heredoc_data(t_heredoc_data *data);
 void	cleanup_heredoc_resources(t_heredoc_content *hdc);
-
+int		setup_heredoc_pipe(t_ast_node *node);
+int		collect_heredoc_content(t_ast_node *node, t_shell *shell);
 /* Command execution */
 int		execute_ast(t_shell *shell, t_ast_node *node);
 int		execute_command(t_shell *shell, t_ast_node *node);

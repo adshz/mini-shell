@@ -16,70 +16,16 @@
 int	execute_command(t_shell *shell, t_ast_node *node)
 {
 	int	ret;
-	int	i;
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
-
-	// Enhanced debug output with pointer values and validation
-	ft_putstr_fd("\nDEBUG: execute_command starting\n", STDERR_FILENO);
-	ft_putstr_fd("DEBUG: node address: ", STDERR_FILENO);
-	ft_putnbr_fd((long)node, STDERR_FILENO);
-	ft_putstr_fd("\nDEBUG: node->args address: ", STDERR_FILENO);
-	ft_putnbr_fd((long)node->args, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
 	
-	if (node && node->args)
-	{
-		ft_putstr_fd("DEBUG: Checking args array...\n", STDERR_FILENO);
-		i = 0;
-		while (node->args[i] != NULL)
-		{
-			ft_putstr_fd("DEBUG: arg[", STDERR_FILENO);
-			ft_putnbr_fd(i, STDERR_FILENO);
-			ft_putstr_fd("] address: ", STDERR_FILENO);
-			ft_putnbr_fd((long)node->args[i], STDERR_FILENO);
-			if (node->args[i])
-			{
-				ft_putstr_fd(" value: [", STDERR_FILENO);
-				ft_putstr_fd(node->args[i], STDERR_FILENO);
-				ft_putstr_fd("]\n", STDERR_FILENO);
-			}
-			else
-			{
-				ft_putstr_fd(" (NULL)\n", STDERR_FILENO);
-			}
-			i++;
-		}
-	}
-
 	ret = validate_and_expand_command(shell, node);
 	if (ret != 0)
-	{
-		ft_putstr_fd("DEBUG: Command validation/expansion failed\n", STDERR_FILENO);
 		return (ret);
-	}
-
-	// Debug output after expansion with safety checks
-	if (node && node->args)
-	{
-		ft_putstr_fd("DEBUG: After expansion:\n", STDERR_FILENO);
-		i = 0;
-		while (node->args[i])
-		{
-			ft_putstr_fd("  arg[", STDERR_FILENO);
-			ft_putnbr_fd(i, STDERR_FILENO);
-			ft_putstr_fd("]: [", STDERR_FILENO);
-			if (node->args[i])  // Extra safety check
-				ft_putstr_fd(node->args[i], STDERR_FILENO);
-			ft_putstr_fd("]\n", STDERR_FILENO);
-			i++;
-		}
-	}
 
 	if (is_builtin(node->args[0]))
 	{
-		ft_putstr_fd("DEBUG: Executing builtin command\n", STDERR_FILENO);
 		ret = execute_builtin(shell, node);
 		if (ft_strcmp(node->args[0], "exit") == 0)
 			if (!shell->in_heredoc)
@@ -87,7 +33,6 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 		return (ret);
 	}
 
-	ft_putstr_fd("DEBUG: Executing external command\n", STDERR_FILENO);
 	ret = execute_external_command(shell, node);
 	return (ret);
 }
@@ -131,17 +76,9 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	int		ret;
 	pid_t	pid;
 
-	ft_putstr_fd("\nDEBUG: execute_external_command called\n",
-		STDERR_FILENO);
 	ret = handle_path_resolution(shell, node, &cmd_path);
 	if (ret != 0)
-	{
-		ft_putstr_fd("DEBUG: Path resolution failed\n", STDERR_FILENO);
 		return (ret);
-	}
-	ft_putstr_fd("DEBUG: Resolved command path: [", STDERR_FILENO);
-	ft_putstr_fd(cmd_path, STDERR_FILENO);
-	ft_putstr_fd("]\n", STDERR_FILENO);
 	pid = fork();
 	if (pid == -1)
 	{

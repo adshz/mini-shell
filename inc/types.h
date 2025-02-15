@@ -24,6 +24,14 @@
 struct						s_ast_node;
 typedef struct s_ast_node	t_ast_node;
 
+/* Heredoc data structure */
+typedef struct s_heredoc_data
+{
+	char		*content_path;
+	int			content_fd;
+	const char	*delimiter;
+}	t_heredoc_data;
+
 /*########################################*/
 
 /*

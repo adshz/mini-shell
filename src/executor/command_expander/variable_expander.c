@@ -16,12 +16,8 @@ int	handle_variable_expansion(t_shell *shell, t_ast_node *node)
 {
 	char	*dollar_pos;
 
-	ft_putstr_fd("\nDEBUG: Starting variable expansion\n", STDERR_FILENO);
 	if (!node || !node->args)
-	{
-		ft_putstr_fd("DEBUG: Invalid node or args\n", STDERR_FILENO);
 		return (1);
-	}
 	dollar_pos = ft_strchr(node->args[0], '$');
 	if (dollar_pos)
 		return (expand_command_name_with_var(shell, node, dollar_pos));
@@ -30,14 +26,7 @@ int	handle_variable_expansion(t_shell *shell, t_ast_node *node)
 
 int	expand_command_args(t_shell *shell, t_ast_node *node)
 {
-	ft_putstr_fd("\nDEBUG: expand_command_args called\n", STDERR_FILENO);
 	if (!node || !node->args || !node->args[0])
-	{
-		ft_putstr_fd("DEBUG: Invalid node or args\n", STDERR_FILENO);
 		return (1);
-	}
-	ft_putstr_fd("DEBUG: First arg: [", STDERR_FILENO);
-	ft_putstr_fd(node->args[0], STDERR_FILENO);
-	ft_putstr_fd("]\n", STDERR_FILENO);
 	return (handle_variable_expansion(shell, node));
 }

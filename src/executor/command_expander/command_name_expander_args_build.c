@@ -26,7 +26,6 @@ static int	complete_args_update(t_ast_node *node,
 	free(split_parts);
 	free(node->value);
 	node->value = ft_strdup(expanded_args[0]);
-	ft_putstr_fd("DEBUG: Final expanded arguments:\n", STDERR_FILENO);
 	return (0);
 }
 

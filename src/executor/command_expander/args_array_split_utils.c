@@ -66,7 +66,6 @@ int	handle_arg_split(t_ast_node *node, int *i, char *space_pos)
 	char	**new_args;
 	int		new_arg_count;
 
-	ft_putstr_fd("DEBUG: Found space followed by hyphen, splitting argument\n", STDERR_FILENO);
 	new_arg_count = count_and_allocate_new_args(node->args, &new_args);
 	if (new_arg_count == SHELL_ERROR)
 		return (SHELL_ERROR);

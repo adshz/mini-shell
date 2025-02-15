@@ -18,10 +18,6 @@
 # include "types.h"
 # include "lexer/lexer.h"  /* For t_token type */
 
-/* Forward declarations */
-struct					s_shell;
-typedef struct s_shell	t_shell;
-
 /* Abstract Syntax Tree Node Types */
 /**
  * @brief AST Node types for the shell's command parser
@@ -66,6 +62,7 @@ typedef enum e_ast_type
  * @param original		Original string before variable expansions
  * @param left			Left child node (e.g., represents command before pipe)
  * @param right			Right child node (e.g, represents command after pipe)
+ * @param data		For storing heredoc data
 */
 typedef struct s_ast_node
 {
@@ -76,6 +73,7 @@ typedef struct s_ast_node
 	char				*original;
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
+	t_heredoc_data		data;  // For storing heredoc data
 }	t_ast_node;
 
 /* Parser functions */
@@ -104,6 +102,8 @@ t_ast_node	*handle_redirection(t_ast_node *node, t_token **tokens);
 /* Command initialization helpers */
 char		**allocate_args(int arg_count);
 int			is_variable_token(const char *value);
+t_ast_node	*create_default_heredoc_command(void);
+bool		init_command_expansion(t_ast_node *node, const char *value);
 
 /* Command construction helpers */
 t_ast_node	*parse_redirection_construct(t_ast_node *cmd_node,
@@ -138,6 +138,5 @@ t_ast_node	*create_regular_command(t_token **tokens, t_token *start, \
 								int arg_count);
 t_token		*find_last_word_token(t_token *start);
 int			count_command_args(t_token *tokens);
-t_ast_node	*create_default_heredoc_command(void);
 
 #endif
