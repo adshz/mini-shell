@@ -80,20 +80,15 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 	ft_putnbr_fd(count, STDERR_FILENO);
 	ft_putstr_fd(")\n", STDERR_FILENO);
 
-	// Second pass: Create nodes in reverse order
-	while (count > 0)
+	// Second pass: Create nodes in forward order
+	t_token *target = current;
+	int current_count = 1;
+	while (current_count <= count)
 	{
-		t_token *target = current;
-		int skip = (count - 1) * 2;  // Skip to the last unprocessed heredoc
-		while (skip > 0)
-		{
-			target = target->next->next;
-			skip -= 2;
-		}
 		delimiter = target->next;
 
 		ft_putstr_fd("\nCreating heredoc node #", STDERR_FILENO);
-		ft_putnbr_fd(count, STDERR_FILENO);
+		ft_putnbr_fd(current_count, STDERR_FILENO);
 		ft_putstr_fd(" with delimiter: [", STDERR_FILENO);
 		ft_putstr_fd(delimiter->value, STDERR_FILENO);
 		ft_putstr_fd("]\n", STDERR_FILENO);
@@ -116,7 +111,8 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 			new_redir->left = first_redir;
 			first_redir = new_redir;
 		}
-		count--;
+		target = target->next->next;
+		current_count++;
 	}
 
 	// Update tokens pointer to skip all processed heredocs
