@@ -12,34 +12,35 @@
 
 #include "cd.h"
 
-int	builtin_cd(t_shell *shell, t_ast_node *node)
+static int	handle_cd_with_path_arg(t_shell *shell, t_ast_node *node)
 {
-	char	*path;
 	char	*expanded_path;
 	int		ret;
 
+	expanded_path = NULL;
+	ret = 0;
+	if (node->args[1][0] == '~')
+		expanded_path = expand_tilde(shell, node->args[1]);
+	else
+		expanded_path = handle_path(shell, node->args[1]);
+	if (!expanded_path)
+		return (1);
+	ret = handle_cd_path(shell, expanded_path);
+	free(expanded_path);
+	return (ret);
+}
+
+int	builtin_cd(t_shell *shell, t_ast_node *node)
+{
+	char	*path;
+
+	path = NULL;
 	if (!node->args[1])
 		path = get_home_path(shell);
 	else if (ft_strcmp(node->args[1], "-") == 0)
 		path = get_oldpwd_path(shell);
 	else
-	{
-		if (node->args[1][0] == '~')
-		{
-			expanded_path = expand_tilde(shell, node->args[1]);
-			if (!expanded_path)
-				return (1);
-		}
-		else
-		{
-			expanded_path = handle_path(shell, node->args[1]);
-			if (!expanded_path)
-				return (1);
-		}
-		ret = handle_cd_path(shell, expanded_path);
-		free(expanded_path);
-		return (ret);
-	}
+		return (handle_cd_with_path_arg(shell, node));
 	if (!path)
 		return (1);
 	return (handle_cd_path(shell, path));
