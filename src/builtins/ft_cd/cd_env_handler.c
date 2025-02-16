@@ -18,6 +18,8 @@ void	update_pwd_vars(t_shell *shell, char *old_pwd)
 
 	if (old_pwd)
 		hashmap_set(shell->env, "OLDPWD", old_pwd);
+	else
+		hashmap_set(shell->env, "OLDPWD", "");
 	if (getcwd(cwd, PATH_MAX))
 		hashmap_set(shell->env, "PWD", cwd);
 	else

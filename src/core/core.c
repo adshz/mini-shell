@@ -12,11 +12,6 @@
 #include "core.h"
 #include "shell.h"
 
-// Special signal values for different states
-#define SIG_NONE 0
-#define SIG_HEREDOC_MODE 1    // Shell is in heredoc mode
-#define SIG_HEREDOC_INT 2     // Heredoc was interrupted
-#define SIG_REGULAR_INT 3     // Regular interrupt
 /**
  * @brief Builds abstract syntax tree from command line
  *

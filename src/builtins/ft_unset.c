@@ -13,13 +13,6 @@
 #include "builtin_utils.h"
 #include "expander/expander.h"
 
-static bool	is_readonly_var(const char *name)
-{
-	return (ft_strcmp(name, "PWD") == 0 || \
-			ft_strcmp(name, "OLDPWD") == 0 || \
-			ft_strcmp(name, "PATH") == 0);
-}
-
 static char	*expand_var_name(t_shell *shell, const char *arg)
 {
 	char	*expanded;
@@ -61,7 +54,7 @@ int	builtin_unset(t_shell *shell, t_ast_node *node)
 			ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 			status = 1;
 		}
-		else if (!is_readonly_var(expanded_name))
+		else
 			hashmap_remove(shell->env, expanded_name);
 		free(expanded_name);
 		i++;
