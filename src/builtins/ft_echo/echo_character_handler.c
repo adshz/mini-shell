@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   echo_character_handler.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/12 19:17:07 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/12 19:48:31 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/16 21:27:58 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/16 21:28:16 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "./echo.h"
 
 void	handle_quotes(char c, t_expansion_state *state)
@@ -56,7 +55,7 @@ void	handle_exit_status(t_shell *shell, char *result,
 	char	exit_status_str[16];
 
 	ft_itoa_buf(shell->exit_status, exit_status_str);
-	ft_strlcpy(result + state->j, exit_status_str, 
+	ft_strlcpy(result + state->j, exit_status_str, \
 		ft_strlen(exit_status_str) + 1);
 	state->j += ft_strlen(exit_status_str);
 	state->i += 2;

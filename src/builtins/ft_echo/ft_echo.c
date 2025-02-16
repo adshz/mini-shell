@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/16 21:26:08 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/16 21:26:39 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "./echo.h"
 
-static bool is_valid_n_flag(const char *arg)
+static bool	is_valid_n_flag(const char *arg)
 {
 	int	i;
 
@@ -16,7 +27,7 @@ static bool is_valid_n_flag(const char *arg)
 	return (i > 1);
 }
 
-static int skip_and_check_n_flags(char **args, int *has_n_flag)
+static int	skip_and_check_n_flags(char **args, int *has_n_flag)
 {
 	int	i;
 
@@ -30,17 +41,16 @@ static int skip_and_check_n_flags(char **args, int *has_n_flag)
 	return (i);
 }
 
-static void echo_print_single_argument(const char *arg, int *is_first_arg)
+static void	echo_print_single_argument(const char *arg, int *is_first_arg)
 {
 	if (!*is_first_arg)
 		ft_putchar_fd(' ', STDOUT_FILENO);
-
 	if (arg)
 		ft_putstr_fd((char *)arg, STDOUT_FILENO);
 	*is_first_arg = 0;
 }
 
-static void echo_print_all_arguments(t_ast_node *node, int start_idx)
+static void	echo_print_all_arguments(t_ast_node *node, int start_idx)
 {
 	int	is_first_arg;
 
@@ -52,7 +62,7 @@ static void echo_print_all_arguments(t_ast_node *node, int start_idx)
 	}
 }
 
-int ft_echo(t_shell *shell, t_ast_node *node)
+int	ft_echo(t_shell *shell, t_ast_node *node)
 {
 	int	start_idx;
 	int	has_n_flag;

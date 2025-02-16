@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   echo_variable_expander.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/12 21:39:45 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/12 21:40:06 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/16 21:19:23 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/16 21:20:26 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "./echo.h"
 
 static char	*handle_special_cases(t_shell *shell, const char *arg)
@@ -21,20 +20,20 @@ static char	*handle_special_cases(t_shell *shell, const char *arg)
 	return (NULL);
 }
 
-static void process_dollar_sign(t_shell *shell, const char *arg,
-	char *result, t_expansion_state *state)
+static void	process_dollar_sign(t_shell *shell, const char *arg, \
+							char *result, t_expansion_state *state)
 {
 	if (arg[state->i + 1] == '?')
 		handle_exit_status(shell, result, state);
-	else if (arg[state->i + 1] && (ft_isalnum(arg[state->i + 1])
-		|| arg[state->i + 1] == '_'))
+	else if (arg[state->i + 1] && (ft_isalnum(arg[state->i + 1]) || \
+		arg[state->i + 1] == '_'))
 		handle_variable(shell, arg, result, state);
 	else
 		result[state->j++] = arg[state->i++];
 }
 
-static void	process_current_char(t_shell *shell, const char *arg,
-	char *result, t_expansion_state *state)
+static void	process_current_char(t_shell *shell, const char *arg, \
+								char *result, t_expansion_state *state)
 {
 	if (state->is_command_name && state->i == 0)
 		state->i++;
@@ -46,9 +45,9 @@ static void	process_current_char(t_shell *shell, const char *arg,
 		handle_regular_char(arg[state->i], result, state);
 }
 
-static char *init_expansion(void)
+static char	*init_expansion(void)
 {
-	char *result;
+	char	*result;
 
 	result = malloc(4096);
 	if (!result)
@@ -56,10 +55,10 @@ static char *init_expansion(void)
 	return (result);
 }
 
-char *expand_complex_variable(t_shell *shell, const char *arg)
+char	*expand_complex_variable(t_shell *shell, const char *arg)
 {
-	char *result;
-	t_expansion_state state;
+	t_expansion_state	state;
+	char				*result;
 
 	result = handle_special_cases(shell, arg);
 	if (result)
