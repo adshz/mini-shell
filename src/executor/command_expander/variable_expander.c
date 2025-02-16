@@ -18,6 +18,10 @@ int	handle_variable_expansion(t_shell *shell, t_ast_node *node)
 
 	if (!node || !node->args)
 		return (1);
+
+	ft_printf("\nDEBUG [var_expand]: Processing command arguments\n");
+	
+	// Handle command name (first argument) specially
 	dollar_pos = ft_strchr(node->args[0], '$');
 	if (dollar_pos)
 		return (expand_command_name_with_var(shell, node, dollar_pos));

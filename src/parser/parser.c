@@ -153,24 +153,66 @@ t_ast_node	*parse_expression(t_token **tokens, t_shell *shell)
 {
 	t_ast_node	*node;
 	char		*expanded;
+	t_token		*current;
 
 	if (!tokens || !*tokens)
 		return (NULL);
+
+	ft_printf("\nDEBUG [parser]: Processing expression\n");
+	current = *tokens;
+	ft_printf("DEBUG [parser]: Current token value: [%s], type: %d\n", 
+		current->value, current->type);
+
 	/* Only handle pure variable cases (starting with '$') */
 	if ((*tokens)->value[0] == '$')
 	{
+		ft_printf("DEBUG [parser]: Found variable token starting with $\n");
 		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
 		if (!expanded)
+		{
+			ft_printf("DEBUG [parser]: Variable expansion failed\n");
 			return (NULL);
+		}
+		ft_printf("DEBUG [parser]: Variable expanded to: [%s]\n", expanded);
 		/* Update token value with expanded string */
 		free((*tokens)->value);
 		(*tokens)->value = expanded;
+		ft_printf("DEBUG [parser]: Updated token value to: [%s]\n", (*tokens)->value);
 	}
+	else if (ft_strchr((*tokens)->value, '$'))
+	{
+		ft_printf("DEBUG [parser]: Found $ in token: [%s]\n", (*tokens)->value);
+		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
+		if (!expanded)
+		{
+			ft_printf("DEBUG [parser]: Variable expansion failed\n");
+			return (NULL);
+		}
+		ft_printf("DEBUG [parser]: Variable expanded to: [%s]\n", expanded);
+		free((*tokens)->value);
+		(*tokens)->value = expanded;
+		ft_printf("DEBUG [parser]: Updated token value to: [%s]\n", (*tokens)->value);
+	}
+
 	node = parse_pipeline(tokens, shell);
 	if (!node)
+	{
+		ft_printf("DEBUG [parser]: Pipeline parsing failed\n");
 		return (NULL);
-	if (*tokens && (*tokens)->type == TOKEN_REDIRECT_IN)
-		node = parse_redirection_construct(node, tokens, shell);
+	}
+
+	ft_printf("DEBUG [parser]: Pipeline parsed successfully\n");
+	if (*tokens)
+	{
+		ft_printf("DEBUG [parser]: Remaining token value: [%s], type: %d\n",
+			(*tokens)->value, (*tokens)->type);
+		if ((*tokens)->type == TOKEN_REDIRECT_IN)
+		{
+			ft_printf("DEBUG [parser]: Found redirection token\n");
+			node = parse_redirection_construct(node, tokens, shell);
+		}
+	}
+
 	return (node);
 }
 
@@ -201,27 +243,42 @@ t_ast_node	*parse(t_token *tokens, t_shell *shell)
 	t_ast_node	*ast;
 	t_token		*current;
 
+	ft_printf("\nDEBUG [parser]: Starting parse\n");
 	if (!tokens)
+	{
+		ft_printf("DEBUG [parser]: No tokens to parse\n");
 		return (NULL);
+	}
+
+	ft_printf("DEBUG [parser]: First token value: [%s], type: %d\n",
+		tokens->value, tokens->type);
+
 	if (tokens->type == TOKEN_PIPE)
 	{
+		ft_printf("DEBUG [parser]: Error - command starts with pipe\n");
 		ft_putendl_fd("minishell: syntax error near unexpected token '|'", STDERR_FILENO);
 		shell->exit_status = 258;
 		return (NULL);
 	}
+
 	current = tokens;
 	ast = parse_expression(&current, shell);
 	if (!ast)
 	{
+		ft_printf("DEBUG [parser]: Expression parsing failed\n");
 		if (current && is_redirection_token(current->type))
 			shell->exit_status = 258;
 		return (NULL);
 	}
+
 	if (current != NULL)
 	{
+		ft_printf("DEBUG [parser]: Error - unparsed tokens remain\n");
 		free_ast(ast);
 		shell->exit_status = 258;
 		return (NULL);
 	}
+
+	ft_printf("DEBUG [parser]: Parse completed successfully\n");
 	return (ast);
 }
