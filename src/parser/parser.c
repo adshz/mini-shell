@@ -163,35 +163,46 @@ t_ast_node	*parse_expression(t_token **tokens, t_shell *shell)
 	ft_printf("DEBUG [parser]: Current token value: [%s], type: %d\n", 
 		current->value, current->type);
 
-	/* Only handle pure variable cases (starting with '$') */
-	if ((*tokens)->value[0] == '$')
+	/* Handle any token containing variables */
+	if (ft_strchr((*tokens)->value, '$'))
 	{
-		ft_printf("DEBUG [parser]: Found variable token starting with $\n");
-		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
-		if (!expanded)
+		ft_printf("DEBUG [parser]: Found token with variables: [%s]\n", (*tokens)->value);
+		ft_printf("DEBUG [parser]: This could be a command name or argument\n");
+
+		char *dollar_pos = ft_strchr((*tokens)->value, '$');
+		if (dollar_pos > (*tokens)->value)
 		{
-			ft_printf("DEBUG [parser]: Variable expansion failed\n");
-			return (NULL);
+			ft_printf("DEBUG [parser]: Mixed case (text before $), skipping parser expansion\n");
+			// Check if this is part of a command (has more tokens)
+			if ((*tokens)->next && ft_strchr((*tokens)->next->value, '$'))
+			{
+				ft_printf("DEBUG [parser]: Found argument with $, will expand: [%s]\n", 
+					(*tokens)->next->value);
+				expanded = parse_handle_variable_expansion(shell, (*tokens)->next->value);
+				if (!expanded)
+				{
+					ft_printf("DEBUG [parser]: Argument expansion failed\n");
+					return (NULL);
+				}
+				ft_printf("DEBUG [parser]: Argument expanded to: [%s]\n", expanded);
+				free((*tokens)->next->value);
+				(*tokens)->next->value = expanded;
+			}
 		}
-		ft_printf("DEBUG [parser]: Variable expanded to: [%s]\n", expanded);
-		/* Update token value with expanded string */
-		free((*tokens)->value);
-		(*tokens)->value = expanded;
-		ft_printf("DEBUG [parser]: Updated token value to: [%s]\n", (*tokens)->value);
-	}
-	else if (ft_strchr((*tokens)->value, '$'))
-	{
-		ft_printf("DEBUG [parser]: Found $ in token: [%s]\n", (*tokens)->value);
-		expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
-		if (!expanded)
+		else
 		{
-			ft_printf("DEBUG [parser]: Variable expansion failed\n");
-			return (NULL);
+			expanded = parse_handle_variable_expansion(shell, (*tokens)->value);
+			if (!expanded)
+			{
+				ft_printf("DEBUG [parser]: Variable expansion failed\n");
+				return (NULL);
+			}
+			ft_printf("DEBUG [parser]: All variables expanded to: [%s]\n", expanded);
+			/* Update token value with expanded string */
+			free((*tokens)->value);
+			(*tokens)->value = expanded;
+			ft_printf("DEBUG [parser]: Token updated to: [%s]\n", (*tokens)->value);
 		}
-		ft_printf("DEBUG [parser]: Variable expanded to: [%s]\n", expanded);
-		free((*tokens)->value);
-		(*tokens)->value = expanded;
-		ft_printf("DEBUG [parser]: Updated token value to: [%s]\n", (*tokens)->value);
 	}
 
 	node = parse_pipeline(tokens, shell);

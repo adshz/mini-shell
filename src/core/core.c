@@ -78,20 +78,20 @@ bool	parse_and_build_ast(t_shell *shell)
  *
  * @note readline() returns NULL on Ctrl+D (EOF) or error
  */
-// static bool	valid_usr_input(t_shell *shell)
-// {
-// 	if (!shell->line)
-// 	{
-// 		ft_putendl_fd("exit", STDOUT_FILENO);
-// 		return (false);
-// 	}
-// 	if (shell->line[0] == '\0')
-// 	{
-// 		free(shell->line);
-// 		return (false);
-// 	}
-// 	return (true);
-// }
+static bool	valid_usr_input(t_shell *shell)
+{
+	if (!shell->line)
+	{
+		ft_putendl_fd("exit", STDOUT_FILENO);
+		return (false);
+	}
+	if (shell->line[0] == '\0')
+	{
+		free(shell->line);
+		return (false);
+	}
+	return (true);
+}
 
 /**
  * @brief Main interactive shell loop
@@ -108,23 +108,23 @@ bool	parse_and_build_ast(t_shell *shell)
  *
  * @note Continues until EOF or exit command
  */
-// void	interactive_loop(t_shell *shell)
-// {
-// 	while (1)
-// 	{
-// 		init_signals();
-// 		shell->line = readline(PROMPT);
-// 		if (!valid_usr_input(shell))
-// 			break ;
-// 		if (!parse_and_build_ast(shell))
-// 			continue ;
-// 		if (shell->ast)
-// 		{
-// 			shell->exit_status = execute_ast(shell, shell->ast);
-// 			add_command_to_history(shell, shell->ast);
-// 			shell->ast = NULL;
-// 		}
-// 		cleanup_current_command(shell);
-// 	}
-// 	cleanup_shell(shell);
-// }
+void	interactive_loop(t_shell *shell)
+{
+	while (1)
+	{
+		init_signals();
+		shell->line = readline(PROMPT);
+		if (!valid_usr_input(shell))
+			break ;
+		if (!parse_and_build_ast(shell))
+			continue ;
+		if (shell->ast)
+		{
+			shell->exit_status = execute_ast(shell, shell->ast);
+			add_command_to_history(shell, shell->ast);
+			shell->ast = NULL;
+		}
+		cleanup_current_command(shell);
+	}
+	cleanup_shell(shell);
+}
