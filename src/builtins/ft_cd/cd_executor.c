@@ -55,15 +55,13 @@ int	handle_cd_path(t_shell *shell, const char *path)
 		ft_putendl_fd(ERR_GETCWD ERR_NO_FILE, STDERR_FILENO);
 		return (1);
 	}
-
 	if (chdir(path) == -1)
 	{
 		free(old_pwd);
 		return (handle_cd_error(path, path));
 	}
-	// Update PWD and OLDPWD environment variables
 	update_pwd_vars(shell, old_pwd);
-	free(old_pwd);  // Free the old_pwd after updating vars
-	cleanup_path((char *)path, path, shell);  // Clean up the path argument if needed
+	free(old_pwd);
+	cleanup_path((char *)path, path, shell);
 	return (0);
 }

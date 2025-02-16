@@ -30,7 +30,7 @@ int	handle_cd_error(const char *path, const char *arg)
 
 void	cleanup_path(char *path, const char *arg, t_shell *shell)
 {
-	if (path != arg && path != hashmap_get(shell->env, "HOME") 
-		&& path != hashmap_get(shell->env, "OLDPWD"))
+	if (path != arg && path != hashmap_get(shell->env, "HOME") && \
+	path != hashmap_get(shell->env, "OLDPWD"))
 		free(path);
 }
