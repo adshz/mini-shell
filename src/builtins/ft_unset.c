@@ -29,34 +29,43 @@ static char	*expand_var_name(t_shell *shell, const char *arg)
 	return (ft_strdup(arg));
 }
 
+static int	process_unset_var(t_shell *shell, const char *arg)
+{
+	char	*expanded_name;
+	int		status;
+
+	status = 0;
+	expanded_name = expand_var_name(shell, arg);
+	if (!expanded_name)
+		return (0);
+	if (!is_valid_identifier(expanded_name))
+	{
+		ft_putstr_fd("unset: '", STDERR_FILENO);
+		ft_putstr_fd(expanded_name, STDERR_FILENO);
+		ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+		status = 1;
+	}
+	else
+		hashmap_remove(shell->env, expanded_name);
+	free(expanded_name);
+	return (status);
+}
+
 int	builtin_unset(t_shell *shell, t_ast_node *node)
 {
 	int		i;
 	int		status;
-	char	*expanded_name;
+	int		current_status;
 
 	if (!node->args[1])
 		return (0);
-	status = 0;
 	i = 1;
+	status = 0;
 	while (node->args[i])
 	{
-		expanded_name = expand_var_name(shell, node->args[i]);
-		if (!expanded_name)
-		{
-			i++;
-			continue ;
-		}
-		if (!is_valid_identifier(expanded_name))
-		{
-			ft_putstr_fd("unset: '", STDERR_FILENO);
-			ft_putstr_fd(expanded_name, STDERR_FILENO);
-			ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-			status = 1;
-		}
-		else
-			hashmap_remove(shell->env, expanded_name);
-		free(expanded_name);
+		current_status = process_unset_var(shell, node->args[i]);
+		if (current_status)
+			status = current_status;
 		i++;
 	}
 	return (status);
