@@ -85,6 +85,7 @@ typedef enum e_token_type
  * @param type	Type classification of token (e.g. TOKEN_WORD, TOKEN_PIPE..)
  * @param next	Pointer to next token in the sequence, NULL if last token
  * @param prev	Pointer to previous token in the sequence, NULL if first token
+ * @param in_single_quotes Indicates if the token was in single quotes
 */
 typedef struct s_token
 {
@@ -92,6 +93,7 @@ typedef struct s_token
 	t_token_type	type;
 	struct s_token	*next;
 	struct s_token	*prev;
+	bool			in_single_quotes;
 }	t_token;
 
 /* Function Prototypes */
@@ -154,9 +156,10 @@ size_t				get_token_length_with_state(const char *input);
  * @brief Extracts token from input string
  * @param input Input string
  * @param len Length to extract
+ * @param in_single_quotes Pointer to store if token is in single quotes
  * @return New string containing token or NULL on error
  */
-char				*extract_token(const char *input, size_t len);
+char				*extract_token(const char *input, size_t len, bool *in_single_quotes);
 
 /* State Transitions */
 /**

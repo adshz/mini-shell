@@ -93,6 +93,7 @@ typedef struct s_shell
 	int				signal;
 	struct termios	term_settings;
 	bool			in_double_quotes;
+	bool			in_single_quotes;
 }	t_shell;
 
 #endif

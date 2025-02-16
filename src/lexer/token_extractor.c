@@ -111,6 +111,7 @@ static void	process_normal_char(char *result, size_t *j, char current_char,
  *
  * @param input Input string to extract from
  * @param len Length of token to extract
+ * @param in_single_quotes Pointer to store if token is in single quotes
  * 
  * @return char* Returns:
  *         - Newly allocated string containing the extracted token
@@ -126,7 +127,7 @@ static void	process_normal_char(char *result, size_t *j, char current_char,
  * @note Caller must free returned string
  * @see get_next_state() for state tracking details
  */
-char	*extract_token(const char *input, size_t len)
+char	*extract_token(const char *input, size_t len, bool *in_single_quotes)
 {
 	char				*result;
 	size_t				i;
@@ -134,9 +135,20 @@ char	*extract_token(const char *input, size_t len)
 	t_tokeniser_state	state;
 	t_tokeniser_state	prev_state;
 
+	ft_printf("DEBUG [extract_token]: input=[%s], len=%zu\n", input, len);
+	if (!input)
+	{
+		ft_printf("DEBUG [extract_token]: NULL input!\n");
+		return (NULL);
+	}
 	result = init_token_extraction(len, &i, &j, &state, &prev_state);
 	if (!result)
+	{
+		ft_printf("DEBUG [extract_token]: Failed to allocate result buffer!\n");
 		return (NULL);
+	}
+	*in_single_quotes = (len >= 2 && input[0] == '\'' && input[len - 1] == '\'');
+	ft_printf("DEBUG [extract_token]: in_single_quotes=%d\n", *in_single_quotes);
 	while (i < len)
 	{
 		prev_state = state;

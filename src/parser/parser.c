@@ -76,9 +76,12 @@ static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
 	if (!value)
 		return (NULL);
 
+	ft_printf("\nDEBUG [parser]: Handling variable expansion for value: [%s]\n", value);
+
 	/* Pure variable case (token starts with '$') */
 	if (value[0] == '$')
 	{
+		ft_printf("DEBUG [parser]: Pure variable case, expanding: [%s]\n", value + 1);
 		expanded_value = expand_simple_variable(shell, value + 1);
 		if (!expanded_value)
 			expanded_value = ft_strdup("");
@@ -86,23 +89,30 @@ static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
 		dollar_pos = ft_strchr(value + 1, '$');
 		if (dollar_pos)
 		{
+			ft_printf("DEBUG [parser]: Found additional variable at: [%s]\n", dollar_pos);
 			remaining_expanded = parse_handle_variable_expansion(shell, dollar_pos);
 			if (remaining_expanded)
 			{
+				ft_printf("DEBUG [parser]: Combining [%s] with [%s]\n", expanded_value, remaining_expanded);
 				final_value = ft_strjoin(expanded_value, remaining_expanded);
 				free(expanded_value);
 				free(remaining_expanded);
 				expanded_value = final_value;
 			}
 		}
+		ft_printf("DEBUG [parser]: Final expansion result: [%s]\n", expanded_value);
 		return (expanded_value);
 	}
 
 	/* Mixed variable case ('$' in the middle) */
 	dollar_pos = ft_strchr(value, '$');
 	if (!dollar_pos)
+	{
+		ft_printf("DEBUG [parser]: No variable found, returning copy: [%s]\n", value);
 		return (ft_strdup(value));
+	}
 	
+	ft_printf("DEBUG [parser]: Mixed case - prefix before $: [%.*s]\n", (int)(dollar_pos - value), value);
 	prefix = ft_substr(value, 0, dollar_pos - value);
 	if (!prefix)
 		return (NULL);
@@ -112,9 +122,11 @@ static char	*parse_handle_variable_expansion(t_shell *shell, const char *value)
 		free(prefix);
 		return (NULL);
 	}
+	ft_printf("DEBUG [parser]: Combining prefix [%s] with expansion [%s]\n", prefix, remaining_expanded);
 	final_value = ft_strjoin(prefix, remaining_expanded);
 	free(prefix);
 	free(remaining_expanded);
+	ft_printf("DEBUG [parser]: Mixed case final result: [%s]\n", final_value);
 	return (final_value);
 }
 

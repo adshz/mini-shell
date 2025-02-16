@@ -70,8 +70,9 @@ static t_token	*process_single_token(const char *input, size_t len)
 {
 	t_token	*new_token;
 	char	*value;
+	bool	in_single_quotes;
 
-	value = extract_token(input, len);
+	value = extract_token(input, len, &in_single_quotes);
 	if (!value)
 		return (NULL);
 	new_token = create_token(get_token_type(value), value);
@@ -80,6 +81,7 @@ static t_token	*process_single_token(const char *input, size_t len)
 		free(value);
 		return (NULL);
 	}
+	new_token->in_single_quotes = in_single_quotes;
 	return (new_token);
 }
 

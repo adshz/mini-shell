@@ -61,7 +61,15 @@ char	*combine_parts(char *prefix, char *expanded, char *suffix)
 void	init_quote_state(t_shell *shell,
 		const char *arg, bool *was_in_double_quotes)
 {
+	size_t len;
+
 	*was_in_double_quotes = shell->in_double_quotes;
-	if (arg[0] == '"' && arg[ft_strlen(arg) - 1] == '"')
-		shell->in_double_quotes = true;
+	len = ft_strlen(arg);
+	if (len >= 2)
+	{
+		if (arg[0] == '"' && arg[len - 1] == '"')
+			shell->in_double_quotes = true;
+		else if (arg[0] == '\'' && arg[len - 1] == '\'')
+			shell->in_single_quotes = true;
+	}
 }

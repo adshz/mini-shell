@@ -44,6 +44,7 @@ t_token	*create_token(t_token_type type, const char *value)
 	}
 	token->next = NULL;
 	token->prev = NULL;
+	token->in_single_quotes = false;
 	return (token);
 }
 
