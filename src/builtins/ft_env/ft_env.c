@@ -9,34 +9,16 @@
 /*   Updated: 2025/02/12 22:04:57 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "builtins.h"
-#include "executor/executor.h"
-#include "libft.h"
-#include "hashtable/hashtable.h"
-#include "utils/utils.h"
-
-static void	print_env_var(const char *key, const char *value)
-{
-	char	*key_copy;
-	char	*value_copy;
-
-	key_copy = ft_strdup(key);
-	value_copy = ft_strdup(value);
-	ft_putstr_fd(key_copy, STDOUT_FILENO);
-	ft_putstr_fd("=", STDOUT_FILENO);
-	ft_putendl_fd(value_copy, STDOUT_FILENO);
-	free(key_copy);
-	free(value_copy);
-}
+#include "env.h"
 
 static int	execute_env_command(t_shell *shell,
 			char *cmd_path, t_ast_node *node)
 {
 	char	**env_array;
 	pid_t	pid;
-	int		status;
 
+	env_array = NULL;
+	pid = 0;
 	env_array = create_env_array(shell->env);
 	if (!env_array)
 	{
@@ -45,27 +27,12 @@ static int	execute_env_command(t_shell *shell,
 	}
 	pid = fork();
 	if (pid == 0)
-	{
-		execve(cmd_path, node->args + 1, env_array);
-		exit(127);
-	}
+		handle_env_child_process(cmd_path, node->args + 1, env_array);
 	else if (pid > 0)
-	{
-		waitpid(pid, &status, 0);
-		free(cmd_path);
-		ft_free_array(env_array);
-		return ((status >> 8) & 0xff);
-	}
+		return (handle_env_parent_process(pid, cmd_path, env_array));
 	free(cmd_path);
 	ft_free_array(env_array);
 	return (1);
-}
-
-static int	handle_env_command_not_found(const char *cmd)
-{
-	ft_putstr_fd((char *)cmd, STDERR_FILENO);
-	ft_putendl_fd(": No such file or directory", STDERR_FILENO);
-	return (127);
 }
 
 int	builtin_env(t_shell *shell, t_ast_node *node)
@@ -76,7 +43,7 @@ int	builtin_env(t_shell *shell, t_ast_node *node)
 		return (1);
 	if (!node->args[1])
 	{
-		hashmap_iterate(shell->env, print_env_var);
+		hashmap_iterate(shell->env, env_print_env_var);
 		return (0);
 	}
 	cmd_path = get_command_path(shell, node->args[1], shell->env);

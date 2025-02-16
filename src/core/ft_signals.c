@@ -15,6 +15,15 @@
 #include <termios.h>
 #include <unistd.h>
 
+// extern is a keyword that is used to declare a variable that is defined
+// outside of the current file.
+// volatile is a keyword that is used to declare a variable that can be changed
+// by the program or by the operating system.
+// sig_atomic_t is a keyword that is used to declare a variable that can be
+// changed by the program or by the operating system.
+// g_signal_status is a variable that is used to store the signal status.
+// it is declared as volatile because it can be changed by the program or
+// by the operating system.
 extern volatile sig_atomic_t	g_signal_status;
 
 #define SIG_HEREDOC_MODE 1
@@ -74,6 +83,8 @@ void	handle_sigint(int sig)
  * - Disables control character echo
  * - Initializes global signal status
  * - Uses SA_RESTART to automatically restart interrupted system calls
+ * - Sets rl_catch_signals to 0 because we want to handle signals on
+ * our own rather than using readline's default
  */
 void	init_signals(void)
 {

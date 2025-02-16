@@ -9,18 +9,17 @@
 /*   Updated: 2025/02/12 22:07:12 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "libft.h"
 #include "utils/utils.h"
 #include "errors.h"
 
 static int	get_exit_code(t_shell *shell, t_ast_node *node)
 {
-	int exit_code;
+	int	exit_code;
 
 	if (!node || !node->args)
 		exit_code = shell->exit_status;
-	else if (!node->args[0])  // Check if even the command name exists
+	else if (!node->args[0])
 		exit_code = shell->exit_status;
 	else if (node->args[1] && !ft_isnumber(node->args[1]))
 	{
@@ -41,15 +40,15 @@ static int	get_exit_code(t_shell *shell, t_ast_node *node)
 
 int	builtin_exit(t_shell *shell, t_ast_node *node)
 {
-	int exit_code;
+	int	exit_code;
 
 	if (!shell || !node)
 		return (1);
 	if (!shell->in_pipe)
 		ft_putendl_fd("exit", STDERR_FILENO);
-
 	exit_code = get_exit_code(shell, node);
-	if (exit_code == 1 && node->args && node->args[0] && node->args[1] && node->args[2])
+	if (exit_code == 1 && node->args && node->args[0] && \
+	node->args[1] && node->args[2])
 		return (1);
 	exit(exit_code);
 }

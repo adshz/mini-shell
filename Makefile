@@ -40,7 +40,7 @@ SRCS		:=	\
 				core/shell_modes.c \
 				builtins/builtins.c \
 				builtins/builtins_executor.c \
-				builtins/builtin_utils.c \
+				builtins/builtin_utils/builtin_utils.c \
 				builtins/ft_cd/cd_env_handler.c \
 				builtins/ft_cd/cd_executor.c \
 				builtins/ft_cd/cd_path_handler.c \
@@ -52,7 +52,8 @@ SRCS		:=	\
 				builtins/ft_echo/echo_variable_handler.c \
 				builtins/ft_echo/echo_command_handler.c \
 				builtins/ft_echo/echo_number_utils.c \
-				builtins/ft_env.c \
+				builtins/ft_env/ft_env.c \
+				builtins/ft_env/ft_env_utils.c \
 				builtins/ft_exit.c \
 				builtins/ft_export.c \
 				builtins/ft_pwd.c \
