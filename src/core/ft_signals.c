@@ -70,6 +70,7 @@ void	handle_sigint(int sig)
 	if (g_signal_status == SIG_HEREDOC_INT)
 		return;  // Prevent double handling of heredoc interrupts
 
+  write(1, "\n", 1);
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
