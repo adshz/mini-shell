@@ -39,23 +39,11 @@ t_ast_node	*init_command_node(t_token *start, int arg_count)
 {
 	t_ast_node	*node;
 
-	ft_putstr_fd("\n=== Initializing Command Node ===\n", STDERR_FILENO);
-	ft_putstr_fd("Token value: [", STDERR_FILENO);
-	ft_putstr_fd(start->value, STDERR_FILENO);
-	ft_putstr_fd("]\nArg count: ", STDERR_FILENO);
-	ft_putnbr_fd(arg_count, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
-
 	node = create_ast_node(AST_COMMAND, start->value);
 	if (!node)
-	{
-		ft_putstr_fd("Failed to create AST node\n", STDERR_FILENO);
 		return (NULL);
-	}
-
 	if (!init_command_expansion(node, start->value))
 	{
-		ft_putstr_fd("Failed to initialize command expansion\n", STDERR_FILENO);
 		free_ast(node);
 		return (NULL);
 	}
@@ -63,13 +51,9 @@ t_ast_node	*init_command_node(t_token *start, int arg_count)
 	node->args = allocate_args(arg_count);
 	if (!node->args)
 	{
-		ft_putstr_fd("Failed to allocate arguments\n", STDERR_FILENO);
 		free_ast(node);
 		return (NULL);
 	}
-
-	ft_putstr_fd("Successfully initialized command node\n", STDERR_FILENO);
-	ft_putstr_fd("=== Command Node Initialization Complete ===\n\n", STDERR_FILENO);
 	return (node);
 }
 
@@ -144,34 +128,21 @@ t_ast_node	*create_default_heredoc_command(void)
 	t_token		*cat_token;
 	t_ast_node	*node;
 
-	ft_putstr_fd("\n=== Creating Default Heredoc Command ===\n", STDERR_FILENO);
 	cat_token = create_token(TOKEN_WORD, "cat");
 	if (!cat_token)
-	{
-		ft_putstr_fd("Failed to create cat token\n", STDERR_FILENO);
 		return (NULL);
-	}
-
-	ft_putstr_fd("Creating command node for cat\n", STDERR_FILENO);
 	node = init_command_node(cat_token, 1);
 	if (!node)
 	{
-		ft_putstr_fd("Failed to initialize command node\n", STDERR_FILENO);
 		free_tokens(cat_token);
 		return (NULL);
 	}
-
-	ft_putstr_fd("Filling command arguments\n", STDERR_FILENO);
 	if (!fill_args(node->args, cat_token, 1))
 	{
-		ft_putstr_fd("Failed to fill arguments\n", STDERR_FILENO);
 		free_tokens(cat_token);
 		free_ast(node);
 		return (NULL);
 	}
-
 	free_tokens(cat_token);
-	ft_putstr_fd("Successfully created default heredoc command\n", STDERR_FILENO);
-	ft_putstr_fd("=== Default Heredoc Command Creation Complete ===\n\n", STDERR_FILENO);
 	return (node);
 }
