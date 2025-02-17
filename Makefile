@@ -61,7 +61,6 @@ SRCS		:=	\
 				builtins/ft_export/export_parser.c \
 				builtins/ft_pwd.c \
 				builtins/ft_unset.c \
-				executor/redirections_executor/debug_heredoc.c\
 				executor/ast_executor/ast_executor.c \
 				executor/ast_executor/node_handler.c \
 				executor/ast_executor/redirection_handler.c \
@@ -95,8 +94,6 @@ SRCS		:=	\
 				executor/pipe_handler/pipe_executor.c \
 				executor/pipe_handler/pipe_setup.c \
 				executor/pipe_handler/pipe_utils.c \
-				executor/redirections_executor/heredoc_content_handler.c \
-				executor/redirections_executor/heredoc_io_handler.c \
 				executor/redirections_executor/heredoc_processor.c \
 				executor/redirections_executor/redirection_executor.c \
 				executor/redirections_executor/redirection_filename_expander.c \

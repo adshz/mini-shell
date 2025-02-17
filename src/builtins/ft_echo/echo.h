@@ -29,6 +29,9 @@ typedef struct s_expansion_state
 	int	had_var_expansion;
 }	t_expansion_state;
 
+/* Main echo function */
+int		ft_echo(t_shell *shell, t_ast_node *node);
+
 /* Echo utilities */
 bool	is_echo_flag(const char *arg);
 void	handle_echo_args(char **args, bool *print_newline);

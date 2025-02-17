@@ -26,7 +26,7 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 	shell->in_heredoc = 1;
 	while (1)
 	{
-		write(STDOUT_FILENO, "> ", 2);
+		write(STDERR_FILENO, "> ", 2);
 		line = get_next_line(STDIN_FILENO);
 		if (!line || g_signal_status == SIG_HEREDOC_INT)
 		{
@@ -79,5 +79,7 @@ int	setup_heredoc_pipe(t_ast_node *node)
 
 int	handle_heredoc(t_ast_node *node, t_shell *shell)
 {
-	return (collect_heredoc_content(node, shell));
+	int ret;
+  ret = collect_heredoc_content(node, shell);
+	return (ret);
 }

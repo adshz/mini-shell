@@ -62,15 +62,16 @@ void	handle_sigint(int sig)
 
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
+		write(1, "\n", 1);  // Add newline before returning to prompt
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
 		return;
 	}
 
 	if (g_signal_status == SIG_HEREDOC_INT)
-		return;  // Prevent double handling of heredoc interrupts
+		return ;  // Prevent double handling of heredoc interrupts
 
-  write(1, "\n", 1);
+	write(1, "\n", 1);
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
@@ -104,12 +105,8 @@ void	restore_signal_handlers(void)
  */
 void	init_signals(void)
 {
-	ft_printf("\nDEBUG [signals]: ============ Signal Handler Initialization ============\n");
-	ft_printf("DEBUG [signals]: Previous signal status: %d\n", g_signal_status);
 	g_signal_status = SIG_NONE;
 	disable_ctrl_char_echo();
 	restore_signal_handlers();
 	rl_catch_signals = 0;
-	ft_printf("DEBUG [signals]: New signal status: %d\n", g_signal_status);
-	ft_printf("DEBUG [signals]: ================= Initialization Done ================\n\n");
 }

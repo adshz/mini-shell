@@ -56,10 +56,12 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 	t_token		*current;
 	t_token		*delimiter;
 	t_ast_node	*first_redir;
+	t_ast_node	*last_redir;
 	int			count;
 
 	current = *tokens;
 	first_redir = NULL;
+	last_redir = NULL;
 	count = 0;
 
 	t_token *check = current;
@@ -73,6 +75,7 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 		}
 		check = check->next->next;
 	}
+
 	t_token *target = current;
 	int current_count = 1;
 	while (current_count <= count)
@@ -82,19 +85,23 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 			delimiter->value);
 		if (!new_redir)
 			return (cleanup_heredoc_nodes(first_redir, command_node));
+
 		if (!first_redir)
 		{
-			new_redir->left = command_node;
 			first_redir = new_redir;
+			last_redir = new_redir;
 		}
 		else
 		{
-			new_redir->left = first_redir;
-			first_redir = new_redir;
+			last_redir->left = new_redir;
+			last_redir = new_redir;
 		}
 		target = target->next->next;
 		current_count++;
 	}
+
+	last_redir->left = command_node;
+
 	while (current && current->type == TOKEN_HEREDOC)
 	{
 		current = current->next->next;

@@ -22,7 +22,7 @@
 
 /* Builtin command declarations */
 int		builtin_cd(t_shell *shell, t_ast_node *node);
-int		builtin_echo(t_shell *shell, t_ast_node *node);
+int		ft_echo(t_shell *shell, t_ast_node *node);
 int		builtin_env(t_shell *shell, t_ast_node *node);
 int		builtin_exit(t_shell *shell, t_ast_node *node);
 int		builtin_export(t_shell *shell, t_ast_node *node);
