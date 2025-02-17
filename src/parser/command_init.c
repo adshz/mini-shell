@@ -44,14 +44,12 @@ t_ast_node	*init_command_node(t_token *start, int arg_count)
 		return (NULL);
 	if (!init_command_expansion(node, start->value))
 	{
-		ft_putstr_fd("Failed to initialize command expansion\n", STDERR_FILENO);
 		free_ast(node);
 		return (NULL);
 	}
 	node->args = allocate_args(arg_count);
 	if (!node->args)
 	{
-		ft_putstr_fd("Failed to allocate arguments\n", STDERR_FILENO);
 		free_ast(node);
 		return (NULL);
 	}
@@ -128,20 +126,16 @@ t_ast_node	*create_default_heredoc_command(void)
 
 	cat_token = create_token(TOKEN_WORD, "cat");
 	if (!cat_token)
-	{
-		ft_putstr_fd("Failed to create cat token\n", STDERR_FILENO);
 		return (NULL);
 	}
 	node = init_command_node(cat_token, 1);
 	if (!node)
 	{
-		ft_putstr_fd("Failed to initialize command node\n", STDERR_FILENO);
 		free_tokens(cat_token);
 		return (NULL);
 	}
 	if (!fill_args(node->args, cat_token, 1))
 	{
-		ft_putstr_fd("Failed to fill arguments\n", STDERR_FILENO);
 		free_tokens(cat_token);
 		free_ast(node);
 		return (NULL);

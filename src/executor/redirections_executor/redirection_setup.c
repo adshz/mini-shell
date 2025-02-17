@@ -97,7 +97,7 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	i = redir_count - 1;
 	while (i >= 0)
 	{
-		if (redir_nodes[i]->type == AST_HEREDOC)
+		if (redir_nodes[i]->type == AST_HEREDOC && !redir_nodes[i]->data.content_fd)
 		{
 			if (collect_heredoc_content(redir_nodes[i], shell) != 0)
 			{

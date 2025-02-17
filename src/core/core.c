@@ -70,7 +70,7 @@ bool	parse_and_build_ast(t_shell *shell)
  *
  * Checks for:
  * - NULL input (EOF/Ctrl+D): Prints "exit" and returns false
- * - Empty line: Frees line and returns false
+ * - Empty line: Frees line and returns true so we continue the loop
  *
  * @param shell Pointer to shell structure
  * @return true if input is valid for processing, false if shell should exit
@@ -85,10 +85,11 @@ static bool	valid_usr_input(t_shell *shell)
 		ft_putendl_fd("exit", STDOUT_FILENO);
 		return (false);
 	}
-	if (shell->line[0] == '\0')
+	if (shell->line[0] == '\0' || is_only_whitespace(shell->line))
 	{
 		free(shell->line);
-		return (false);
+		shell->line = NULL;
+		return (true);
 	}
 	return (true);
 }
