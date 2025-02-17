@@ -63,8 +63,8 @@ void	handle_sigint(int sig)
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
 		g_signal_status = SIG_HEREDOC_INT;
-		close(STDIN_FILENO);
-		return ;
+		rl_done = 1;  // Force readline to return
+		return;
 	}
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
