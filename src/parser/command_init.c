@@ -127,7 +127,6 @@ t_ast_node	*create_default_heredoc_command(void)
 	cat_token = create_token(TOKEN_WORD, "cat");
 	if (!cat_token)
 		return (NULL);
-	}
 	node = init_command_node(cat_token, 1);
 	if (!node)
 	{

@@ -82,7 +82,6 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 			delimiter->value);
 		if (!new_redir)
 			return (cleanup_heredoc_nodes(first_redir, command_node));
-		}
 		if (!first_redir)
 		{
 			new_redir->left = command_node;
@@ -109,11 +108,9 @@ t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 	t_ast_node	*command_node;
 	t_ast_node	*heredoc_chain;
 
-
 	command_node = create_default_heredoc_command();
 	if (!command_node)
 		return (NULL);
-	}
 	heredoc_chain = create_heredoc_chain(tokens, command_node, shell);
 	if (!heredoc_chain)
 	{
