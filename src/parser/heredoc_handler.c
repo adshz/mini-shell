@@ -62,44 +62,27 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 	first_redir = NULL;
 	count = 0;
 
-	// First pass: Count heredocs and validate delimiters
 	t_token *check = current;
 	while (check && check->type == TOKEN_HEREDOC)
 	{
 		count++;
 		if (!check->next || check->next->type != TOKEN_WORD)
 		{
-			ft_putstr_fd("Error: Missing or invalid delimiter\n", STDERR_FILENO);
 			shell->exit_status = 258;
 			return (cleanup_heredoc_nodes(first_redir, command_node));
 		}
 		check = check->next->next;
 	}
 
-	ft_putstr_fd("\nProcessing heredocs in order (total: ", STDERR_FILENO);
-	ft_putnbr_fd(count, STDERR_FILENO);
-	ft_putstr_fd(")\n", STDERR_FILENO);
-
-	// Second pass: Create nodes in forward order
 	t_token *target = current;
 	int current_count = 1;
 	while (current_count <= count)
 	{
 		delimiter = target->next;
-
-		ft_putstr_fd("\nCreating heredoc node #", STDERR_FILENO);
-		ft_putnbr_fd(current_count, STDERR_FILENO);
-		ft_putstr_fd(" with delimiter: [", STDERR_FILENO);
-		ft_putstr_fd(delimiter->value, STDERR_FILENO);
-		ft_putstr_fd("]\n", STDERR_FILENO);
-
 		t_ast_node *new_redir = create_redirection_node(TOKEN_HEREDOC,
 			delimiter->value);
 		if (!new_redir)
-		{
-			ft_putstr_fd("Failed to create redirection node\n", STDERR_FILENO);
 			return (cleanup_heredoc_nodes(first_redir, command_node));
-		}
 
 		if (!first_redir)
 		{
@@ -115,14 +98,12 @@ static t_ast_node	*create_heredoc_chain(t_token **tokens,
 		current_count++;
 	}
 
-	// Update tokens pointer to skip all processed heredocs
 	while (current && current->type == TOKEN_HEREDOC)
 	{
 		current = current->next->next;
 	}
 	*tokens = current;
 
-	ft_putstr_fd("\nHeredoc chain created successfully\n", STDERR_FILENO);
 	return (first_redir);
 }
 
@@ -131,23 +112,14 @@ t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 	t_ast_node	*command_node;
 	t_ast_node	*heredoc_chain;
 
-	ft_putstr_fd("\n=== Starting Heredoc Command Parsing ===\n", STDERR_FILENO);
-	
 	command_node = create_default_heredoc_command();
 	if (!command_node)
-	{
-		ft_putstr_fd("Failed to create default heredoc command\n", STDERR_FILENO);
 		return (NULL);
-	}
-
 	heredoc_chain = create_heredoc_chain(tokens, command_node, shell);
 	if (!heredoc_chain)
 	{
-		ft_putstr_fd("Failed to create heredoc chain\n", STDERR_FILENO);
 		free_ast(command_node);
 		return (NULL);
 	}
-
-	ft_putstr_fd("=== Heredoc Command Parsing Complete ===\n\n", STDERR_FILENO);
 	return (heredoc_chain);
 }
