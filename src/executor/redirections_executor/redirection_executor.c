@@ -62,7 +62,7 @@ int	handle_redirection_parent_process(t_shell *shell, int status)
 {
 	if (WIFEXITED(status))
 	{
-		if (g_signal_status == SIG_HEREDOC_INT)
+		if (g_signal_status == SIG_HEREDOC_INT || shell->heredoc_sigint)
 		{
 			shell->signal = 0;
 			shell->heredoc_sigint = false;
@@ -71,6 +71,11 @@ int	handle_redirection_parent_process(t_shell *shell, int status)
 			return (130);
 		}
 		return ((status >> 8) & 0xff);
+	}
+	if (WIFSIGNALED(status))
+	{
+		shell->exit_status = 128 + WTERMSIG(status);
+		return (shell->exit_status);
 	}
 	return (1);
 }

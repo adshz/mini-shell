@@ -36,10 +36,11 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 			{
 				shell->heredoc_sigint = true;
 				g_signal_status = SIG_NONE;
+				shell->exit_status = 130;
 			}
 			if (line)
 				free(line);
-			return (1);
+			return (130);
 		}
 		len = ft_strlen(line);
 		if (len > 0 && line[len - 1] == '\n')

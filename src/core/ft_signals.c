@@ -73,10 +73,7 @@ void	handle_sigint(int sig)
 		ft_printf("DEBUG [signals]: SIGINT received in heredoc mode\n");
 		ft_printf("\n");
 		g_signal_status = SIG_HEREDOC_INT;
-		ft_printf("DEBUG [signals]: Setting heredoc interrupt status\n");
-		close(STDIN_FILENO);
-		ft_printf("DEBUG [signals]: Closed STDIN in heredoc mode\n");
-		handling_signal = false;
+		rl_done = 1;  // Force readline to return
 		return;
 	}
 	ft_printf("DEBUG [signals]: SIGINT received in normal mode\n");
