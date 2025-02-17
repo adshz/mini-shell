@@ -62,7 +62,6 @@ void	handle_sigint(int sig)
 
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
-		ft_printf("\n");
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
 		return;
@@ -71,11 +70,21 @@ void	handle_sigint(int sig)
 	if (g_signal_status == SIG_HEREDOC_INT)
 		return;  // Prevent double handling of heredoc interrupts
 
-	ft_printf("\n");
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
+}
+
+void	restore_signal_handlers(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handle_sigint;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa, NULL);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 /**
@@ -94,17 +103,11 @@ void	handle_sigint(int sig)
  */
 void	init_signals(void)
 {
-	struct sigaction	sa;
-
 	ft_printf("\nDEBUG [signals]: ============ Signal Handler Initialization ============\n");
 	ft_printf("DEBUG [signals]: Previous signal status: %d\n", g_signal_status);
 	g_signal_status = SIG_NONE;
 	disable_ctrl_char_echo();
-	sa.sa_handler = handle_sigint;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+	restore_signal_handlers();
 	rl_catch_signals = 0;
 	ft_printf("DEBUG [signals]: New signal status: %d\n", g_signal_status);
 	ft_printf("DEBUG [signals]: ================= Initialization Done ================\n\n");

@@ -114,11 +114,6 @@ void	interactive_loop(t_shell *shell)
 {
 	while (1)
 	{
-    if (shell->needs_reset)
-    {
-          reset_shell_state(shell);
-          continue;
-    }
 		init_signals();
 		shell->line = readline(PROMPT);
 		if (!valid_usr_input(shell))

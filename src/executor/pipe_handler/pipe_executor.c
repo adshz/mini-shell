@@ -88,7 +88,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(left_pid, &left_status, 0);
 	waitpid(right_pid, &right_status, 0);
-	init_signals();
+	restore_signal_handlers();
 	shell->in_pipe = false;
 	if ((left_status & 0x7f) || (right_status & 0x7f))
 	{

@@ -12,6 +12,7 @@
 
 #include "types.h"
 #include "builtins/builtins.h"
+#include "core/core.h"
 
 int	execute_command(t_shell *shell, t_ast_node *node)
 {
@@ -37,8 +38,7 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 	return (ret);
 }
 
-static int	execute_child_process(t_shell *shell,
-		t_ast_node *node, char *cmd_path)
+static int	execute_child_process(t_shell *shell, t_ast_node *node, char *cmd_path)
 {
 	char	**env_array;
 
@@ -55,30 +55,40 @@ static int	execute_child_process(t_shell *shell,
 	exit(127);
 }
 
-static int	handle_external_parent_process(t_shell *shell,
-		pid_t pid, char *cmd_path)
+static int	handle_external_parent_process(pid_t pid, char *cmd_path)
 {
 	int	status;
 
-	setup_parent_process();
-	waitpid(pid, &status, 0);
 	free(cmd_path);
-	init_signals();
-	if (was_signaled(status))
-		return (handle_signal_termination(shell, status));
-	shell->exit_status = get_exit_status(status);
-	return (get_exit_status(status));
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	waitpid(pid, &status, 0);
+	restore_signal_handlers();
+	if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGQUIT)
+		{
+			ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
+			return (131);
+		}
+		if (WTERMSIG(status) == SIGINT)
+			return (130);
+	}
+	return (WEXITSTATUS(status));
 }
 
 int	execute_external_command(t_shell *shell, t_ast_node *node)
 {
-	char	*cmd_path;
-	int		ret;
 	pid_t	pid;
+	char	*cmd_path;
 
-	ret = handle_path_resolution(shell, node, &cmd_path);
-	if (ret != 0)
-		return (ret);
+	if (!node || !node->args || !node->args[0])
+		return (1);
+
+	cmd_path = get_command_path(shell, node->args[0], shell->env);
+	if (!cmd_path)
+		return (127);
+
 	pid = fork();
 	if (pid == -1)
 	{
@@ -86,6 +96,10 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 		return (1);
 	}
 	if (pid == 0)
-		return (execute_child_process(shell, node, cmd_path));
-	return (handle_external_parent_process(shell, pid, cmd_path));
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		execute_child_process(shell, node, cmd_path);
+	}
+	return (handle_external_parent_process(pid, cmd_path));
 }
