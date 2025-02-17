@@ -29,10 +29,9 @@ typedef struct s_expansion_state
 	int	had_var_expansion;
 }	t_expansion_state;
 
-/* Public functions */
-int		ft_echo(t_shell *shell, t_ast_node *node);
-char	*expand_complex_variable(t_shell *shell, const char *arg);
-char	*expand_tilde(t_shell *shell, const char *arg);
+/* Echo utilities */
+bool	is_echo_flag(const char *arg);
+void	handle_echo_args(char **args, bool *print_newline);
 
 /* Variable expansion functions */
 void	init_expansion_state(t_expansion_state *state, const char *arg);

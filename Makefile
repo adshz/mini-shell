@@ -53,9 +53,12 @@ SRCS		:=	\
 				builtins/ft_echo/echo_command_handler.c \
 				builtins/ft_echo/echo_number_utils.c \
 				builtins/ft_env/ft_env.c \
-				builtins/ft_env/ft_env_utils.c \
+				builtins/ft_env/env_utils.c \
 				builtins/ft_exit.c \
-				builtins/ft_export.c \
+				builtins/ft_export/ft_export.c \
+				builtins/ft_export/export_utils.c \
+				builtins/ft_export/export_value_expansion.c \
+				builtins/ft_export/export_parser.c \
 				builtins/ft_pwd.c \
 				builtins/ft_unset.c \
 				executor/redirections_executor/debug_heredoc.c\

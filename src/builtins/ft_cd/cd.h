@@ -9,7 +9,6 @@
 /*   Updated: 2025/02/12 19:15:29 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef CD_H
 # define CD_H
 
@@ -26,6 +25,11 @@
 # define ERR_OLDPWD_NOT_SET "cd: OLDPWD not set"
 # define ERR_HOME_NOT_SET "cd: HOME not set"
 # define ERR_NO_FILE "No such file or directory"
+
+/* CD utilities that were in builtins.h */
+char	*get_oldpwd_path(t_shell *shell);
+char	*get_home_path(t_shell *shell);
+int		handle_cd_path(t_shell *shell, const char *path);
 
 /* Internal CD functions */
 void	update_pwd_vars(t_shell *shell, char *old_pwd);
