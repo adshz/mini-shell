@@ -86,41 +86,29 @@ int	expand_command_name_with_var(t_shell *shell,
 	prefix = NULL;
 	expanded = NULL;
 	var_end = NULL;
-	ft_printf("\nDEBUG [cmd_expand]: Starting command name expansion\n");
-	ft_printf("DEBUG [cmd_expand]: Original command: [%s]\n", node->args[0]);
 	
 	ret = cmd_handle_prefix_extraction(node->args[0],
 			dollar_pos, &prefix);
 	if (ret)
 	{
-		ft_printf("DEBUG [cmd_expand]: Prefix extraction failed\n"); // debug deleted
 		return (ret);
 	}
-	ft_printf("DEBUG [cmd_expand]: Extracted prefix: [%s]\n", prefix ? prefix : "NULL");
 
 	expanded = cmd_handle_variable_expansion(shell,
 			dollar_pos, &var_end);
 	if (!expanded)
 	{
-		ft_printf("DEBUG [cmd_expand]: Variable expansion failed\n");
 		free(prefix);
 		return (1);
 	}
-	ft_printf("DEBUG [cmd_expand]: Expanded value: [%s]\n", expanded);
-	ft_printf("DEBUG [cmd_expand]: Var end position: [%s]\n", var_end ? var_end : "NULL");
 
 	if (cmd_handle_suffix_combination(&expanded, var_end))
 	{
-		ft_printf("DEBUG [cmd_expand]: Suffix combination failed\n");
 		free(prefix);
 		free(expanded);
 		return (1);
 	}
-	ft_printf("DEBUG [cmd_expand]: After suffix combination: [%s]\n", expanded);
 
 	ret = cmd_process_expanded_value(expanded, prefix, node);
-	ft_printf("DEBUG [cmd_expand]: Final command name: [%s]\n", node->args[0]);
 	return (ret);
-	// return (cmd_process_expanded_value(expanded,
-	// 		prefix, node));
 }

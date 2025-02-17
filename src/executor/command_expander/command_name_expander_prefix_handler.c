@@ -18,7 +18,6 @@
 */
 int	cmd_create_command_prefix(const char *arg, size_t prefix_len, char **prefix)
 {
-	ft_putstr_fd("\nDEBUG: create_command_prefix called\n", STDERR_FILENO);
 	*prefix = ft_substr(arg, 0, prefix_len);
 	return (*prefix != NULL);
 }
