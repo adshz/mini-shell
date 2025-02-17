@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtin_utils.h"
+#include "builtins/builtin_utils/builtin_utils.h"
 #include "expander/expander.h"
 
 static char	*expand_var_name(t_shell *shell, const char *arg)
