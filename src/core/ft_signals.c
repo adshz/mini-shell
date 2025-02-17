@@ -63,7 +63,7 @@ void	handle_sigint(int sig)
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
 		g_signal_status = SIG_HEREDOC_INT;
-		rl_done = 1;  // Force readline to return
+		rl_done = 1;
 		return;
 	}
 	g_signal_status = SIGINT;
