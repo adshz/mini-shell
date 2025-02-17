@@ -21,6 +21,7 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 		return (print_error("heredoc", "invalid delimiter", 1));
 	if (pipe(pipe_fds) == -1)
 		return (print_error("heredoc", "pipe creation failed", 1));
+	
 	g_signal_status = SIG_HEREDOC_MODE;
 	shell->in_heredoc = 1;
 	while (1)
@@ -37,10 +38,12 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 				shell->heredoc_sigint = true;
 				g_signal_status = SIG_NONE;
 				shell->exit_status = 130;
+				node->data.content_fd = -1;
+				return (130);
 			}
 			if (line)
 				free(line);
-			return (130);
+			return (1);
 		}
 		len = ft_strlen(line);
 		if (len > 0 && line[len - 1] == '\n')
@@ -63,6 +66,8 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 
 int	setup_heredoc_pipe(t_ast_node *node)
 {
+	if (!node || node->data.content_fd < 0)
+		return (print_error("heredoc", "invalid file descriptor", 1));
 	if (dup2(node->data.content_fd, STDIN_FILENO) == -1)
 	{
 		close(node->data.content_fd);

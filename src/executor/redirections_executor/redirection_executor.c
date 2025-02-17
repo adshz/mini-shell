@@ -84,18 +84,20 @@ int	execute_redirection(t_shell *shell, t_ast_node *node)
 {
 	pid_t	pid;
 	int		status;
-	int		ret;
 
-	shell->signint_child = true;
-	ret = handle_signal_interrupt(shell);
-	if (ret != 0)
-		return (ret);
 	pid = fork();
 	if (pid == -1)
 		return (print_error(NULL, "fork failed", 1));
 	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);  // Reset to default
+		signal(SIGQUIT, SIG_DFL);
 		execute_child_process(shell, node);
+	}
+	// Parent should ignore SIGINT during child execution
+	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
+	signal(SIGINT, handle_sigint);  // Restore normal handler
 	return (handle_redirection_parent_process(shell, status));
 }
 

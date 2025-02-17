@@ -36,7 +36,7 @@ extern volatile sig_atomic_t	g_signal_status;
  * from being displayed when signals are triggered.
  * Uses termios structure to modify terminal attributes.
  */
-static void	disable_ctrl_char_echo(void)
+void	disable_ctrl_char_echo(void)
 {
 	struct termios	term;
 
@@ -58,32 +58,24 @@ static void	disable_ctrl_char_echo(void)
  */
 void	handle_sigint(int sig)
 {
-	static bool handling_signal = false;
-
 	(void)sig;
-	if (handling_signal)
-	{
-		ft_printf("DEBUG [signals]: Preventing recursive signal handling\n");
-		return;
-	}
-	handling_signal = true;
 
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
-		ft_printf("DEBUG [signals]: SIGINT received in heredoc mode\n");
 		ft_printf("\n");
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
 		return;
 	}
-	ft_printf("DEBUG [signals]: SIGINT received in normal mode\n");
+
+	if (g_signal_status == SIG_HEREDOC_INT)
+		return;  // Prevent double handling of heredoc interrupts
+
 	ft_printf("\n");
 	g_signal_status = SIGINT;
-	ft_printf("DEBUG [signals]: Setting normal interrupt status\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
-	handling_signal = false;
 }
 
 /**

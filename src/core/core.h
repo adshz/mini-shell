@@ -36,6 +36,7 @@ extern volatile sig_atomic_t	g_signal_status;
 /* Signal handling functions */
 void	setup_signals(void);
 void	setup_terminal_settings(void);
+void	disable_ctrl_char_echo(void);
 
 /* Shell initialization functions */
 int		init_terminal(t_shell *shell);

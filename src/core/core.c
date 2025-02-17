@@ -11,6 +11,31 @@
 /* ************************************************************************** */
 #include "core.h"
 #include "shell.h"
+#include <signal.h>
+
+static void reset_shell_state(t_shell *shell)
+{
+    // Reset all file descriptors
+    if (shell->in_heredoc)
+    {
+        shell->in_heredoc = 0;
+        shell->exit_status = 130;
+    }
+    
+    // Reset signal states
+    g_signal_status = SIG_NONE;
+    
+    // Reset terminal settings
+    disable_ctrl_char_echo();
+    
+    // Reset readline state
+    rl_replace_line("", 0);
+    rl_on_new_line();
+    
+    // Reset shell flags
+    shell->needs_reset = false;
+    shell->heredoc_sigint = false;
+}
 
 /**
  * @brief Builds abstract syntax tree from command line
@@ -113,6 +138,11 @@ void	interactive_loop(t_shell *shell)
 {
 	while (1)
 	{
+    if (shell->needs_reset)
+    {
+          reset_shell_state(shell);
+          continue;
+    }
 		init_signals();
 		shell->line = readline(PROMPT);
 		if (!valid_usr_input(shell))

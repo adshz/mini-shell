@@ -91,15 +91,25 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	saved_stdout = -1;
 	if (setup_saved_fds(&saved_stdin, &saved_stdout))
 		return ;
-	collect_redirection_nodes(node, redir_nodes, &redir_count);
+	if (collect_redirection_nodes(node, redir_nodes, &redir_count) != 0)
+	{
+		cleanup_and_exit(saved_stdin, saved_stdout, 1);
+		return ;
+	}
 
 	// First pass: Process all heredocs
 	i = redir_count - 1;
 	while (i >= 0)
 	{
-		if (redir_nodes[i]->type == AST_HEREDOC && !redir_nodes[i]->data.content_fd)
+		if (redir_nodes[i]->type == AST_HEREDOC)
 		{
 			if (collect_heredoc_content(redir_nodes[i], shell) != 0)
+			{
+				cleanup_and_exit(saved_stdin, saved_stdout, 1);
+				return ;
+			}
+			// Set up heredoc pipe immediately after collecting content
+			if (setup_heredoc_pipe(redir_nodes[i]) != 0)
 			{
 				cleanup_and_exit(saved_stdin, saved_stdout, 1);
 				return ;
@@ -108,21 +118,18 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 		i--;
 	}
 
-	// Second pass: Set up pipes and handle other redirections
+	// Second pass: Handle other redirections
 	i = redir_count - 1;
 	while (i >= 0)
 	{
 		if (redir_nodes[i]->type != AST_HEREDOC)
-			handle_redirection_type(redir_nodes[i], shell, saved_stdin, saved_stdout);
-		i--;
-	}
-
-	// Final pass: Set up heredoc pipes
-	i = redir_count - 1;
-	while (i >= 0)
-	{
-		if (redir_nodes[i]->type == AST_HEREDOC)
-			setup_heredoc_pipe(redir_nodes[i]);
+		{
+			if (handle_redirection_type(redir_nodes[i], shell, saved_stdin, saved_stdout) != 0)
+			{
+				cleanup_and_exit(saved_stdin, saved_stdout, 1);
+				return ;
+			}
+		}
 		i--;
 	}
 
