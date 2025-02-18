@@ -30,17 +30,9 @@ t_ast_node	*create_redirection_node(t_token_type type, \
 	else if (type == TOKEN_APPEND)
 		redir_node = create_ast_node(AST_REDIR_APPEND, NULL);
 	else if (type == TOKEN_HEREDOC)
-	{
 		redir_node = create_ast_node(AST_HEREDOC, NULL);
-		if (redir_node)
-		{
-			redir_node->data.content_fd = -1;
-			redir_node->data.content_path = NULL;
-			redir_node->data.delimiter = file_value;
-		}
-	}
 	else
-		return (NULL);
+		redir_node = create_ast_node(AST_HEREDOC, NULL);
 	if (!redir_node)
 		return (NULL);
 	file_node = create_ast_node(AST_COMMAND, (char *)file_value);

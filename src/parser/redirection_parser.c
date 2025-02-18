@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 12:49:40 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 21:32:22 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/17 23:53:25 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,16 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 {
 	t_ast_node	*new_result;
 	t_token		*next_token;
+	t_token		*cmd_token;
 
-	ft_putstr_fd("\nDEBUG [handle_redirection_token]: Processing redirection token: [", STDERR_FILENO);
+	ft_putstr_fd("\nDEBUG [handle_redirection_token]: Processing redirection token: [",
+		STDERR_FILENO);
 	ft_putstr_fd((*current)->value, STDERR_FILENO);
 	ft_putstr_fd("]\n", STDERR_FILENO);
-
 	if ((*current)->type == TOKEN_HEREDOC)
 	{
-		ft_putstr_fd("DEBUG [handle_redirection_token]: Found heredoc token\n", STDERR_FILENO);
+		ft_putstr_fd("DEBUG [handle_redirection_token]: Found heredoc token\n",
+			STDERR_FILENO);
 		next_token = (*current)->next;
 		if (!next_token || next_token->type != TOKEN_WORD)
 		{
@@ -98,7 +100,7 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 		}
 		if (!result)
 		{
-			t_token	*cmd_token = next_token->next;
+			cmd_token = next_token->next;
 			while (cmd_token && !is_redirection_token(cmd_token->type))
 				cmd_token = cmd_token->next;
 			if (cmd_token && cmd_token->next
@@ -135,11 +137,13 @@ static t_ast_node	*handle_redirection_token(t_token **current,
 	new_result = process_redirection(*current, result);
 	if (!new_result)
 	{
-		ft_putstr_fd("DEBUG [handle_redirection_token]: Failed to process redirection\n", STDERR_FILENO);
+		ft_putstr_fd("DEBUG [handle_redirection_token]: Failed to process redirection\n",
+			STDERR_FILENO);
 		shell->exit_status = 258;
 		return (NULL);
 	}
-	ft_putstr_fd("DEBUG [handle_redirection_token]: Successfully processed redirection\n", STDERR_FILENO);
+	ft_putstr_fd("DEBUG [handle_redirection_token]: Successfully processed redirection\n",
+		STDERR_FILENO);
 	*prev_type = (*current)->type;
 	*tokens = (*current)->next->next;
 	*current = *tokens;
@@ -163,35 +167,40 @@ t_shell *shell)
 	t_ast_node		*result;
 	t_token_type	prev_type;
 
-	ft_putstr_fd("\nDEBUG [parse_redirection_construct]: Starting redirection parsing\n", STDERR_FILENO);
+	ft_putstr_fd("\nDEBUG [parse_redirection_construct]: Starting redirection parsing\n",
+		STDERR_FILENO);
 	current = *tokens;
 	result = left;
 	prev_type = TOKEN_EOF;
-
 	while (current)
 	{
-		ft_putstr_fd("DEBUG [parse_redirection_construct]: Processing token: [", STDERR_FILENO);
+		ft_putstr_fd("DEBUG [parse_redirection_construct]: Processing token: [",
+			STDERR_FILENO);
 		ft_putstr_fd(current->value, STDERR_FILENO);
 		ft_putstr_fd("] of type ", STDERR_FILENO);
 		ft_putnbr_fd(current->type, STDERR_FILENO);
 		ft_putstr_fd("\n", STDERR_FILENO);
-
 		if (current->type == TOKEN_WORD)
-			result = handle_word_token(&current, &prev_type, result, tokens, shell);
+			result = handle_word_token(&current, &prev_type, result,
+				tokens, shell);
 		else if (is_redirection_token(current->type))
-			result = handle_redirection_token(&current, &prev_type, result, tokens, shell);
+			result = handle_redirection_token(&current, &prev_type,
+				result, tokens, shell);
 		else
 		{
-			ft_putstr_fd("DEBUG [parse_redirection_construct]: Found non-redirection token, breaking\n", STDERR_FILENO);
-			break;
+			ft_putstr_fd("DEBUG [parse_redirection_construct]: Found non-redirection token, breaking\n",
+				STDERR_FILENO);
+			break ;
 		}
 		if (!result)
 		{
-			ft_putstr_fd("DEBUG [parse_redirection_construct]: Failed to process token\n", STDERR_FILENO);
+			ft_putstr_fd("DEBUG [parse_redirection_construct]: Failed to process token\n",
+				STDERR_FILENO);
 			shell->exit_status = 258;
 			return (NULL);
 		}
 	}
-	ft_putstr_fd("DEBUG [parse_redirection_construct]: Finished redirection parsing\n", STDERR_FILENO);
+	ft_putstr_fd("DEBUG [parse_redirection_construct]: Finished redirection parsing\n",
+		STDERR_FILENO);
 	return (result);
 }

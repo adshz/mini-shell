@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ast_builder.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 13:38:10 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 13:38:24 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/17 18:47:17 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 
 t_ast_node	*create_ast_node(t_ast_type type, char *value)
@@ -25,11 +26,9 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 	node->value = NULL;
 	node->is_expanded = 0;
 	node->original = NULL;
-	// Initialize heredoc data
 	node->data.content_path = NULL;
 	node->data.content_fd = -1;
 	node->data.delimiter = NULL;
-	
 	if (value)
 	{
 		node->value = ft_strdup(value);

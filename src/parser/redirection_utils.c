@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 13:40:07 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 13:40:12 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/17 23:47:12 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser.h"
 
 int	check_input_file(const char *filename)
@@ -24,13 +25,15 @@ static bool	validate_file_token(t_token *file_token)
 {
 	if (!file_token || file_token->type != TOKEN_WORD)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'", STDERR_FILENO);
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
 		return (false);
 	}
 	return (true);
 }
 
-static t_ast_node	*create_file_node(t_token *file_token, t_ast_node *redir_node)
+static t_ast_node	*create_file_node(t_token *file_token,
+	t_ast_node *redir_node)
 {
 	t_ast_node	*file_node;
 

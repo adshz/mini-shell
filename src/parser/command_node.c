@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 21:37:46 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/17 19:09:47 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ t_ast_node	*create_regular_command(t_token **tokens,
 		t_token *start, int arg_count)
 {
 	t_ast_node	*node;
-	int         min_args;
+	int			min_args;
 
 	min_args = arg_count;
 	if (start && start->value && (ft_strcmp(start->value, "exit") == 0))
@@ -54,7 +54,6 @@ t_ast_node	*create_regular_command(t_token **tokens,
 		else
 			min_args = arg_count;
 	}
-
 	node = init_command_node(start, min_args);
 	if (!node)
 		return (NULL);

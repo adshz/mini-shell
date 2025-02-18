@@ -6,105 +6,81 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 21:10:40 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 21:26:16 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/17 23:17:09 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 
-t_token	*find_last_word_token(t_token *start)
+static int	count_heredoc_tokens(t_token *tokens, t_shell *shell)
 {
-	t_token	*cmd_token;
-	t_token	*last_word;
-	int		is_redir_arg;
+	t_token	*check;
+	int		count;
 
-	cmd_token = start;
-	last_word = NULL;
-	is_redir_arg = 0;
-	while (cmd_token)
-	{
-		if (is_redirection_token(cmd_token->type))
-		{
-			is_redir_arg = 1;
-			cmd_token = cmd_token->next;
-			continue ;
-		}
-		if (cmd_token->type == TOKEN_WORD)
-		{
-			if (!is_redir_arg)
-				last_word = cmd_token;
-			is_redir_arg = 0;
-		}
-		cmd_token = cmd_token->next;
-	}
-	return (last_word);
-}
-
-static t_ast_node	*cleanup_heredoc_nodes(t_ast_node *first_redir,
-	t_ast_node *command_node)
-{
-	if (first_redir)
-		free_ast(first_redir);
-	if (command_node)
-		free_ast(command_node);
-	return (NULL);
-}
-
-static t_ast_node	*create_heredoc_chain(t_token **tokens,
-	t_ast_node *command_node, t_shell *shell)
-{
-	t_token		*current;
-	t_token		*delimiter;
-	t_ast_node	*first_redir;
-	t_ast_node	*last_redir;
-	int			count;
-
-	current = *tokens;
-	first_redir = NULL;
-	last_redir = NULL;
+	check = tokens;
 	count = 0;
-
-	t_token *check = current;
 	while (check && check->type == TOKEN_HEREDOC)
 	{
 		count++;
 		if (!check->next || check->next->type != TOKEN_WORD)
 		{
 			shell->exit_status = 258;
-			return (cleanup_heredoc_nodes(first_redir, command_node));
+			return (-1);
 		}
 		check = check->next->next;
 	}
+	return (count);
+}
 
-	t_token *target = current;
-	int current_count = 1;
-	while (current_count <= count)
+static void	link_heredoc_node(t_ast_node **first_redir,
+	t_ast_node *new_redir, t_ast_node *command_node)
+{
+	if (!*first_redir)
 	{
-		delimiter = target->next;
-		t_ast_node *new_redir = create_redirection_node(TOKEN_HEREDOC,
-			delimiter->value);
-		if (!new_redir)
-			return (cleanup_heredoc_nodes(first_redir, command_node));
-
-		if (!first_redir)
-		{
-			first_redir = new_redir;
-			last_redir = new_redir;
-		}
-		else
-		{
-			last_redir->left = new_redir;
-			last_redir = new_redir;
-		}
-		target = target->next->next;
-		current_count++;
+		new_redir->left = command_node;
+		*first_redir = new_redir;
 	}
-
-	last_redir->left = command_node;
-
-	while (current && current->type == TOKEN_HEREDOC)
+	else
 	{
+		new_redir->left = *first_redir;
+		*first_redir = new_redir;
+	}
+}
+
+static t_ast_node	*create_heredoc_node(t_token *token,
+	t_ast_node **first_redir, t_ast_node *command_node)
+{
+	t_ast_node	*new_redir;
+
+	new_redir = create_redirection_node(TOKEN_HEREDOC, token->next->value);
+	if (!new_redir)
+	{
+		if (*first_redir)
+			free_ast(*first_redir);
+		if (command_node)
+			free_ast(command_node);
+		return (NULL);
+	}
+	link_heredoc_node(first_redir, new_redir, command_node);
+	return (new_redir);
+}
+
+static t_ast_node	*build_heredoc_chain(t_token **tokens,
+	t_ast_node *command_node, int count)
+{
+	t_token		*current;
+	t_ast_node	*first_redir;
+	int			i;
+
+	current = *tokens;
+	first_redir = NULL;
+	i = 0;
+	while (i < count)
+	{
+		if (!create_heredoc_node(current, &first_redir, command_node))
+			return (NULL);
 		current = current->next->next;
+		i++;
 	}
 	*tokens = current;
 	return (first_redir);
@@ -114,11 +90,18 @@ t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 {
 	t_ast_node	*command_node;
 	t_ast_node	*heredoc_chain;
+	int			count;
 
 	command_node = create_default_heredoc_command();
 	if (!command_node)
 		return (NULL);
-	heredoc_chain = create_heredoc_chain(tokens, command_node, shell);
+	count = count_heredoc_tokens(*tokens, shell);
+	if (count == -1)
+	{
+		free_ast(command_node);
+		return (NULL);
+	}
+	heredoc_chain = build_heredoc_chain(tokens, command_node, count);
 	if (!heredoc_chain)
 	{
 		free_ast(command_node);
