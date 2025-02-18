@@ -55,7 +55,7 @@ void	init_env_vars(t_shell *shell, char **argv);
  * @param envp  Array of environment variables
  * @return SUCCESS if initialization succeeds, ERROR otherwise
  */
-int	init_shell(t_shell *shell, char *argv[], char *envp[]);
+int		init_shell(t_shell *shell, char *argv[], char *envp[]);
 
 /* AST building and parsing */
 /**

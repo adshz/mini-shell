@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
+#include "utils/utils.h"
 
 int	handle_cd_redirection(t_shell *shell, t_ast_node *node)
 {

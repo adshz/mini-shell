@@ -22,7 +22,8 @@ static int	expand_single_variable(t_shell *shell,
 
 	prefix = get_prefix(*arg, ft_strchr(*arg, '$'));
 	suffix = get_suffix(ft_strchr(*arg, '$'));
-	if (handle_expansion(shell, ft_strchr(*arg, '$'), &expanded, was_in_double_quotes))
+	if (handle_expansion(shell, ft_strchr(*arg, '$'), \
+					&expanded, was_in_double_quotes))
 	{
 		free(prefix);
 		free(suffix);
@@ -49,38 +50,40 @@ static int	process_remaining_variables(t_shell *shell, char **result)
 	return (0);
 }
 
+static int	check_token_validity(t_shell *shell, const char *arg,
+		bool *was_in_double_quotes, t_token **current_token)
+{
+	*current_token = shell->tokens;
+	if (*current_token && ft_strcmp((*current_token)->value, arg) == 0)
+	{
+		shell->in_double_quotes = *was_in_double_quotes;
+		shell->in_single_quotes = false;
+		return (1);
+	}
+	while (*current_token && ft_strcmp((*current_token)->value, arg) != 0)
+		*current_token = (*current_token)->next;
+	if (!ft_strchr(arg, '$') || \
+		(*current_token && (*current_token)->in_single_quotes))
+	{
+		shell->in_double_quotes = *was_in_double_quotes;
+		shell->in_single_quotes = false;
+		return (1);
+	}
+	return (0);
+}
+
 int	process_single_arg_expansion(t_shell *shell, char **arg)
 {
 	bool	was_in_double_quotes;
 	int		ret;
 	t_token	*current_token;
 
+	was_in_double_quotes = false;
+	ret = 0;
 	init_quote_state(shell, *arg, &was_in_double_quotes);
-	current_token = shell->tokens;
-	
-	// If this is a command name (first argument), skip expansion as it's handled by parser
-	if (current_token && ft_strcmp(current_token->value, *arg) == 0)
-	{
-		shell->in_double_quotes = was_in_double_quotes;
-		shell->in_single_quotes = false;
+	if (check_token_validity(shell, *arg, &was_in_double_quotes, \
+						&current_token))
 		return (0);
-	}
-
-	// Find the token for this argument
-	while (current_token && ft_strcmp(current_token->value, *arg) != 0)
-		current_token = current_token->next;
-	
-	// Skip variable expansion if:
-	// 1. No $ sign in argument, or
-	// 2. Found matching token and it's in single quotes
-	if (!ft_strchr(*arg, '$') || 
-		(current_token && current_token->in_single_quotes))
-	{
-		shell->in_double_quotes = was_in_double_quotes;
-		shell->in_single_quotes = false;
-		return (0);
-	}
-
 	ret = expand_single_variable(shell, arg, &was_in_double_quotes);
 	if (ret != 0)
 		return (ret);

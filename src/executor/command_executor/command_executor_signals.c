@@ -12,6 +12,13 @@
 
 #include "executor/executor.h"
 
+// WIFEXITED(status) equivalent: checks if process exited normally
+int	exited_normally(int status)
+{
+	return (((status) & 0x7f) == 0);
+}
+
+// WTERMSIG(status) equivalent: gets the signal number of the process
 int	get_signal_from_status(int status)
 {
 	return (status & 0x7f);

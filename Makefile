@@ -76,6 +76,7 @@ SRCS		:=	\
 				executor/command_expander/variable_expander.c \
 				executor/command_expander/command_name_expander.c \
 				executor/command_expander/args_array_handler.c \
+				executor/command_expander/args_array_handler_utils.c \
 				executor/command_expander/args_array_helper.c \
 				executor/command_expander/args_array_expander_utils.c \
 				executor/command_expander/args_array_split_utils.c \
@@ -84,23 +85,32 @@ SRCS		:=	\
 				executor/command_expander/command_name_expander_prefix_handler.c \
 				executor/command_expander/command_name_expander_var_expansion.c \
 				executor/env_executor/env_array_creator.c \
-				executor/env_executor/env_string_utils.c \
+				executor/env_executor/env_array_builder.c \
+				executor/env_executor/env_string_builder.c \
 				executor/env_executor/env_array_string_helper.c \
 				executor/env_executor/env_variable_handler.c \
 				executor/env_executor/env_hashmap_handler.c \
 				executor/env_executor/env_item_processor.c \
+				executor/env_executor/env_item_processor_utils.c \
 				executor/env_executor/env_mem_utils.c \
 				executor/pipe_handler/pipe_child.c \
 				executor/pipe_handler/pipe_executor.c \
+				executor/pipe_handler/pipe_process_handler.c \
 				executor/pipe_handler/pipe_setup.c \
+				executor/pipe_handler/pipe_status_handler.c \
 				executor/pipe_handler/pipe_utils.c \
 				executor/redirections_executor/heredoc_processor.c \
+				executor/redirections_executor/heredoc_processor_utils.c \
 				executor/redirections_executor/redirection_executor.c \
+				executor/redirections_executor/redirection_process_handler.c \
+				executor/redirections_executor/redirection_signal_handler.c \
 				executor/redirections_executor/redirection_filename_expander.c \
 				executor/redirections_executor/redirection_filename_utils.c \
 				executor/redirections_executor/redirection_input_handler.c \
 				executor/redirections_executor/redirection_output_handler.c \
-				executor/redirections_executor/redirection_setup.c \
+				executor/redirections_executor/redirection_processor.c \
+				executor/redirections_executor/redirection_fd_handler.c \
+				executor/redirections_executor/redirection_node_handler.c \
 				executor/redirections_executor/redirection_utils.c \
 				expander/expand_variables/command_expander.c \
 				expander/expand_variables/simple_variable_expander.c \

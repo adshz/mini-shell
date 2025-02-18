@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
+/*   heredoc_executor.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,19 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LEXER_H
-# define LEXER_H
+#ifndef HEREDOC_EXECUTOR_H
+# define HEREDOC_EXECUTOR_H
 
-# include "includes/lexer_types.h"
-# include "includes/token_handler.h"
-# include "includes/state_handler.h"
-
-/* Main Tokenization Function */
-/**
- * @brief Main tokenization function
- * @param input Command line to tokenize
- * @return Head of token list or NULL on error
- */
-t_token     *tokenise(const char *input);
-
-#endif
+# include "parser/parser.h"
+int		setup_heredoc_pipe(t_ast_node *node);
+int		collect_heredoc_content(t_ast_node *node, t_shell *shell);
+#endif 

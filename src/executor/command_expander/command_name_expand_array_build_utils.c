@@ -6,14 +6,15 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 16:06:18 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 16:10:42 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/17 23:40:53 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor/executor.h"
 
 /*
-* Copies the command parts from the split_parts array to the expanded_args array  
+* Copies the command parts from the split_parts array
+* to the expanded_args array  
 * 1. Count Phase  
 */
 size_t	cmd_count_command_parts(char **split_parts)

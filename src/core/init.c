@@ -53,12 +53,13 @@ static void	cleanup_intialisation(t_shell *shell)
  * - Terminal settings for proper signal handling
  *
  * @param shell Pointer to shell structure to initialize
- * @return SHELL_SUCCESS if all I/O resources initialized properly, SHELL_ERROR otherwise
+ * @return SHELL_SUCCESS if all I/O resources initialized properly, 
+ * SHELL_ERROR otherwise
  *
  * @note File descriptors are backed up for handling pipes and redirections
  * @note Terminal settings are needed for proper signal handling
  */
- int	init_io(t_shell *shell)
+int	init_io(t_shell *shell)
 {
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);

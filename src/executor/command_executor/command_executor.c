@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   command_executor.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/29 14:33:01 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 09:20:20 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/17 21:48:34 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/17 21:48:55 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "types.h"
 #include "builtins/builtins.h"
 #include "core/core.h"
@@ -20,11 +19,9 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
-	
 	ret = validate_and_expand_command(shell, node);
 	if (ret != 0)
 		return (ret);
-
 	if (is_builtin(node->args[0]))
 	{
 		ret = execute_builtin(shell, node);
@@ -33,12 +30,12 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 				exit(ret);
 		return (ret);
 	}
-
 	ret = execute_external_command(shell, node);
 	return (ret);
 }
 
-static int	execute_child_process(t_shell *shell, t_ast_node *node, char *cmd_path)
+static int	execute_child_process(t_shell *shell, t_ast_node *node, \
+								char *cmd_path)
 {
 	char	**env_array;
 
@@ -64,17 +61,17 @@ static int	handle_external_parent_process(pid_t pid, char *cmd_path)
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	restore_signal_handlers();
-	if (WIFSIGNALED(status))
+	if (was_signaled(status))
 	{
-		if (WTERMSIG(status) == SIGQUIT)
+		if (get_signal_from_status(status) == SIGQUIT)
 		{
 			ft_putendl_fd("Quit (core dumped)", STDERR_FILENO);
 			return (131);
 		}
-		if (WTERMSIG(status) == SIGINT)
+		if (get_signal_from_status(status) == SIGINT)
 			return (130);
 	}
-	return (WEXITSTATUS(status));
+	return (get_exit_status(status));
 }
 
 int	execute_external_command(t_shell *shell, t_ast_node *node)
@@ -84,11 +81,9 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
-
 	cmd_path = get_command_path(shell, node->args[0], shell->env);
 	if (!cmd_path)
 		return (127);
-
 	pid = fork();
 	if (pid == -1)
 	{

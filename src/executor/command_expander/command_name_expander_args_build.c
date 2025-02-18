@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   command_name_expander_args_build.c                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 16:11:17 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 16:13:34 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/17 23:40:13 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/17 23:40:15 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "executor/executor.h"
 
 /*

@@ -57,11 +57,17 @@ static int	cmd_process_expanded_value(char *expanded,
 		free(prefix);
 		return (1);
 	}
+	final_command = NULL;
 	if (prefix)
 	{
 		final_command = ft_strjoin(prefix, split_parts[0]);
 		free(prefix);
 		free(split_parts[0]);
+		if (!final_command)
+		{
+			ft_free_array(split_parts);
+			return (1);
+		}
 		split_parts[0] = final_command;
 	}
 	return (build_new_args_array(node, split_parts));
@@ -75,40 +81,41 @@ static int	cmd_process_expanded_value(char *expanded,
 * Phase 3: suffix combination (cmd_handle_suffix_combination)
 * Phase 4: process expanded value (cmd_process_expanded_value)
 */
-int	expand_command_name_with_var(t_shell *shell,
-		t_ast_node *node, char *dollar_pos)
+static int	expand_command_variable_part(t_shell *shell,
+		t_ast_node *node, char *dollar_pos, char *prefix)
 {
-	char	*prefix;
 	char	*expanded;
 	char	*var_end;
 	int		ret;
 
-	prefix = NULL;
-	expanded = NULL;
-	var_end = NULL;
-	
-	ret = cmd_handle_prefix_extraction(node->args[0],
-			dollar_pos, &prefix);
-	if (ret)
-	{
-		return (ret);
-	}
-
-	expanded = cmd_handle_variable_expansion(shell,
-			dollar_pos, &var_end);
+	expanded = cmd_handle_variable_expansion(shell, dollar_pos, &var_end);
 	if (!expanded)
 	{
 		free(prefix);
 		return (1);
 	}
-
-	if (cmd_handle_suffix_combination(&expanded, var_end))
+	ret = cmd_handle_suffix_combination(&expanded, var_end);
+	if (ret)
 	{
 		free(prefix);
 		free(expanded);
 		return (1);
 	}
-
 	ret = cmd_process_expanded_value(expanded, prefix, node);
 	return (ret);
+}
+
+int	expand_command_name_with_var(t_shell *shell,
+		t_ast_node *node, char *dollar_pos)
+{
+	char	*prefix;
+	int		ret;
+
+	if (!shell || !node || !dollar_pos)
+		return (1);
+	prefix = NULL;
+	ret = cmd_handle_prefix_extraction(node->args[0], dollar_pos, &prefix);
+	if (ret)
+		return (ret);
+	return (expand_command_variable_part(shell, node, dollar_pos, prefix));
 }

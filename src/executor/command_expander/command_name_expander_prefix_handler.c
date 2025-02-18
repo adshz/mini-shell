@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   command_name_expander_prefix_handler.c             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 10:05:10 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 10:08:16 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/17 23:40:28 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/17 23:40:31 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "executor/executor.h"
 
 /* expand command name with variable expand_command_name_with_var
@@ -29,8 +28,8 @@ int	cmd_create_command_prefix(const char *arg, size_t prefix_len, char **prefix)
 * - Responsibility: Extract any text before the variable
 * - Output: prefix string or NULL
 */
-int	cmd_handle_prefix_extraction(const char *arg, 
-		char *dollar_pos, char **prefix)
+int	cmd_handle_prefix_extraction(const char *arg, char *dollar_pos, \
+								char **prefix)
 {
 	size_t	prefix_len;
 

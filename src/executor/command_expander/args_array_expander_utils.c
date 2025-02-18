@@ -61,7 +61,7 @@ char	*combine_parts(char *prefix, char *expanded, char *suffix)
 void	init_quote_state(t_shell *shell,
 		const char *arg, bool *was_in_double_quotes)
 {
-	size_t len;
+	size_t	len;
 
 	*was_in_double_quotes = shell->in_double_quotes;
 	len = ft_strlen(arg);

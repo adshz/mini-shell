@@ -17,10 +17,8 @@ int	execute_ast(t_shell *shell, t_ast_node *node)
 
 	if (!node)
 		return (0);
-	
 	if (shell->heredoc_sigint)
 		return (130);
-
 	ret = handle_node_by_type(shell, node);
 	if (ret != -1)
 		return (ret);
