@@ -29,7 +29,7 @@ char	*search_in_paths(t_shell *shell, char **paths, const char *cmd)
 		i++;
 	}
 	ft_free_array(paths);
-	shell->exit_status = 127;
+	shell->exit_status = ERR_NOT_FOUND;
 	return (NULL);
 }
 
@@ -65,7 +65,7 @@ char	*get_command_path(t_shell *shell, const char *cmd, t_hashmap *env)
 	paths = get_path_directories(env);
 	if (!paths)
 	{
-		shell->exit_status = 127;
+		shell->exit_status = ERR_NOT_FOUND;
 		return (NULL);
 	}
 	return (search_in_paths(shell, paths, cmd));

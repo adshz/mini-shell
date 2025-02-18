@@ -60,4 +60,6 @@ char	*cmd_handle_variable_expansion(t_shell *shell, char *dollar_pos,
 			char **var_end);
 char	*cmd_ex_handle_exit_status(t_shell *shell);
 
+int expand_command_args(t_shell *shell, t_ast_node *node);
+
 #endif 

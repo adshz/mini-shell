@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
+#include "utils/utils.h"
 
 int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 {

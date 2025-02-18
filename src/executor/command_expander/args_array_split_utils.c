@@ -9,7 +9,6 @@
 /*   Updated: 2025/02/13 16:05:01 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "executor/executor.h"
 
 static int	count_and_allocate_new_args(char **args, char ***new_args)

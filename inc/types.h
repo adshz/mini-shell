@@ -20,6 +20,10 @@
 # include "../src/lexer/lexer.h"
 # include "../src/hashtable/hashtable.h"
 
+# define SIG_HEREDOC_MODE 1
+# define SIG_HEREDOC_INT 2
+# define SIG_NONE 0
+
 /* Forward declarations */
 struct						s_ast_node;
 typedef struct s_ast_node	t_ast_node;

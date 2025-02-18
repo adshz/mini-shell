@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "executor/executor.h"
+#include "utils/utils.h"
 
 /* expand command name with variable expand_command_name_with_var
 * Phase 2: Variable expansion

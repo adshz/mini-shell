@@ -60,6 +60,6 @@ int	handle_parent_process(t_shell *shell, pid_t pid, \
 int	execute_command_child(t_ast_node *node, char *cmd_path, char **env_array)
 {
 	execve(cmd_path, node->args, env_array);
-	print_error(cmd_path, strerror(errno), ERR_NOT_EXECUTABLE);
+	print_error(cmd_path, ERR_MSG_NOT_EXECUTABLE, ERR_NOT_EXECUTABLE);
 	exit(ERR_NOT_EXECUTABLE);
 }

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
-
+#include "utils/utils.h"
 static int	validate_env(t_hashmap *env)
 {
 	if (!env)

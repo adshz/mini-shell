@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "executor/executor.h"
+#include "utils/utils.h"
 
 int	setup_heredoc(t_ast_node *node, int pipe_fds[2], t_shell *shell)
 {

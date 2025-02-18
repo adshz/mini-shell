@@ -16,7 +16,7 @@
 # include "parser_types.h"
 
 /* Pipeline node functions */
-t_ast_node  *create_pipeline_node(t_ast_node *left, t_ast_node *right);
+t_ast_node       *parse_pipeline(t_token **tokens, t_shell *shell);
 t_ast_node  *process_pipeline(t_token **tokens);
 t_ast_node  *handle_pipeline_sequence(t_token **tokens);
 

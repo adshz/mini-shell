@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "executor/executor.h"
+#include "core/core.h"
 
 int	create_left_child(t_shell *shell, t_ast_node *node,
 		int pipe_fd[2], pid_t *pid)

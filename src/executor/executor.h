@@ -13,6 +13,7 @@
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
+# include <signal.h>
 // Core includes
 # include "includes/heredoc_executor.h"
 # include "includes/command_executor.h"
@@ -22,6 +23,9 @@
 # include "includes/signal_handler.h"
 # include "includes/redirections_executor.h"
 # include "includes/command_check.h"
+# include "utils/utils.h"
+# include "errors.h"
+
 /* High-level orchestration functions */
 void	restore_redirections(t_shell *shell);
 void	add_command_history(t_shell *shell, void *ast);

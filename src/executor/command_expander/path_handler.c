@@ -30,8 +30,8 @@ int	handle_tilde_path(t_shell *shell, t_ast_node *node)
 	expanded = expand_tilde(shell, node->args[0]);
 	if (!expanded)
 	{
-		shell->exit_status = 127;
-		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, 127));
+		shell->exit_status = ERR_NOT_FOUND;
+		return (print_error(node->args[0], MSG_CMD_NOT_FOUND, ERR_NOT_FOUND));
 	}
 	ret = handle_tilde_directory(expanded);
 	free(expanded);
@@ -42,8 +42,8 @@ int	handle_dot_paths(t_shell *shell, const char *arg)
 {
 	if (ft_strcmp(arg, "..") == 0 || ft_strcmp(arg, ".") == 0)
 	{
-		shell->exit_status = 127;
-		return (print_error((char *)arg, MSG_CMD_NOT_FOUND, 127));
+		shell->exit_status = ERR_NOT_FOUND;
+		return (print_error((char *)arg, MSG_CMD_NOT_FOUND, ERR_NOT_FOUND));
 	}
 	return (0);
 }

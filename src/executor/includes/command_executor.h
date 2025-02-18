@@ -42,5 +42,5 @@ int		handle_parent_process(t_shell *shell, pid_t pid,
 int		handle_command_not_found(t_shell *shell, const char *cmd);
 void	handle_child_error(const char *cmd);
 int		check_command(t_shell *shell, t_ast_node *cmd);
-
+int		validate_and_expand_command(t_shell *shell, t_ast_node *node);
 #endif 

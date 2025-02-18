@@ -9,9 +9,8 @@
 /*   Updated: 2025/02/13 16:15:25 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "executor/executor.h"
-#include <stdatomic.h>
+
 
 static int	cmd_handle_suffix_combination(char **expanded,
 		char *var_end)

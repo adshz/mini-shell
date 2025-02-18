@@ -26,9 +26,6 @@
 // by the operating system.
 extern volatile sig_atomic_t	g_signal_status;
 
-#define SIG_HEREDOC_MODE 1
-#define SIG_HEREDOC_INT 2
-#define SIG_NONE 0
 /**
  * @brief Disables the echoing of control characters in terminal
  *

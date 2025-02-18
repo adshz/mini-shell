@@ -17,7 +17,9 @@
 # include "includes/ast_node_handler.h"
 # include "includes/redirection_handler.h"
 # include "includes/pipeline_handler.h"
-
+# include "includes/heredoc_handler.h"
+# include "includes/command_parser.h"
+# include "includes/parser_redirection.h"
 /* High-level parsing functions */
 t_ast_node  *parse(t_token *tokens, t_shell *shell);
 t_ast_node  *parse_command_line(t_token **tokens);

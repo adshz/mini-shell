@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "../executor.h"
+#include "utils/utils.h"
 
 char	*get_expanded_filename(t_shell *shell, const char *filename)
 {

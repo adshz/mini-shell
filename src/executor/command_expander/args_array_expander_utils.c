@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "executor/executor.h"
+#include "utils/utils.h"
 
 int	replace_argument(char **arg, char *expanded)
 {
