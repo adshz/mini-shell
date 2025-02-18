@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #include "../executor.h"
 
-
 int	handle_command_not_found(t_shell *shell, const char *cmd)
 {
 	shell->exit_status = 127;

@@ -38,6 +38,7 @@ int		handle_builtin_redirection(t_shell *shell, t_ast_node *node);
 int		handle_redirection_node(t_shell *shell, t_ast_node *node);
 
 /* Path resolution */
-int		handle_path_resolution(t_shell *shell, t_ast_node *node, char **cmd_path);
+int		handle_path_resolution(t_shell *shell, t_ast_node *node, \
+						char **cmd_path);
 
 #endif

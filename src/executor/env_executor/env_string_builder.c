@@ -60,4 +60,3 @@ char	*create_env_string(const char *key, const char *value)
 		return (NULL);
 	return (build_env_string(key, value, key_len, value_len));
 }
- 

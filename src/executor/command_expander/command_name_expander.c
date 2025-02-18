@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #include "executor/executor.h"
 
-
 static int	cmd_handle_suffix_combination(char **expanded,
 		char *var_end)
 {

@@ -9,11 +9,8 @@
 /*   Updated: 2025/02/18 02:16:13 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef SIGNAL_HANDLER_H
 # define SIGNAL_HANDLER_H
-
-
 
 /* Signal handling */
 void	setup_child_process(void);

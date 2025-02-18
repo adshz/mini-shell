@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #include "executor/executor.h"
 
-
 static bool	should_skip_split_for_export(const char *cmd, const char *arg)
 {
 	return (ft_strcmp(cmd, "export") == 0 && ft_strchr(arg, '='));

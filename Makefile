@@ -65,6 +65,7 @@ SRCS		:=	\
 				executor/ast_executor/node_handler.c \
 				executor/ast_executor/redirection_handler.c \
 				executor/command_check/command_path_check.c \
+				executor/command_check/command_path_check_utils.c \
 				executor/command_check/command_path_resolver.c \
 				executor/command_check/command_path_searcher.c \
 				executor/command_executor/command_error_handler.c \

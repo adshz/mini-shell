@@ -34,8 +34,9 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 	return (ret);
 }
 
-static int	execute_child_process(t_shell *shell, t_ast_node *node, \
-								char *cmd_path)
+static int	command_executor_execute_child_process(t_shell *shell, \
+												t_ast_node *node, \
+												char *cmd_path)
 {
 	char	**env_array;
 
@@ -94,7 +95,7 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		execute_child_process(shell, node, cmd_path);
+		command_executor_execute_child_process(shell, node, cmd_path);
 	}
 	return (handle_external_parent_process(pid, cmd_path));
 }
