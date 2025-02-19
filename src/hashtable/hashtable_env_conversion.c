@@ -37,23 +37,18 @@ static int	process_env_entry(char *env_str, t_hashmap *env)
 	char	*value;
 	size_t	key_len;
 
-	ft_putstr_fd("Processing env entry: '", STDERR_FILENO);
-	ft_putstr_fd(env_str, STDERR_FILENO);
-	ft_putendl_fd("'", STDERR_FILENO);
 	equals_pos = ft_strchr(env_str, '=');
 	if (!equals_pos)
 		return (HASH_OK);
 	key_len = equals_pos - env_str;
 	key = ft_substr(env_str, 0, key_len);
 	value = ft_strdup(equals_pos + 1);
-	if (!key || !value || hashmap_insert(env, key, value, 1) != HASH_OK)
+	if (!key || !value || hashmap_insert(env, key, value, 0) != HASH_OK)
 	{
 		free(key);
 		free(value);
 		return (HASH_ERR);
 	}
-	free(key);
-	free(value);
 	return (HASH_OK);
 }
 

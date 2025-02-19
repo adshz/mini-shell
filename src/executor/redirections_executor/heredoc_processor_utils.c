@@ -39,6 +39,8 @@ int	handle_heredoc_line(char *line, int pipe_fds[2],
 			g_signal_status = SIG_NONE;
 			shell->exit_status = 130;
 			node->data.content_fd = -1;
+			if (line)
+				free(line);
 			return (130);
 		}
 		if (line)

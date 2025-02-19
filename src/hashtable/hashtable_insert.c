@@ -29,32 +29,12 @@
 static t_hash_item	*create_new_item(char *key, char *value)
 {
 	t_hash_item	*new_item;
-	char		*new_key;
-	char		*new_value;
 
-	ft_putstr_fd("Creating new item - Key: '", STDERR_FILENO);
-	ft_putstr_fd(key, STDERR_FILENO);
-	ft_putstr_fd("' (", STDERR_FILENO);
-	ft_putnbr_fd(ft_strlen(key), STDERR_FILENO);
-	ft_putstr_fd(" bytes) Value: '", STDERR_FILENO);
-	ft_putstr_fd(value, STDERR_FILENO);
-	ft_putstr_fd("' (", STDERR_FILENO);
-	ft_putnbr_fd(ft_strlen(value), STDERR_FILENO);
-	ft_putstr_fd(" bytes)\n", STDERR_FILENO);
 	new_item = (t_hash_item *)malloc(sizeof(t_hash_item));
 	if (!new_item)
 		return (NULL);
-	new_key = ft_strdup(key);
-	new_value = ft_strdup(value);
-	if (!new_key || !new_value)
-	{
-		free(new_key);
-		free(new_value);
-		free(new_item);
-		return (NULL);
-	}
-	new_item->key = new_key;
-	new_item->value = new_value;
+	new_item->key = key;
+	new_item->value = value;
 	new_item->next = NULL;
 	return (new_item);
 }
