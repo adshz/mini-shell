@@ -37,6 +37,9 @@ static int	process_env_entry(char *env_str, t_hashmap *env)
 	char	*value;
 	size_t	key_len;
 
+	ft_putstr_fd("Processing env entry: '", STDERR_FILENO);
+	ft_putstr_fd(env_str, STDERR_FILENO);
+	ft_putendl_fd("'", STDERR_FILENO);
 	equals_pos = ft_strchr(env_str, '=');
 	if (!equals_pos)
 		return (HASH_OK);
