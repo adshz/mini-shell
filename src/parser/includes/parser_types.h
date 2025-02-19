@@ -18,6 +18,71 @@
 # include "types.h"
 # include "lexer/lexer.h"
 
+/**
+ * @brief Structure for parsing redirection tokens
+ * 
+ * This structure contains the current token, the result left node,
+ * the previous token type, and the shell.
+ * @example
+ * we have `echo hello > file.txt`
+ * the result_left_node will be the command `echo hello`
+ * the current will be the redirection token `>`
+ * the prev_type will be the type of the token before the redirection token
+ * in the case of `echo hello > file.txt` the prev_type will be TOKEN_WORD
+ * the shell will be the shell
+ */
+typedef struct s_redir_parse
+{
+	t_token			*current;
+	t_ast_node		*result_left_node;
+	t_token_type	prev_type;
+	t_shell			*shell;
+}	t_redir_parse;
+
+/**
+ * @brief Structure for parsing redirection tokens
+ * 
+ * This structure contains the current token, the result left node,
+ * the previous token type, and the shell.
+ * t_token **current: the current token
+ * t_token **tokens: the list of tokens of the command
+ * t_token *next_token: single token, the token after the redirection token 
+ * t_ast_node *result_left_node: the command before the redirection token
+ * t_ast_node *output_node: the output/target of the redirection token
+ * t_token_type *prev_type: the type of the token before the redirection token
+ * t_shell *shell: the shell
+ * @example
+ * we have `echo hello > file.txt`
+ * the current will be the redirection token `>`
+ * the tokens will be the tokens of the command `echo hello > file.txt`
+ * the next_token will be the token after the redirection token `>` \
+ * which is `file.txt`
+ * the result (result_left_node) is to store the result of the command `echo hello`
+ * the output_node will be the result of the command `echo hello > file.txt`
+ * the prev_type will be the type of the token before the redirection token
+ * which is TOKEN_WORD in our case of `echo hello > file.txt`
+ */
+typedef struct s_redir_token
+{
+	t_token		**current;
+	t_token		**tokens;
+	t_token		*next_token;
+	t_ast_node	*result_left_node;
+	t_ast_node	*output_node;
+	t_token_type	prev_type;
+	t_shell		*shell;
+}	t_redir_token;
+
+typedef struct s_word_token
+{
+	t_token		**current;
+	t_token		**tokens;
+	t_token_type	*prev_type;
+	t_ast_node	*result;
+	t_shell		*shell;
+	t_ast_node	*cmd_node;
+}	t_word_token;
+
 /* Abstract Syntax Tree Node Types */
 /**
  * @brief AST Node types for the shell's command parser

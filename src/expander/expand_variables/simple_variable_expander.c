@@ -9,7 +9,6 @@
 /*   Updated: 2025/02/13 17:55:24 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../expander.h"
 
 static size_t	extract_variable_name(const char *arg, char *var_name)
@@ -35,15 +34,14 @@ static char	*clean_variable_value(const char *var_value)
 
 static char	*get_variable_value(t_shell *shell, const char *var_name)
 {
-    char *var_value;
-    char *cleaned_value;
-    
-    var_value = hashmap_get(shell->env, var_name);
-    if (!var_value)
-        return (ft_strdup(""));
-    
-    cleaned_value = clean_variable_value(var_value);
-    return (cleaned_value);
+	char	*var_value;
+	char	*cleaned_value;
+
+	var_value = hashmap_get(shell->env, var_name);
+	if (!var_value)
+		return (ft_strdup(""));
+	cleaned_value = clean_variable_value(var_value);
+	return (cleaned_value);
 }
 
 char	*expand_simple_variable(t_shell *shell, const char *arg)

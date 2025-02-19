@@ -17,12 +17,21 @@
 # include "includes/token_handler.h"
 # include "includes/state_handler.h"
 
+typedef struct s_token_extract
+{
+	char				*result;
+	size_t				i;
+	size_t				j;
+	t_tokeniser_state	state;
+	t_tokeniser_state	prev_state;
+}	t_token_extract;
+
 /* Main Tokenization Function */
 /**
  * @brief Main tokenization function
  * @param input Command line to tokenize
  * @return Head of token list or NULL on error
  */
-t_token     *tokenise(const char *input);
+t_token	*tokenise(const char *input);
 
 #endif

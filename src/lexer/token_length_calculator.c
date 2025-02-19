@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   token_length_calculator.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/07 10:00:00 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 19:09:02 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/18 16:20:10 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/18 16:21:50 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer.h"
 
-static size_t	handle_special_char(const char *input,
-			t_tokeniser_state state, size_t len)
+static size_t	handle_special_char(const char *input, \
+								t_tokeniser_state state, size_t len)
 {
 	if (state == STATE_NORMAL && len == 0 && is_special_char(input[len]))
 	{
@@ -28,23 +28,26 @@ static size_t	handle_special_char(const char *input,
 static int	handle_quote_state(t_tokeniser_state state,
 			size_t len, const char *input)
 {
-	if ((state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE) && !input[len])
+	if ((state == STATE_IN_SINGLE_QUOTE || state == STATE_IN_DOUBLE_QUOTE) \
+		&& !input[len])
 	{
-		ft_putendl_fd("minishell: syntax error: unclosed quotes", STDERR_FILENO);
+		ft_putendl_fd("minishell: syntax error: unclosed quotes", \
+				STDERR_FILENO);
 		return (1);
 	}
 	return (0);
 }
 
-static size_t	process_char(const char *input,
-			size_t len, t_tokeniser_state *state, bool *prev_was_quote)
+static size_t	process_char(const char *input, size_t len, \
+						t_tokeniser_state *state, bool *prev_was_quote)
 {
-	size_t				special_len;
+	size_t	special_len;
 
 	*state = get_next_state(*state, input[len]);
 	if (*state == STATE_NORMAL && ft_isspace(input[len]) && len > 0)
 	{
-		if (input[len + 1] && (input[len + 1] == '\'' || input[len + 1] == '"') && *prev_was_quote)
+		if (input[len + 1] && (input[len + 1] == '\'' || \
+			input[len + 1] == '"') && *prev_was_quote)
 			;
 		else
 			return (len);

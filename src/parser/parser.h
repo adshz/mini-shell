@@ -1,15 +1,14 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/18 02:15:20 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 02:15:23 by szhong           ###   ########.fr       */
-/*                                                                            */
+/*																			  */
+/*														  :::	   ::::::::   */
+/*	 parser.h											:+:		 :+:	:+:   */
+/*													  +:+ +:+		  +:+	  */
+/*	 By: szhong <szhong@student.42london.com>		+#+  +:+	   +#+		  */
+/*												  +#+#+#+#+#+	+#+			  */
+/*	 Created: 2025/02/18 02:15:20 by szhong			   #+#	  #+#			  */
+/*	 Updated: 2025/02/18 02:15:23 by szhong			  ###	########.fr		  */
+/*																			  */
 /* ************************************************************************** */
-
 #ifndef PARSER_H
 # define PARSER_H
 
@@ -21,17 +20,17 @@
 # include "includes/command_parser.h"
 # include "includes/parser_redirection.h"
 /* High-level parsing functions */
-t_ast_node  *parse(t_token *tokens, t_shell *shell);
-t_ast_node  *parse_command_line(t_token **tokens);
-bool        validate_syntax(t_token *tokens);
+t_ast_node	*parse(t_token *tokens, t_shell *shell);
+t_ast_node	*parse_command_line(t_token **tokens);
+bool		validate_syntax(t_token *tokens);
 
 /* Error handling */
-void        handle_parse_error(const char *message);
-void        cleanup_parse_context(t_token *tokens, t_ast_node *ast);
+void		handle_parse_error(const char *message);
+void		cleanup_parse_context(t_token *tokens, t_ast_node *ast);
 
 /* Parser state management */
-bool        initialize_parser(void);
-void        reset_parser_state(void);
-void        cleanup_parser(void);
+bool		initialize_parser(void);
+void		reset_parser_state(void);
+void		cleanup_parser(void);
 
 #endif

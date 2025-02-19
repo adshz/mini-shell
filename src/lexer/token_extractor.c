@@ -15,10 +15,7 @@
  * @brief Initializes token extraction state
  * 
  * @param len Length of token to be extracted
- * @param i Pointer to input string position counter
- * @param j Pointer to result string position counter
- * @param state Pointer to current tokenizer state
- * @param prev_state Pointer to previous tokenizer state
+ * @param extract Pointer to token extraction state
  * 
  * @return char* Returns:
  *         - Newly allocated string buffer for token
@@ -27,83 +24,74 @@
  * Allocates memory and initializes all counters and states
  * needed for token extraction process.
  */
-static char	*init_token_extraction(size_t len,
-				size_t *i, size_t *j, t_tokeniser_state *state,
-				t_tokeniser_state *prev_state)
+static char	*init_token_extraction(size_t len, t_token_extract *extract)
 {
 	char	*result;
 
 	result = (char *)malloc(len + 1);
 	if (!result)
 		return (NULL);
-	*i = 0;
-	*j = 0;
-	*state = STATE_NORMAL;
-	*prev_state = STATE_NORMAL;
+	extract->i = 0;
+	extract->j = 0;
+	extract->state = STATE_NORMAL;
+	extract->prev_state = STATE_NORMAL;
 	return (result);
 }
 
 /**
  * @brief Processes character based on quote state
  * 
- * @param result Output string buffer
- * @param j Pointer to current position in result buffer
+ * @param extract Pointer to token extraction state
  * @param current_char Character being processed
- * @param prev_state Previous tokenizer state
  * 
  * Handles character processing within quoted strings:
  * - Copies characters inside double quotes (except the quotes themselves)
  * - Copies characters inside single quotes (except the quotes themselves)
  * - Skips quote characters
  */
-static void	process_quoted_char(char *result, size_t *j, char current_char, \
-							t_tokeniser_state prev_state)
+static void	process_quoted_char(t_token_extract *extract, char current_char)
 {
-	static int was_backslash;
+	static int	was_backslash;
 
-	if (prev_state == STATE_IN_DOUBLE_QUOTE)
+	if (extract->prev_state == STATE_IN_DOUBLE_QUOTE)
 	{
 		if (was_backslash)
 		{
 			if (current_char == 'n')
 			{
-				result[(*j)++] = '\\';
-				result[(*j)++] = 'n';
+				extract->result[(extract->j)++] = '\\';
+				extract->result[(extract->j)++] = 'n';
 			}
 			else
-				result[(*j)++] = current_char;
+				extract->result[(extract->j)++] = current_char;
 			was_backslash = 0;
 		}
 		else if (current_char == '\\')
 			was_backslash = 1;
 		else if (current_char != '"')
-			result[(*j)++] = current_char;
+			extract->result[(extract->j)++] = current_char;
 	}
-	else if (prev_state == STATE_IN_SINGLE_QUOTE && current_char != '\'')
-		result[(*j)++] = current_char;
+	else if (extract->prev_state == STATE_IN_SINGLE_QUOTE && \
+		current_char != '\'')
+		extract->result[(extract->j)++] = current_char;
 }
 
 /**
  * @brief Processes character in normal state
  * 
- * @param result Output string buffer
- * @param j Pointer to current position in result buffer
+ * @param extract Pointer to token extraction state
  * @param current_char Character being processed
- * @param state Current tokenizer state
- * @param prev_state Previous tokenizer state
  * 
  * Handles character processing outside of quotes:
  * - Copies normal characters
  * - Skips quote characters
  * - Only processes when both current and previous states are normal
  */
-static void	process_normal_char(char *result, size_t *j, char current_char,
-							t_tokeniser_state state,
-							t_tokeniser_state prev_state)
+static void	process_normal_char(t_token_extract *extract, char current_char)
 {
-	if (state == STATE_NORMAL && prev_state == STATE_NORMAL && \
-		current_char != '\'' && current_char != '"')
-		result[(*j)++] = current_char;
+	if (extract->state == STATE_NORMAL && extract->prev_state == STATE_NORMAL \
+		&& current_char != '\'' && current_char != '"')
+		extract->result[(extract->j)++] = current_char;
 }
 
 /**
@@ -129,26 +117,23 @@ static void	process_normal_char(char *result, size_t *j, char current_char,
  */
 char	*extract_token(const char *input, size_t len, bool *in_single_quotes)
 {
-	char				*result;
-	size_t				i;
-	size_t				j;
-	t_tokeniser_state	state;
-	t_tokeniser_state	prev_state;
+	t_token_extract	extract;
 
 	if (!input)
 		return (NULL);
-	result = init_token_extraction(len, &i, &j, &state, &prev_state);
-	if (!result)
+	extract.result = init_token_extraction(len, &extract);
+	if (!extract.result)
 		return (NULL);
-	*in_single_quotes = (len >= 2 && input[0] == '\'' && input[len - 1] == '\'');
-	while (i < len)
+	*in_single_quotes = (len >= 2 && input[0] == '\'' && \
+		input[len - 1] == '\'');
+	while (extract.i < len)
 	{
-		prev_state = state;
-		state = get_next_state(state, input[i]);
-		process_quoted_char(result, &j, input[i], prev_state);
-		process_normal_char(result, &j, input[i], state, prev_state);
-		i++;
+		extract.prev_state = extract.state;
+		extract.state = get_next_state(extract.state, input[extract.i]);
+		process_quoted_char(&extract, input[extract.i]);
+		process_normal_char(&extract, input[extract.i]);
+		extract.i++;
 	}
-	result[j] = '\0';
-	return (result);
+	extract.result[extract.j] = '\0';
+	return (extract.result);
 }

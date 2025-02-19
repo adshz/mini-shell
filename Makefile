@@ -114,6 +114,7 @@ SRCS		:=	\
 				executor/redirections_executor/redirection_node_handler.c \
 				executor/redirections_executor/redirection_utils.c \
 				expander/expand_variables/command_expander.c \
+				expander/expand_variables/command_expander_var_processor.c \
 				expander/expand_variables/simple_variable_expander.c \
 				expander/expand_variables/tilde_expander.c \
 				expander/expander_utils.c \

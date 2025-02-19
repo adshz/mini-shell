@@ -9,7 +9,6 @@
 /*   Updated: 2025/02/18 02:15:23 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef LEXER_TYPES_H
 # define LEXER_TYPES_H
 
@@ -30,13 +29,11 @@
 */
 typedef enum e_tokeniser_state
 {
-    STATE_NORMAL,
-    STATE_IN_SINGLE_QUOTE,
-    STATE_IN_DOUBLE_QUOTE,
-    STATE_IN_BACKSLASH
-}   t_tokeniser_state;
-
-/* Token types */
+	STATE_NORMAL,
+	STATE_IN_SINGLE_QUOTE,
+	STATE_IN_DOUBLE_QUOTE,
+	STATE_IN_BACKSLASH
+}	t_tokeniser_state;
 /**
  * @brief Token types for lexical analysis
  *
@@ -57,18 +54,18 @@ typedef enum e_tokeniser_state
 */
 typedef enum e_token_type
 {
-    TOKEN_WORD,
-    TOKEN_PIPE,
-    TOKEN_REDIRECT_IN,
-    TOKEN_REDIRECT_OUT,
-    TOKEN_APPEND,
-    TOKEN_HEREDOC,
-    TOKEN_AND,
-    TOKEN_OR,
-    TOKEN_SEMICOLON,
-    TOKEN_NEWLINE,
-    TOKEN_EOF
-}   t_token_type;
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_APPEND,
+	TOKEN_HEREDOC,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_SEMICOLON,
+	TOKEN_NEWLINE,
+	TOKEN_EOF
+}	t_token_type;
 
 /* Token Structure*/
 /**
@@ -85,11 +82,10 @@ typedef enum e_token_type
 */
 typedef struct s_token
 {
-    char            *value;
-    t_token_type    type;
-    struct s_token  *next;
-    struct s_token  *prev;
-    bool            in_single_quotes;
-}   t_token;
-
-#endif 
+	char			*value;
+	t_token_type	type;
+	struct s_token	*next;
+	struct s_token	*prev;
+	bool			in_single_quotes;
+}	t_token;
+#endif

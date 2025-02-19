@@ -17,49 +17,47 @@ int	is_quoted(const char *str)
 	return (str && (str[0] == '\'' || str[0] == '"'));
 }
 
-static void	handle_string_copy(char *result, const char *str,
-		size_t *i, size_t *j, char quote_char)
+static void	handle_string_copy(t_copy_state *state, char quote_char)
 {
 	if (quote_char)
 	{
-		(*i)++;
-		while (str[*i] && str[*i] != quote_char)
+		state->i++;
+		while (state->str[state->i] && state->str[state->i] != quote_char)
 		{
-			result[*j] = str[*i];
-			(*j)++;
-			(*i)++;
+			state->result[state->j] = state->str[state->i];
+			state->j++;
+			state->i++;
 		}
-		if (str[*i])
-			(*i)++;
+		if (state->str[state->i])
+			state->i++;
 	}
 	else
 	{
-		result[*j] = str[*i];
-		(*j)++;
-		(*i)++;
+		state->result[state->j] = state->str[state->i];
+		state->j++;
+		state->i++;
 	}
 }
 
 static char	*process_string(const char *str)
 {
-	char	*result;
-	size_t	i;
-	size_t	j;
+	t_copy_state	state;
 
-	result = malloc(ft_strlen(str) + 1);
-	if (!result)
+	state.result = malloc(ft_strlen(str) + 1);
+	if (!state.result)
 		return (NULL);
-	i = 0;
-	j = 0;
-	while (str[i])
+	state.str = str;
+	state.i = 0;
+	state.j = 0;
+	while (str[state.i])
 	{
-		if (str[i] == '\'' || str[i] == '"')
-			handle_string_copy(result, str, &i, &j, str[i]);
+		if (str[state.i] == '\'' || str[state.i] == '"')
+			handle_string_copy(&state, str[state.i]);
 		else
-			handle_string_copy(result, str, &i, &j, 0);
+			handle_string_copy(&state, 0);
 	}
-	result[j] = '\0';
-	return (result);
+	state.result[state.j] = '\0';
+	return (state.result);
 }
 
 char	*strip_quotes(char *str)

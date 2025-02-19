@@ -141,7 +141,7 @@ static t_token	*process_input_tokens(const char *input, t_token *head)
 			break ;
 		len = get_token_length_with_state(input);
 		if (len == 0)
-			break;
+			break ;
 		head = handle_token_creation(input, len, head);
 		if (!head)
 			return (NULL);
