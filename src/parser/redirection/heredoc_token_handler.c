@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_token_handler.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/19 17:42:33 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/19 17:42:40 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "parser/parser.h"
 
 void	init_word_token(t_word_token *wt, t_redir_parse *parse,
@@ -64,7 +75,8 @@ t_ast_node	*create_and_attach_command(t_word_token *wt)
  */
 t_ast_node	*is_word_part_of_redirection(t_word_token *wt)
 {
-	if ((*wt->current)->next && is_redirection_token((*wt->current)->next->type))
+	if ((*wt->current)->next && \
+		is_redirection_token((*wt->current)->next->type))
 	{
 		update_token_positions(wt);
 		return (wt->result);

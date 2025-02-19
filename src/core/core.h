@@ -30,7 +30,11 @@
 # include "shell.h"
 # include <signal.h>
 # include "lexer/lexer.h"
-
+/**
+ * 
+ * Without extern, each file would create its own separate variable 
+ * instead of using the one defined in main.c
+ */
 extern volatile sig_atomic_t	g_signal_status;
 
 /* Signal handling functions */

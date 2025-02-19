@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_token_handler.c                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/19 17:41:37 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/19 17:42:05 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "parser/parser.h"
 
 /**
@@ -61,7 +72,8 @@ static t_ast_node	*handle_regular_redirection(t_redir_token *rt)
 	return (rt->output_node);
 }
 
-static void	init_redir_token(t_redir_token *rt, t_redir_parse *parse, t_token **tokens)
+static void	init_redir_token(t_redir_token *rt, t_redir_parse *parse, \
+							t_token **tokens)
 {
 	rt->current = &parse->current;
 	rt->tokens = tokens;

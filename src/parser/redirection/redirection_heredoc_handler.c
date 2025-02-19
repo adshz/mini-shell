@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_heredoc_handler.c                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/19 17:43:39 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/19 17:44:48 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parser/parser.h"
 
 static void	advance_heredoc_token_stream(t_redir_token *rt)
@@ -14,6 +26,7 @@ static void	advance_heredoc_token_stream(t_redir_token *rt)
 		*rt->current = NULL;
 	}
 }
+
 /*
  * @brief Handles the heredoc token
  * 
@@ -49,7 +62,8 @@ static void	advance_heredoc_token_stream(t_redir_token *rt)
  * *rt->current will point to ">"
  *  by doing this, we skip `<<` and `hello`
 */
-static bool	validate_heredoc_word_token(t_redir_token *rt, t_token *delimiter_token)
+static bool	validate_heredoc_word_token(t_redir_token *rt, \
+									t_token *delimiter_token)
 {
 	if (!delimiter_token || delimiter_token->type != TOKEN_WORD)
 	{
@@ -77,8 +91,10 @@ static bool	setup_heredoc_left_node(t_redir_token *rt, t_token *delimiter_token)
 {
 	if (!rt->result_left_node)
 	{
-		if (delimiter_token && delimiter_token->next && delimiter_token->next->type == TOKEN_WORD)
-			rt->result_left_node = create_command_from_token(delimiter_token->next);
+		if (delimiter_token && delimiter_token->next && \
+			delimiter_token->next->type == TOKEN_WORD)
+			rt->result_left_node = \
+				create_command_from_token(delimiter_token->next);
 		if (!rt->result_left_node && rt->shell->exit_status != 258)
 		{
 			rt->shell->exit_status = 258;

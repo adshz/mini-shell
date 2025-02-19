@@ -12,6 +12,8 @@
 #ifndef PARSER_H
 # define PARSER_H
 
+# include "lexer/lexer.h"
+# include "expander/expander.h"
 # include "includes/parser_types.h"
 # include "includes/ast.h"
 # include "includes/redirection_handler.h"
@@ -19,6 +21,8 @@
 # include "includes/heredoc_handler.h"
 # include "includes/command_parser.h"
 # include "includes/parser_redirection.h"
-/* High-level parsing functions */
+# include "includes/parser_variable_expansion.h"
+# include "includes/parser_expressions.h"
+
 t_ast_node	*parse(t_token *tokens, t_shell *shell);
 #endif

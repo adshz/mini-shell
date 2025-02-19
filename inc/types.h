@@ -59,8 +59,8 @@ typedef t_hash_item			t_env;
  * such as command parsing data, execution state, environement management
  * process tracking, and terminal settings.
  * 
- * @param line				Current user command line being parsered by parser
- * @param tokens			List of tokens by scanner and lexer (lexcial analysis)
+ * @param line Current user command line being parsered by parser
+ * @param tokens List of tokens by scanner and lexer (lexcial analysis)
  * @param ast				Abstract syntax tree representing commands, flags etc
  * @param env				Environment variables stored by Hash Table
  * @param cmds				History of executed commands using linked list

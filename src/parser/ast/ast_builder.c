@@ -25,11 +25,9 @@ t_ast_node	*create_ast_node(t_ast_type type, char *value)
 	node->value = NULL;
 	node->is_expanded = 0;
 	node->original = NULL;
-	// Initialize heredoc data
 	node->data.content_path = NULL;
 	node->data.content_fd = -1;
 	node->data.delimiter = NULL;
-	
 	if (value)
 	{
 		node->value = ft_strdup(value);

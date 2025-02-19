@@ -24,13 +24,16 @@ static bool	validate_file_token(t_token *file_token)
 {
 	if (!file_token || file_token->type != TOKEN_WORD)
 	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'", STDERR_FILENO);
+		ft_putendl_fd(\
+				"minishell: syntax error near unexpected token `newline'", \
+				STDERR_FILENO);
 		return (false);
 	}
 	return (true);
 }
 
-static t_ast_node	*create_file_node(t_token *file_token, t_ast_node *redir_node)
+static t_ast_node	*create_file_node(t_token *file_token, \
+								t_ast_node *redir_node)
 {
 	t_ast_node	*file_node;
 

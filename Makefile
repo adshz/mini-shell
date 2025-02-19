@@ -145,8 +145,11 @@ SRCS		:=	\
 				parser/command/command_init.c \
 				parser/command/command_parser.c \
 				parser/command/command_utils.c \
+				parser/expression_parser/parser_expression.c \
+				parser/variable_expansion/parser_variable_expander.c \
 				parser/pipeline/pipeline_parser.c \
 				parser/redirection/heredoc_handler.c \
+				parser/redirection/heredoc_chain_handler.c \
 				parser/redirection/heredoc_token_handler.c \
 				parser/redirection/redirection_handler.c \
 				parser/redirection/redirection_heredoc_handler.c \

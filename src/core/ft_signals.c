@@ -24,6 +24,11 @@
 // g_signal_status is a variable that is used to store the signal status.
 // it is declared as volatile because it can be changed by the program or
 // by the operating system.
+/**
+ * 
+ * Without extern, each file would create its own separate variable 
+ * instead of using the one defined in main.c
+ */
 extern volatile sig_atomic_t	g_signal_status;
 
 /**

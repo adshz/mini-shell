@@ -75,50 +75,6 @@ char	**allocate_args(int arg_count)
 	return (args);
 }
 
-/**
- * @brief Fills argument array with duplicated token values
- * @param args Array to fill with arguments
- * @param start Starting token
- * @param arg_count Number of arguments to process
- * @return 1 on success, 0 on failure
- * 
- * Duplicates token values into the args array. Handles both
- * regular tokens and variable tokens. Ensures proper memory
- * allocation for each argument.
- */
-int	fill_args(char **args, t_token *start, int arg_count)
-{
-	t_token	*current;
-	int		  i;
-	int     allocated_size;
-
-	current = start;
-	i = 0;
-	allocated_size = arg_count;
-	if (start && start->value && ft_strcmp(start->value, "exit") == 0)
-	{
-		if (arg_count < 3)
-			allocated_size = 3;
-		else
-			allocated_size = arg_count;
-	}
-	while (i < arg_count && current)
-	{
-		args[i] = ft_strdup(current->value);
-		if (!args[i])
-			return (0);
-		current = current->next;
-		i++;
-	}
-	while (i < allocated_size)
-	{
-		args[i] = NULL;
-		i++;
-	}
-	args[allocated_size] = NULL;
-	return (1);
-}
-
 t_ast_node	*create_default_heredoc_command(void)
 {
 	t_token		*cat_token;
