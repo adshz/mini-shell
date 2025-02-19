@@ -138,19 +138,22 @@ SRCS		:=	\
 				lexer/token_utils.c \
 				lexer/token_extractor.c \
 				lexer/tokeniser.c \
-				parser/command_node.c \
-				parser/redirection_handler.c \
-				parser/heredoc_handler.c \
-				parser/ast_builder.c \
-				parser/ast_free.c \
-				parser/command_init.c \
-				parser/command_parser.c \
-				parser/command_utils.c \
 				parser/parser.c \
-				parser/pipeline_parser.c \
-				parser/redirection_init.c \
-				parser/redirection_parser.c \
-				parser/redirection_utils.c \
+				parser/ast/ast_free.c \
+				parser/ast/ast_builder.c \
+				parser/command/command_node.c \
+				parser/command/command_init.c \
+				parser/command/command_parser.c \
+				parser/command/command_utils.c \
+				parser/pipeline/pipeline_parser.c \
+				parser/redirection/heredoc_handler.c \
+				parser/redirection/heredoc_token_handler.c \
+				parser/redirection/redirection_handler.c \
+				parser/redirection/redirection_heredoc_handler.c \
+				parser/redirection/redirection_init.c \
+				parser/redirection/redirection_parser.c \
+				parser/redirection/redirection_utils.c \
+				parser/redirection/redirection_token_handler.c \
 				utils/cleanup.c \
 				utils/command_cleanup.c \
 				utils/command_utils.c \

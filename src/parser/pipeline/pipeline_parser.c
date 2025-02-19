@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 12:05:18 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 /**
  * @brief Creates a new pipeline node connecting two AST nodes

@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 14:15:29 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 static void	free_command_node(t_ast_node *node)
 {

@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/13 21:37:46 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 /**
  * @brief Creates a command node from a token

@@ -15,4 +15,8 @@ t_ast_node *create_and_attach_command(t_word_token *wt);
 t_ast_node *is_word_part_of_redirection(t_word_token *wt);
 t_ast_node *handle_word_token(t_word_token *wt);
 
+
+t_ast_node	*process_redir_token(t_redir_parse *parse, t_token **tokens);
+
+t_ast_node	*handle_heredoc_token(t_redir_token *rt);
 #endif

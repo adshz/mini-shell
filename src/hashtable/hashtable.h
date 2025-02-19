@@ -20,15 +20,6 @@
 # include "libft.h"
 # include <stdlib.h>
 
-typedef struct s_hash_count
-{
-	size_t		count;
-	size_t		i;
-	t_hash_item	*current;
-	size_t		max_items_per_bucket;
-	size_t		items_in_bucket;
-}	t_hash_count;
-
 /* Hash Table - Hash Item Structure */
 /**
  * @brief Hash Table Item Structure
@@ -46,6 +37,15 @@ typedef struct s_hash_item
 	char				*value;
 	struct s_hash_item	*next;
 }	t_hash_item;
+
+typedef struct s_hash_count
+{
+	size_t		count;
+	size_t		i;
+	t_hash_item	*current;
+	size_t		max_items_per_bucket;
+	size_t		items_in_bucket;
+}	t_hash_count;
 
 /* Hash Table Structure */
 /**

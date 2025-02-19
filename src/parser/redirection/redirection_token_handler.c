@@ -1,8 +1,5 @@
 #include "parser/parser.h"
 
-static t_ast_node  *handle_redirection_token();
-static t_ast_node  *handle_regular_redirection();
-
 /**
  * @brief Handles the regular redirection token
  * 
@@ -125,3 +122,4 @@ t_ast_node	*process_redir_token(t_redir_parse *parse, t_token **tokens)
 		return (NULL);
 	}
 	return (parse->result_left_node);
+}

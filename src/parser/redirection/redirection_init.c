@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 13:39:49 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 /**
  * @brief Creates appropriate redirection node based on token type

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "parser/parser.h"
 
 /**
  * @brief Counts the number of consecutive word tokens

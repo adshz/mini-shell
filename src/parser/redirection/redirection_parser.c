@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "parser/parser.h"
 #include "lexer/lexer.h"
 #include "shell.h"
 
