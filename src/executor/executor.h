@@ -25,6 +25,7 @@
 # include "includes/command_check.h"
 # include "utils/utils.h"
 # include "errors.h"
+# include <sys/wait.h>
 
 /* High-level orchestration functions */
 void	restore_redirections(t_shell *shell);
