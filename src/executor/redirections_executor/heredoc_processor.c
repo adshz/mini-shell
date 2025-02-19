@@ -27,7 +27,11 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 		line = get_next_line(STDIN_FILENO);
 		ret = handle_heredoc_line(line, pipe_fds, node, shell);
 		if (ret != 0)
+		{
+			shell->in_heredoc = 0;
+			g_signal_status = SIG_NONE;
 			return (ret);
+		}
 		if (write_heredoc_line(line, pipe_fds, node))
 			break ;
 	}

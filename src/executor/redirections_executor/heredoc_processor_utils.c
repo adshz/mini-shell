@@ -43,6 +43,7 @@ int	handle_heredoc_line(char *line, int pipe_fds[2],
 		}
 		if (line)
 			free(line);
+		node->data.content_fd = -1;
 		return (1);
 	}
 	len = ft_strlen(line);
