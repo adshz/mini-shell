@@ -44,6 +44,7 @@ int	handle_heredoc_line(char *line, int pipe_fds[2],
 		if (line)
 			free(line);
 		node->data.content_fd = -1;
+		write(STDERR_FILENO, "\n", 1);
 		return (1);
 	}
 	len = ft_strlen(line);
@@ -59,6 +60,7 @@ int	write_heredoc_line(char *line, int pipe_fds[2],
 	{
 		free(line);
 		close(pipe_fds[1]);
+		write(STDERR_FILENO, "\n", 1);
 		return (1);
 	}
 	ft_putendl_fd(line, pipe_fds[1]);
