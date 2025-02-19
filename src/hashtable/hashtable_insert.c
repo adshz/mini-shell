@@ -114,10 +114,12 @@ static int	update_existing_item(t_hash_item *item, char *value, int free_old)
 	char	*new_value;
 
 	new_value = ft_strdup(value);
+	if (!new_value)
+		return (HASH_ERR);
 	if (free_old)
 		free(item->value);
 	item->value = new_value;
-	return (SUCCESS);
+	return (HASH_OK);
 }
 
 /**
