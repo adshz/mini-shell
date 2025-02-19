@@ -15,6 +15,7 @@
 # include "hashtable/hashtable.h"
 # include "utils/utils.h"
 # include "executor/executor.h"
+# include <sys/wait.h>
 
 void	env_print_env_var(const char *key, const char *value);
 int		handle_env_parent_process(pid_t pid, char *cmd_path, \

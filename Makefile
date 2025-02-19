@@ -143,6 +143,7 @@ SRCS		:=	\
 				parser/ast/ast_builder.c \
 				parser/command/command_node.c \
 				parser/command/command_init.c \
+				parser/command/command_init_utils.c \
 				parser/command/command_parser.c \
 				parser/command/command_utils.c \
 				parser/expression_parser/parser_expression.c \
