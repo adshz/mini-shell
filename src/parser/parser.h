@@ -21,16 +21,4 @@
 # include "includes/parser_redirection.h"
 /* High-level parsing functions */
 t_ast_node	*parse(t_token *tokens, t_shell *shell);
-t_ast_node	*parse_command_line(t_token **tokens);
-bool		validate_syntax(t_token *tokens);
-
-/* Error handling */
-void		handle_parse_error(const char *message);
-void		cleanup_parse_context(t_token *tokens, t_ast_node *ast);
-
-/* Parser state management */
-bool		initialize_parser(void);
-void		reset_parser_state(void);
-void		cleanup_parser(void);
-
 #endif
