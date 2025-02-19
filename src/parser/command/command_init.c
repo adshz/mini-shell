@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 13:38:40 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 /**
  * @brief Initializes command node with variable expansion

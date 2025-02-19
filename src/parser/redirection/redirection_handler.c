@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "parser/parser.h"
 
 int	is_redirection_token(t_token_type type)
 {

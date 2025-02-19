@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "parser/parser.h"
 
 t_token	*find_last_word_token(t_token *start)
 {

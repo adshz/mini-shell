@@ -17,8 +17,8 @@
 # include <termios.h>
 # include <sys/types.h>
 # include "libft.h"
-# include "../src/lexer/lexer.h"
-# include "../src/hashtable/hashtable.h"
+# include "lexer/lexer.h"
+# include "hashtable/hashtable.h"
 
 # define SIG_HEREDOC_MODE 1
 # define SIG_HEREDOC_INT 2

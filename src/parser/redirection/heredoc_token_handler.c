@@ -1,7 +1,15 @@
-static t_ast_node  *handle_heredoc_token();
-static t_ast_node  *find_command_after_heredoc();
-
 #include "parser/parser.h"
+
+void	init_word_token(t_word_token *wt, t_redir_parse *parse,
+	t_token **tokens)
+{
+	wt->current = &parse->current;
+	wt->tokens = tokens;
+	wt->prev_type = &parse->prev_type;
+	wt->result = parse->result_left_node;
+	wt->shell = parse->shell;
+	wt->cmd_node = NULL;
+}
 
 void	update_token_positions(t_word_token *wt)
 {
@@ -69,12 +77,12 @@ t_ast_node	*is_word_part_of_redirection(t_word_token *wt)
 	return (NULL);
 }
 
-t_ast_node	*handle_word_token(t_work_token *wt)
+t_ast_node	*handle_word_token(t_word_token *wt)
 {
 	t_ast_node		*redir_result;
 
-	redir_result = is_word_part_of_redirection(&wt);
+	redir_result = is_word_part_of_redirection(wt);
 	if (redir_result)
 		return (redir_result);
-	return (create_and_attach_command(&wt));
+	return (create_and_attach_command(wt));
 }

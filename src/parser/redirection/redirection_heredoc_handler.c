@@ -2,7 +2,7 @@
 
 static void	advance_heredoc_token_stream(t_redir_token *rt)
 {
-	*rt->prev_type = (*rt->current)->type;
+	rt->prev_type = (*rt->current)->type;
 	if (rt->next_token && rt->next_token->next)
 	{
 		*rt->tokens = rt->next_token->next;

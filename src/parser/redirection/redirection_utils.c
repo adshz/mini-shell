@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 13:40:12 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 int	check_input_file(const char *filename)
 {

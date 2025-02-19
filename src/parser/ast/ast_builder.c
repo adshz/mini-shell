@@ -9,7 +9,7 @@
 /*   Updated: 2025/01/28 13:38:24 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser.h"
+#include "parser/parser.h"
 
 t_ast_node	*create_ast_node(t_ast_type type, char *value)
 {

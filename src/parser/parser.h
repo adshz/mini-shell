@@ -13,7 +13,7 @@
 # define PARSER_H
 
 # include "includes/parser_types.h"
-# include "includes/ast_node_handler.h"
+# include "includes/ast.h"
 # include "includes/redirection_handler.h"
 # include "includes/pipeline_handler.h"
 # include "includes/heredoc_handler.h"
