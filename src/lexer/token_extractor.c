@@ -135,5 +135,10 @@ char	*extract_token(const char *input, size_t len, bool *in_single_quotes)
 		extract.i++;
 	}
 	extract.result[extract.j] = '\0';
+	if (extract.j == 0 && len > 0)
+	{
+		free(extract.result);
+		return (NULL);
+	}
 	return (extract.result);
 }
