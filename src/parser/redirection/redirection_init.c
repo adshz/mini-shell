@@ -53,15 +53,24 @@ static t_ast_node	*create_file_node(const char *file_value, \
 {
 	t_ast_node	*file_node;
 
-	// For heredoc nodes, we don't need a file node since we store the delimiter in data
 	if (redir_node->type == AST_HEREDOC)
-		return (redir_node);
-
-	file_node = create_ast_node(AST_COMMAND, (char *)file_value);
-	if (!file_node)
 	{
-		free_ast(redir_node);
-		return (NULL);
+		// For heredoc, create a node with a duplicate of the delimiter
+		file_node = create_ast_node(AST_COMMAND, (char *)redir_node->data.delimiter);
+		if (!file_node)
+		{
+			free_ast(redir_node);
+			return (NULL);
+		}
+	}
+	else
+	{
+		file_node = create_ast_node(AST_COMMAND, (char *)file_value);
+		if (!file_node)
+		{
+			free_ast(redir_node);
+			return (NULL);
+		}
 	}
 	redir_node->right = file_node;
 	return (redir_node);

@@ -48,7 +48,6 @@ char	*cmd_extract_variable_name(char *dollar_pos, char **var_end)
 	char	*var_start;
 	size_t	var_len;
 
-	ft_printf("DEBUG [cmd_var]: Extracting variable name\n");
 	var_start = dollar_pos + 1;
 	*var_end = var_start;
 	while (**var_end && (ft_isalnum(**var_end) || **var_end == '_'))

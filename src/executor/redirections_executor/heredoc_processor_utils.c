@@ -35,6 +35,9 @@ int	handle_heredoc_line(char *line, int pipe_fds[2],
 		shell->in_heredoc = 0;
 		if (g_signal_status == SIG_HEREDOC_INT)
 		{
+      	// Handle signal interruption cleanup first
+      if (shell->ast && (g_signal_status == SIG_HEREDOC_INT || shell->heredoc_sigint))
+        cleanup_heredoc_signal_interrupt(shell->ast);
 			shell->heredoc_sigint = true;
 			g_signal_status = SIG_NONE;
 			shell->exit_status = 130;

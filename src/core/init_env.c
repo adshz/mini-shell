@@ -37,21 +37,16 @@ static void	init_shlvl(t_shell *shell)
 
 	shlvl = 1;
 	tmp = hashmap_search(shell->env, "SHLVL");
-	printf("DEBUG: Initial SHLVL value from env: %s\n", tmp ? tmp : "NULL");
 	if (tmp && ft_atoi(tmp) > 0)
 		shlvl = ft_atoi(tmp) + 1;
-	printf("DEBUG: New SHLVL value will be: %d\n", shlvl);
 	tmp = ft_itoa(shlvl);
 	if (!tmp)
 	{
 		handle_error(shell, ERROR_ENV, "Environment variable SHLVL failure");
 		return ;
 	}
-	printf("DEBUG: About to insert SHLVL=%s into hashtable\n", tmp);
 	hashmap_insert(shell->env, "SHLVL", tmp, 0);
-	printf("DEBUG: About to free tmp=%p\n", (void*)tmp);
 	free(tmp);
-	printf("DEBUG: After freeing tmp\n");
 }
 
 /**
@@ -160,7 +155,9 @@ void	init_env_vars(t_shell *shell, char *argv[])
 	if (!hashmap_search(shell->env, "PATH"))
 	{
 		hashmap_insert(shell->env, "PATH", \
-				"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
+				"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", 0);
+         //"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
+
 		return ;
 	}
 	if (!hashmap_search(shell->env, "_"))

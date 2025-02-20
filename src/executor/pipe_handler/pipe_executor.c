@@ -15,63 +15,59 @@
 int	execute_pipe(t_shell *shell, t_ast_node *node)
 {
 	int		pipe_fd[2];
-	int		status;
-	pid_t	pid1, pid2;
+	int		statuses[2];
+	pid_t	pids[2];
+	int		ret;
 
 	shell->in_pipe = true;
 	if (setup_pipe(pipe_fd) != 0)
 		return (1);
-
-	// Execute left side (might be another pipe)
-	pid1 = fork();
-	if (pid1 == -1)
+	pids[0] = fork();
+	if (pids[0] == -1)
 		return (handle_fork_error(pipe_fd));
-	if (pid1 == 0)
+	if (pids[0] == 0)
 	{
 		close(pipe_fd[0]);
 		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+		{
+			cleanup_current_command(shell);
 			exit(1);
+		}
 		close(pipe_fd[1]);
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		if (node->left->type == AST_PIPE)
-			exit(execute_pipe(shell, node->left));
+			ret = execute_pipe(shell, node->left);
 		else
-			exit(execute_ast(shell, node->left));
+			ret = execute_ast(shell, node->left);
+		cleanup_current_command(shell);
+		exit(ret);
 	}
-
-	// Execute right side
-	pid2 = fork();
-	if (pid2 == -1)
+	pids[1] = fork();
+	if (pids[1] == -1)
 	{
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 		return (1);
 	}
-	if (pid2 == 0)
+	if (pids[1] == 0)
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+		{
+			cleanup_current_command(shell);
 			exit(1);
+		}
 		close(pipe_fd[0]);
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		exit(execute_ast(shell, node->right));
+		ret = execute_ast(shell, node->right);
+		cleanup_current_command(shell);
+		exit(ret);
 	}
-
-	// Parent process
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	
-	// Wait for both children
-	waitpid(pid1, &status, 0);
-	waitpid(pid2, &status, 0);
+	wait_for_children(pids, statuses);
 	shell->in_pipe = false;
-	restore_signal_handlers();
-	
-	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	return (WEXITSTATUS(status));
+	return (handle_child_exit_status(statuses[0], statuses[1]));
 }

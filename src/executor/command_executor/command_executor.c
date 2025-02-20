@@ -19,6 +19,7 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
+
 	ret = validate_and_expand_command(shell, node);
 	if (ret != 0)
 		return (ret);
@@ -83,7 +84,10 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 		return (1);
 	cmd_path = get_command_path(shell, node->args[0], shell->env);
 	if (!cmd_path)
+	{
+		ft_putstr_fd("ERROR: Command path not found\n", 2);
 		return (127);
+	}
 	pid = fork();
 	if (pid == -1)
 	{
