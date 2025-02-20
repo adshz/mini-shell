@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
+#include <errno.h>
 
 // extern is a keyword that is used to declare a variable that is defined
 // outside of the current file.
@@ -41,10 +42,24 @@ extern volatile sig_atomic_t	g_signal_status;
 void	disable_ctrl_char_echo(void)
 {
 	struct termios	term;
+	struct termios	old_term;
 
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		perror("tcgetattr");
+		return;
+	}
+	old_term = term;
+	term.c_lflag &= ~(ECHOCTL | ICANON);
+	term.c_cc[VMIN] = 1;
+	term.c_cc[VTIME] = 0;
+	
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+	{
+		perror("tcsetattr");
+		tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+		return;
+	}
 }
 
 /**
@@ -63,29 +78,45 @@ void	handle_sigint(int sig)
 	(void)sig;
 	if (g_signal_status == SIG_HEREDOC_MODE)
 	{
-		write(1, "\n", 1);
+		write(STDOUT_FILENO, "\n", 1);
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
 		return ;
 	}
-	if (g_signal_status == SIG_HEREDOC_INT)
-		return ;
-	write(1, "\n", 1);
+	write(STDOUT_FILENO, "\n", 1);
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	rl_redisplay();
+	// Reset readline's internal state
+	rl_reset_line_state();
+	// Reset signal status to allow next Ctrl+C
+	g_signal_status = SIG_NONE;
 }
 
 void	restore_signal_handlers(void)
 {
 	struct sigaction	sa;
 
-	sa.sa_handler = handle_sigint;
+	// Initialize the sigaction struct
 	sigemptyset(&sa.sa_mask);
+	// Block SIGINT during handler execution
+	sigaddset(&sa.sa_mask, SIGINT);
+	sa.sa_handler = handle_sigint;
 	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+	
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+	{
+		perror("sigaction");
+		return;
+	}
+
+	// Set up SIGQUIT handler
+	sa.sa_handler = SIG_IGN;
+	if (sigaction(SIGQUIT, &sa, NULL) == -1)
+	{
+		perror("sigaction");
+		return;
+	}
 }
 
 /**

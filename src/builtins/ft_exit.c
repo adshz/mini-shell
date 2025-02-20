@@ -44,11 +44,22 @@ int	builtin_exit(t_shell *shell, t_ast_node *node)
 
 	if (!shell || !node)
 		return (1);
+	
+	exit_code = get_exit_code(shell, node);
+	
+	// Only print exit message if not in a pipe and it's the parent shell
 	if (!shell->in_pipe)
 		ft_putendl_fd("exit", STDERR_FILENO);
-	exit_code = get_exit_code(shell, node);
+	
+	// If we have too many arguments and we're not in a pipe
 	if (exit_code == 1 && node->args && node->args[0] && \
-	node->args[1] && node->args[2])
+		node->args[1] && node->args[2] && !shell->in_pipe)
 		return (1);
+	
+	// If we're in a pipe, just return the exit code
+	if (shell->in_pipe)
+		return (exit_code);
+	
+	// Actually exit if we're not in a pipe
 	exit(exit_code);
 }

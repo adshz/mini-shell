@@ -25,9 +25,8 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 	if (is_builtin(node->args[0]))
 	{
 		ret = execute_builtin(shell, node);
-		if (ft_strcmp(node->args[0], "exit") == 0)
-			if (!shell->in_heredoc)
-				exit(ret);
+		if (ft_strcmp(node->args[0], "exit") == 0 && !shell->in_pipe && !shell->in_heredoc)
+			exit(ret);
 		return (ret);
 	}
 	ret = execute_external_command(shell, node);

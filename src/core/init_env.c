@@ -37,16 +37,21 @@ static void	init_shlvl(t_shell *shell)
 
 	shlvl = 1;
 	tmp = hashmap_search(shell->env, "SHLVL");
+	printf("DEBUG: Initial SHLVL value from env: %s\n", tmp ? tmp : "NULL");
 	if (tmp && ft_atoi(tmp) > 0)
 		shlvl = ft_atoi(tmp) + 1;
+	printf("DEBUG: New SHLVL value will be: %d\n", shlvl);
 	tmp = ft_itoa(shlvl);
 	if (!tmp)
 	{
 		handle_error(shell, ERROR_ENV, "Environment variable SHLVL failure");
 		return ;
 	}
+	printf("DEBUG: About to insert SHLVL=%s into hashtable\n", tmp);
 	hashmap_insert(shell->env, "SHLVL", tmp, 0);
+	printf("DEBUG: About to free tmp=%p\n", (void*)tmp);
 	free(tmp);
+	printf("DEBUG: After freeing tmp\n");
 }
 
 /**

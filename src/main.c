@@ -9,9 +9,19 @@
 /*   Updated: 2025/01/27 16:20:46 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "mem_tracker.h"
 #include "shell.h"
 #include "types.h"
 
+/**
+ * @brief Signal handler for handling signals
+ *
+ * This function is used to handle signals in the shell.
+ * It sets the signal status to the signal number.
+ * 
+ * Without extern, each file would create its own separate variable 
+ * instead of using the one defined in main.c
+ */
 volatile sig_atomic_t	g_signal_status = 0;
 
 /**
