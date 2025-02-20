@@ -131,10 +131,11 @@ void	interactive_loop(t_shell *shell)
 			break ;
 		if (!parse_and_build_ast(shell))
 		{
-			if (g_signal_status == SIG_HEREDOC_INT)
+			if (g_signal_status == SIG_HEREDOC_INT || shell->heredoc_sigint)
 			{
 				cleanup_current_command(shell);
 				g_signal_status = SIG_NONE;
+				shell->heredoc_sigint = false;
 			}
 			continue ;
 		}

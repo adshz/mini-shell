@@ -45,9 +45,17 @@ t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 	t_ast_node	*command_node;
 	t_ast_node	*heredoc_chain;
 
+	if (shell->heredoc_sigint || g_signal_status == SIG_HEREDOC_INT)
+		return (NULL);
 	command_node = create_default_heredoc_command();
 	if (!command_node)
 		return (NULL);
+	// Check for signal right after allocation
+	if (shell->heredoc_sigint || g_signal_status == SIG_HEREDOC_INT)
+	{
+		free_ast(command_node);
+		return (NULL);
+	}
 	heredoc_chain = create_heredoc_chain(tokens, command_node, shell);
 	if (!heredoc_chain)
 	{

@@ -96,5 +96,10 @@ t_ast_node	*create_default_heredoc_command(void)
 		return (NULL);
 	}
 	free_tokens(cat_token);
+	if (g_signal_status == SIG_HEREDOC_INT)
+	{
+		free_ast(node);
+		return (NULL);
+	}
 	return (node);
 }

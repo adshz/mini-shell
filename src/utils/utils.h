@@ -18,7 +18,7 @@
 
 /* Error handling */
 void	handle_error(t_shell *shell, t_error_type error, const char *detail);
-
+void	cleanup_heredoc_signal_interrupt(t_ast_node *node);
 /* Cleanup functions */
 void	cleanup_shell(t_shell *shell);
 void	cleanup_current_command(t_shell *shell);

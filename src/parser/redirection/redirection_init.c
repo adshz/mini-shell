@@ -35,7 +35,12 @@ static t_ast_node	*init_redirection_by_type(t_token_type type, \
 		{
 			redir_node->data.content_fd = -1;
 			redir_node->data.content_path = NULL;
-			redir_node->data.delimiter = file_value;
+			redir_node->data.delimiter = ft_strdup(file_value);
+			if (!redir_node->data.delimiter)
+			{
+				free(redir_node);
+				return (NULL);
+			}
 		}
 	}
 	else
@@ -47,6 +52,10 @@ static t_ast_node	*create_file_node(const char *file_value, \
 								t_ast_node *redir_node)
 {
 	t_ast_node	*file_node;
+
+	// For heredoc nodes, we don't need a file node since we store the delimiter in data
+	if (redir_node->type == AST_HEREDOC)
+		return (redir_node);
 
 	file_node = create_ast_node(AST_COMMAND, (char *)file_value);
 	if (!file_node)

@@ -36,7 +36,8 @@ int	execute_child_process(t_shell *shell, t_ast_node *node)
 	{
 		g_signal_status = SIG_NONE;
 		shell->signint_child = false;
-		cleanup_current_command(shell);
+		if (!shell->heredoc_sigint)
+			cleanup_current_command(shell);
 		exit(130);
 	}
 	cmd_node = find_command_node(node);
