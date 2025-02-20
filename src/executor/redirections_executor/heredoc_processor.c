@@ -33,7 +33,7 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 			return (ret);
 		}
 		if (write_heredoc_line(line, pipe_fds, node))
-			break ;
+			break;
 	}
 	node->data.content_fd = pipe_fds[0];
 	shell->in_heredoc = 0;

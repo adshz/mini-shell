@@ -29,18 +29,24 @@ t_ast_node	*find_command_node(t_ast_node *node)
 int	execute_child_process(t_shell *shell, t_ast_node *node)
 {
 	t_ast_node	*cmd_node;
+	int			exit_status;
 
 	setup_redirections(shell, node);
 	if (g_signal_status == SIGINT || shell->exit_status == 130)
 	{
 		g_signal_status = SIG_NONE;
 		shell->signint_child = false;
+		cleanup_current_command(shell);
 		exit(130);
 	}
 	cmd_node = find_command_node(node);
 	if (!cmd_node)
 	{
-		exit(shell->exit_status);
+		exit_status = shell->exit_status;
+		cleanup_current_command(shell);
+		exit(exit_status);
 	}
-	exit(execute_ast(shell, cmd_node));
+	exit_status = execute_ast(shell, cmd_node);
+	cleanup_current_command(shell);
+	exit(exit_status);
 }

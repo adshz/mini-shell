@@ -35,12 +35,23 @@ char	*search_in_paths(t_shell *shell, char **paths, const char *cmd)
 
 char	*try_path(const char *path, const char *cmd)
 {
+	char	*path_with_slash;
 	char	*full_path;
-
-	full_path = ft_strjoin3(path, "/", cmd);
-	if (full_path && access(full_path, X_OK) == 0)
+	
+	path_with_slash = ft_strjoin3(path, "/", NULL);
+	if (!path_with_slash)
+		return (NULL);
+	
+	full_path = ft_strjoin3(path_with_slash, cmd, NULL);
+	free(path_with_slash);  // Free intermediate string
+	
+	if (!full_path)
+		return (NULL);
+	
+	if (access(full_path, F_OK | X_OK) == 0)
 		return (full_path);
-	free(full_path);
+	
+	free(full_path);  // Free if path is not executable
 	return (NULL);
 }
 
@@ -60,13 +71,20 @@ char	*get_command_path(t_shell *shell, const char *cmd, t_hashmap *env)
 {
 	char	**paths;
 
-	if (is_special_path(cmd))
+	if (!cmd || !*cmd)
+	{
+		shell->exit_status = ERR_NOT_FOUND;
 		return (NULL);
+	}
+	if (ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
+	
 	paths = get_path_directories(env);
 	if (!paths)
 	{
 		shell->exit_status = ERR_NOT_FOUND;
 		return (NULL);
 	}
+	
 	return (search_in_paths(shell, paths, cmd));
 }

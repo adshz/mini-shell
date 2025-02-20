@@ -31,11 +31,19 @@ static bool	build_ast_tree(t_shell *shell)
 	if (!shell->tokens)
 	{
 		ft_putendl_fd("minishell: tokenisation failed", STDERR_FILENO);
+		free(shell->line);
+		shell->line = NULL;
 		return (false);
 	}
 	shell->ast = parse(shell->tokens, shell);
 	if (shell->ast != NULL)
 		return (true);
+	
+	// Clean up tokens if parsing fails
+	free_tokens(shell->tokens);
+	shell->tokens = NULL;
+	free(shell->line);
+	shell->line = NULL;
 	return (false);
 }
 
@@ -62,7 +70,10 @@ bool	parse_and_build_ast(t_shell *shell)
 	}
 	add_history(shell->line);
 	if (!build_ast_tree(shell))
+	{
+		cleanup_current_command(shell);  // Add full cleanup here
 		return (false);
+	}
 	return (true);
 }
 
@@ -119,7 +130,14 @@ void	interactive_loop(t_shell *shell)
 		if (!valid_usr_input(shell))
 			break ;
 		if (!parse_and_build_ast(shell))
+		{
+			if (g_signal_status == SIG_HEREDOC_INT)
+			{
+				cleanup_current_command(shell);
+				g_signal_status = SIG_NONE;
+			}
 			continue ;
+		}
 		if (shell->ast)
 		{
 			shell->exit_status = execute_ast(shell, shell->ast);

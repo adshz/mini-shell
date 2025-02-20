@@ -58,6 +58,13 @@ int	handle_heredoc_line(char *line, int pipe_fds[2],
 int	write_heredoc_line(char *line, int pipe_fds[2],
 		t_ast_node *node)
 {
+	if (!line || !node || !node->right || !node->right->value)
+	{
+		if (line)
+			free(line);
+		return (1);
+	}
+
 	if (ft_strcmp(line, node->right->value) == 0)
 	{
 		free(line);

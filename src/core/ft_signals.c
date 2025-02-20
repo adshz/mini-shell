@@ -81,15 +81,15 @@ void	handle_sigint(int sig)
 		write(STDOUT_FILENO, "\n", 1);
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
-		return ;
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		return;
 	}
 	write(STDOUT_FILENO, "\n", 1);
 	g_signal_status = SIGINT;
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	// Reset readline's internal state
-	rl_reset_line_state();
-	// Reset signal status to allow next Ctrl+C
+	rl_redisplay();
 	g_signal_status = SIG_NONE;
 }
 
@@ -97,26 +97,12 @@ void	restore_signal_handlers(void)
 {
 	struct sigaction	sa;
 
-	// Initialize the sigaction struct
-	sigemptyset(&sa.sa_mask);
-	// Block SIGINT during handler execution
-	sigaddset(&sa.sa_mask, SIGINT);
 	sa.sa_handler = handle_sigint;
-	sa.sa_flags = SA_RESTART;
-	
-	if (sigaction(SIGINT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		return;
-	}
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
 
-	// Set up SIGQUIT handler
 	sa.sa_handler = SIG_IGN;
-	if (sigaction(SIGQUIT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		return;
-	}
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
 /**

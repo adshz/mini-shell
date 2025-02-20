@@ -60,6 +60,9 @@ int	builtin_exit(t_shell *shell, t_ast_node *node)
 	if (shell->in_pipe)
 		return (exit_code);
 	
+	// Clean up everything before exiting
+	cleanup_shell(shell);
+	
 	// Actually exit if we're not in a pipe
 	exit(exit_code);
 }
