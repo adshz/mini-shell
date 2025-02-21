@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_executor_external_cmd.c                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/21 15:56:06 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/21 15:56:23 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor/executor.h"
 
 static int	prepare_command(t_shell *shell, t_ast_node *node,
@@ -49,7 +61,8 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		ret = command_executor_execute_child_process(shell, node, cmd_path, env_array);
+		ret = command_executor_execute_child_process(shell, node, \
+											cmd_path, env_array);
 		extern_cleanup_resources(cmd_path, env_array);
 		exit(ret);
 	}

@@ -84,8 +84,8 @@ typedef struct s_shell
 	t_token			*tokens;
 	t_ast_node		*ast;
 	t_hashmap		*env;
-	char			**env_array;     /* Cached environment array */
-	bool			env_modified;    /* Flag to track if env was modified */
+	char			**env_array;
+	bool			env_modified;
 	t_list			*cmds;
 	pid_t			pid;
 	pid_t			*pids;
