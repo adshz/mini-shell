@@ -122,7 +122,8 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		ret = command_executor_execute_child_process(shell, node, cmd_path, env_array);
+		ret = command_executor_execute_child_process(shell, node, \
+											cmd_path, env_array);
 		free(cmd_path);
 		ft_free_array(env_array);
 		exit(ret);

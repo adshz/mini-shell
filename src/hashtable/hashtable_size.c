@@ -48,13 +48,13 @@ static void	process_item(t_hash_count *hc)
 static void	count_bucket_items(t_hash_count *hc, t_hashmap *table)
 {
 	if (!hc || !table)
-		return;
+		return ;
 	hc->items_in_bucket = 0;
 	hc->current = table->items[hc->i];
 	while (hc->current != NULL)
 	{
 		if (!validate_current_item(hc, table))
-			break;
+			break ;
 		process_item(hc);
 	}
 }

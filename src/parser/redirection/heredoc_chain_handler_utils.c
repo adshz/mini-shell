@@ -12,7 +12,8 @@
 
 #include "parser/parser.h"
 
-static void	unlink_command_node(t_ast_node *first_redir, t_ast_node *command_node)
+static void	unlink_command_node(t_ast_node *first_redir, \
+								t_ast_node *command_node)
 {
 	t_ast_node	*current;
 
