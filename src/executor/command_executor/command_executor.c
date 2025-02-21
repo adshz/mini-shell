@@ -15,8 +15,11 @@
 
 static void	handle_exit_builtin(t_shell *shell, int exit_status)
 {
-	cleanup_current_command(shell);
-	cleanup_env_cache(shell);
+	if (shell)
+	{
+		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
+	}
 	exit(exit_status);
 }
 
@@ -46,20 +49,26 @@ static int	command_executor_execute_child_process(t_shell *shell, \
 												char *cmd_path, \
 												char **env_array)
 {
-	int		ret;
-
+	if (!cmd_path || !node || !node->args || !env_array)
+	{
+		if (cmd_path)
+			free(cmd_path);
+		if (env_array)
+			ft_free_array(env_array);
+		shell->exit_status = 127;
+		return (shell->exit_status);
+	}
 	setup_child_process();
-	ret = execve(cmd_path, node->args, env_array);
-	if (ret == -1)
+	if (execve(cmd_path, node->args, env_array) == -1)
 	{
 		perror("minishell: execve");
 		shell->exit_status = 127;
-		exit(127);
+		return (shell->exit_status);
 	}
 	return (0);
 }
 
-static int	handle_external_parent_process(pid_t pid, char *cmd_path)
+static int	handle_external_parent_process(pid_t pid)
 {
 	int	status;
 
@@ -67,7 +76,6 @@ static int	handle_external_parent_process(pid_t pid, char *cmd_path)
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	restore_signal_handlers();
-	free(cmd_path);
 	if (was_signaled(status))
 	{
 		if (get_signal_from_status(status) == SIGQUIT)
@@ -86,6 +94,7 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	pid_t	pid;
 	char	*cmd_path;
 	char	**env_array;
+	int		ret;
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
@@ -98,25 +107,27 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	env_array = create_env_array(shell->env);
 	if (!env_array)
 	{
-		perror("minishell: get_env_array");
-		cleanup_current_command(shell);
-		cleanup_env_cache(shell);
 		free(cmd_path);
-		exit(1);
+		perror("minishell: get_env_array");
+		return (1);
 	}
 	pid = fork();
 	if (pid == -1)
 	{
 		free(cmd_path);
+		ft_free_array(env_array);
 		return (1);
 	}
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		command_executor_execute_child_process(shell, node, cmd_path, env_array);
+		ret = command_executor_execute_child_process(shell, node, cmd_path, env_array);
+		free(cmd_path);
+		ft_free_array(env_array);
+		exit(ret);
 	}
-	ft_free_array(env_array);
 	free(cmd_path);
-	return (handle_external_parent_process(pid, cmd_path));
+	ft_free_array(env_array);
+	return (handle_external_parent_process(pid));
 }
