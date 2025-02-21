@@ -19,7 +19,7 @@ static int	execute_env_command(t_shell *shell,
 
 	env_array = NULL;
 	pid = 0;
-	env_array = create_env_array(shell->env);
+	env_array = get_env_array(shell);
 	if (!env_array)
 	{
 		free(cmd_path);
@@ -29,9 +29,12 @@ static int	execute_env_command(t_shell *shell,
 	if (pid == 0)
 		handle_env_child_process(cmd_path, node->args + 1, env_array);
 	else if (pid > 0)
-		return (handle_env_parent_process(pid, cmd_path, env_array));
-	free(cmd_path);
+	{
+		ft_free_array(env_array);
+		return (handle_env_parent_process(pid, cmd_path));
+	}
 	ft_free_array(env_array);
+	free(cmd_path);
 	return (1);
 }
 

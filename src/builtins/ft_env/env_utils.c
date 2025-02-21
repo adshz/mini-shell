@@ -25,15 +25,13 @@ void	env_print_env_var(const char *key, const char *value)
 	free(value_copy);
 }
 
-int	handle_env_parent_process(pid_t pid, char *cmd_path, \
-							char **env_array)
+int	handle_env_parent_process(pid_t pid, char *cmd_path)
 {
 	int	status;
 
 	status = 0;
 	waitpid(pid, &status, 0);
 	free(cmd_path);
-	ft_free_array(env_array);
 	return ((status >> 8) & 0xff);
 }
 
@@ -41,6 +39,8 @@ int	handle_env_child_process(char *cmd_path, \
 							char **args, char **env_array)
 {
 	execve(cmd_path, args, env_array);
+	perror("minishell: execve");
+	free(cmd_path);
 	exit(127);
 }
 

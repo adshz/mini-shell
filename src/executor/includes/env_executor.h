@@ -27,6 +27,12 @@ char		**create_env_array(t_hashmap *env);
 int			fill_env_array(t_hashmap *env, char **env_array);
 void		cleanup_partial_array(char **array, size_t count);
 
+/* Environment array caching */
+void		init_env_cache(t_shell *shell);
+void		cleanup_env_cache(t_shell *shell);
+char		**get_env_array(t_shell *shell);
+void		mark_env_modified(t_shell *shell);
+
 /* Environment variable handling */
 int			handle_variable_assignment(t_shell *shell, const char *assignment);
 int			handle_variable_expansion(t_shell *shell, t_ast_node *node);

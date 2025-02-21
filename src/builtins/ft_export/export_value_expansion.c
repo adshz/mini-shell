@@ -21,13 +21,20 @@ void	export_handle_expanded_value(t_shell *shell, char *key, char *value)
 		if (expanded_value)
 		{
 			hashmap_set(shell->env, key, expanded_value);
+			mark_env_modified(shell);
 			free(expanded_value);
 		}
 		else
+		{
 			hashmap_set(shell->env, key, "");
+			mark_env_modified(shell);
+		}
 	}
 	else
+	{
 		hashmap_set(shell->env, key, value);
+		mark_env_modified(shell);
+	}
 }
 
 char	*export_handle_quoted_value(char *value)

@@ -37,7 +37,10 @@ int	execute_child_process(t_shell *shell, t_ast_node *node)
 		g_signal_status = SIG_NONE;
 		shell->signint_child = false;
 		if (!shell->heredoc_sigint)
+		{
 			cleanup_current_command(shell);
+			cleanup_env_cache(shell);
+		}
 		exit(130);
 	}
 	cmd_node = find_command_node(node);
@@ -45,9 +48,11 @@ int	execute_child_process(t_shell *shell, t_ast_node *node)
 	{
 		exit_status = shell->exit_status;
 		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
 		exit(exit_status);
 	}
 	exit_status = execute_ast(shell, cmd_node);
 	cleanup_current_command(shell);
+	cleanup_env_cache(shell);
 	exit(exit_status);
 }

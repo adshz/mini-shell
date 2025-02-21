@@ -36,7 +36,7 @@ int		execute_command_with_path(t_shell *shell, t_ast_node *node,
 int		execute_command_child(t_ast_node *node,
 			char *cmd_path, char **env_array);
 int		handle_parent_process(t_shell *shell, pid_t pid,
-			char *cmd_path, char **env_array);
+			char *cmd_path);
 
 /* Command error handling */
 int		handle_command_not_found(t_shell *shell, const char *cmd);

@@ -50,14 +50,14 @@ char	*search_in_paths(t_shell *shell, char **paths, const char *cmd)
 		full_path = try_path(paths[i], cmd);
 		if (full_path)
 		{
-			ft_free_array(paths);
 			shell->exit_status = 0;
+			ft_free_array(paths);
 			return (full_path);
 		}
 		i++;
 	}
-	ft_free_array(paths);
 	shell->exit_status = ERR_NOT_FOUND;
+	ft_free_array(paths);
 	return (NULL);
 }
 

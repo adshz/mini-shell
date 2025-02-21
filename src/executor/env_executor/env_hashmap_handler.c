@@ -47,10 +47,15 @@ int	process_all_hash_buckets(t_hashmap *env,
 	size_t	i;
 
 	i = 0;
+	*array_index = 0;
 	while (i < env->size)
 	{
 		if (!process_hash_bucket(env_array, array_index, env->items[i]))
+		{
+			cleanup_partial_array(env_array, *array_index);
+			free(env_array);
 			return (0);
+		}
 		i++;
 	}
 	env_array[*array_index] = NULL;

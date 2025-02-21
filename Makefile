@@ -32,6 +32,7 @@ SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
+				executor/env_executor/env_array_manager.c \
 				utils/mem_tracker.c \
 				main.c \
 				core/core.c \

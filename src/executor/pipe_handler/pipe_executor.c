@@ -30,6 +30,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 		close(pipe_fd[0]);
 		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
 		{
+			perror("minishell: dup2");
 			cleanup_current_command(shell);
 			exit(1);
 		}
@@ -41,6 +42,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 		else
 			ret = execute_ast(shell, node->left);
 		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
 		exit(ret);
 	}
 	pids[1] = fork();
@@ -55,7 +57,9 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
 		{
+			perror("minishell: dup2");
 			cleanup_current_command(shell);
+			cleanup_env_cache(shell);
 			exit(1);
 		}
 		close(pipe_fd[0]);
@@ -63,6 +67,7 @@ int	execute_pipe(t_shell *shell, t_ast_node *node)
 		signal(SIGQUIT, SIG_DFL);
 		ret = execute_ast(shell, node->right);
 		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
 		exit(ret);
 	}
 	close(pipe_fd[0]);

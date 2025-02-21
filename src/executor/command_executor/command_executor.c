@@ -41,27 +41,32 @@ static int	command_executor_execute_child_process(t_shell *shell, \
 	char	**env_array;
 
 	setup_child_process();
-	env_array = create_env_array(shell->env);
+	env_array = get_env_array(shell);
 	if (!env_array)
 	{
+		perror("minishell: get_env_array");
 		free(cmd_path);
 		exit(1);
 	}
-	execve(cmd_path, node->args, env_array);
-	ft_free_array(env_array);
+	if (execve(cmd_path, node->args, env_array) == -1)
+	{
+		perror("minishell: execve");
+		free(cmd_path);
+		exit(127);
+	}
 	free(cmd_path);
-	exit(127);
+	return (0);
 }
 
 static int	handle_external_parent_process(pid_t pid, char *cmd_path)
 {
 	int	status;
 
-	free(cmd_path);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	restore_signal_handlers();
+	free(cmd_path);
 	if (was_signaled(status))
 	{
 		if (get_signal_from_status(status) == SIGQUIT)

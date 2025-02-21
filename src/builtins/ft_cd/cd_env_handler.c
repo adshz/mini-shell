@@ -24,6 +24,7 @@ void	update_pwd_vars(t_shell *shell, char *old_pwd)
 		hashmap_set(shell->env, "PWD", cwd);
 	else
 		ft_putendl_fd(ERR_GETCWD ERR_FILE, STDERR_FILENO);
+	mark_env_modified(shell);
 }
 
 char	*get_oldpwd_path(t_shell *shell)

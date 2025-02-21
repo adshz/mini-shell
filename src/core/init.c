@@ -147,9 +147,10 @@ int	init_shell(t_shell *shell, char *argv[], char *envp[])
 	ft_memset(shell, 0, sizeof(t_shell));
 	if (init_env(shell, envp) == SHELL_SUCCESS && \
 		init_io(shell) == SHELL_SUCCESS && \
-	get_shell_pid(shell) == SHELL_SUCCESS)
+		get_shell_pid(shell) == SHELL_SUCCESS)
 	{
 		init_env_vars(shell, argv);
+		init_env_cache(shell);
 		return (SHELL_SUCCESS);
 	}
 	cleanup_intialisation(shell);

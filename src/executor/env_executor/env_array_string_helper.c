@@ -54,6 +54,7 @@ static int	create_and_add_env_string(char **env_array, size_t *index,
 		ft_putstr_fd("Error: Failed to create env string for key '", 2);
 		ft_putstr_fd(item->key, 2);
 		ft_putendl_fd("'", 2);
+		cleanup_partial_array(env_array, *index);
 		return (0);
 	}
 	env_array[*index] = env_str;

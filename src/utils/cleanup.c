@@ -35,6 +35,7 @@ void	cleanup_shell(t_shell *shell)
 	cleanup_process_state(shell);
 	
 	// Clean up environment
+	cleanup_env_cache(shell);
 	if (shell->env)
 	{
 		hashmap_destroy(shell->env);

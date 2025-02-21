@@ -28,5 +28,10 @@ int	fill_env_array(t_hashmap *env, char **env_array)
 		ft_putendl_fd("Error: NULL pointer in fill_env_array", 2);
 		return (0);
 	}
-	return (iterate_hash_buckets(env, env_array));
+	if (!iterate_hash_buckets(env, env_array))
+	{
+		cleanup_partial_array(env_array, hashmap_size(env));
+		return (0);
+	}
+	return (1);
 }

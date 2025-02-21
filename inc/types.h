@@ -63,6 +63,8 @@ typedef t_hash_item			t_env;
  * @param tokens List of tokens by scanner and lexer (lexcial analysis)
  * @param ast				Abstract syntax tree representing commands, flags etc
  * @param env				Environment variables stored by Hash Table
+ * @param env_array			Cached environment array
+ * @param env_modified		Flag to track if env was modified
  * @param cmds				History of executed commands using linked list
  * @param pid				Process ID of the shell
  * @param pids				Array of child process IDs
@@ -82,6 +84,8 @@ typedef struct s_shell
 	t_token			*tokens;
 	t_ast_node		*ast;
 	t_hashmap		*env;
+	char			**env_array;     /* Cached environment array */
+	bool			env_modified;    /* Flag to track if env was modified */
 	t_list			*cmds;
 	pid_t			pid;
 	pid_t			*pids;

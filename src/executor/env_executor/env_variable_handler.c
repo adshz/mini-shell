@@ -30,6 +30,7 @@ int	handle_variable_assignment(t_shell *shell, const char *assignment)
 		return (1);
 	}
 	hashmap_set(shell->env, key, value);
+	mark_env_modified(shell);
 	free(key);
 	free(value);
 	return (0);

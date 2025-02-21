@@ -46,6 +46,7 @@ static void	init_shlvl(t_shell *shell)
 		return ;
 	}
 	hashmap_insert(shell->env, "SHLVL", tmp, 0);
+	mark_env_modified(shell);
 	free(tmp);
 }
 
@@ -82,6 +83,7 @@ static void	init_pwd(t_shell *shell)
 			return ;
 		}
 		hashmap_insert(shell->env, "PWD", tmp, 0);
+		mark_env_modified(shell);
 		free(tmp);
 	}
 }
@@ -157,10 +159,15 @@ void	init_env_vars(t_shell *shell, char *argv[])
 		hashmap_insert(shell->env, "PATH", \
 				"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", 0);
          //"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
+    mark_env_modified(shell);
 
 		return ;
 	}
 	if (!hashmap_search(shell->env, "_"))
+	{
 		hashmap_insert(shell->env, "_", argv[0], 0);
+		mark_env_modified(shell);
+	}
 	hashmap_remove(shell->env, "OLDPWD");
+	mark_env_modified(shell);
 }

@@ -54,5 +54,10 @@ int	process_bucket_items(char **env_array, size_t *index, t_hash_item *item)
 	if (!validate_bucket_inputs(env_array, index, item))
 		return (0);
 	current = item;
-	return (process_bucket_loop(env_array, index, current));
+	if (!process_bucket_loop(env_array, index, current))
+	{
+		cleanup_partial_array(env_array, *index);
+		return (0);
+	}
+	return (1);
 }
