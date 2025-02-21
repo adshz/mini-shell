@@ -53,10 +53,7 @@ static int	command_executor_execute_child_process(t_shell *shell, \
 	if (ret == -1)
 	{
 		perror("minishell: execve");
-		ft_free_array(env_array);
-		cleanup_current_command(shell);
-		cleanup_env_cache(shell);
-		free(cmd_path);
+		shell->exit_status = 127;
 		exit(127);
 	}
 	return (0);
@@ -120,8 +117,6 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 		command_executor_execute_child_process(shell, node, cmd_path, env_array);
 	}
 	ft_free_array(env_array);
-	cleanup_current_command(shell);
-	cleanup_env_cache(shell);
 	free(cmd_path);
 	return (handle_external_parent_process(pid, cmd_path));
 }
