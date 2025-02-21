@@ -34,7 +34,7 @@ int	handle_other_builtin_redirection(t_shell *shell, t_ast_node *node)
 	pid_t	pid;
 	int		status;
 	int		ret;
-
+	
 	pid = fork();
 	if (pid == -1)
 		return (print_error(NULL, "fork failed", 1));

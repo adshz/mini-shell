@@ -63,13 +63,6 @@ void	mark_env_modified(t_shell *shell)
  */
 char	**get_env_array(t_shell *shell)
 {
-	if (!shell->env_modified && shell->env_array)
-		return (shell->env_array);
-	if (shell->env_array)
-	{
-		ft_free_array(shell->env_array);
-		shell->env_array = NULL;
-	}
 	shell->env_array = create_env_array(shell->env);
 	if (!shell->env_array)
 		return (NULL);

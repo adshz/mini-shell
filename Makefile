@@ -23,7 +23,7 @@ ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
 CC			:=	cc
-CFLAGS		:=	-Wall -Werror -Wextra -g3 -fsanitize=address
+CFLAGS		:=	-Wall -Werror -Wextra -g3
 INCLUDE		:=	-I./inc \
                 -I./libft/inc \
                 -I./src \

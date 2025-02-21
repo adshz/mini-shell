@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
+#include <stdio.h>
 
 static char	*init_stash(char **extra_buff);
 static char	*read_and_extract(int fd, char *stash);

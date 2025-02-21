@@ -43,25 +43,22 @@ int	execute_command(t_shell *shell, t_ast_node *node)
 
 static int	command_executor_execute_child_process(t_shell *shell, \
 												t_ast_node *node, \
-												char *cmd_path)
+												char *cmd_path, \
+												char **env_array)
 {
-	char	**env_array;
+	int		ret;
 
 	setup_child_process();
-	env_array = get_env_array(shell);
-	if (!env_array)
-	{
-		perror("minishell: get_env_array");
-		free(cmd_path);
-		exit(1);
-	}
-	if (execve(cmd_path, node->args, env_array) == -1)
+	ret = execve(cmd_path, node->args, env_array);
+	if (ret == -1)
 	{
 		perror("minishell: execve");
+		ft_free_array(env_array);
+		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
 		free(cmd_path);
 		exit(127);
 	}
-	free(cmd_path);
 	return (0);
 }
 
@@ -91,6 +88,7 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 {
 	pid_t	pid;
 	char	*cmd_path;
+	char	**env_array;
 
 	if (!node || !node->args || !node->args[0])
 		return (1);
@@ -99,6 +97,15 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		ft_putstr_fd("ERROR: Command path not found\n", 2);
 		return (127);
+	}
+	env_array = create_env_array(shell->env);
+	if (!env_array)
+	{
+		perror("minishell: get_env_array");
+		cleanup_current_command(shell);
+		cleanup_env_cache(shell);
+		free(cmd_path);
+		exit(1);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -110,7 +117,11 @@ int	execute_external_command(t_shell *shell, t_ast_node *node)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		command_executor_execute_child_process(shell, node, cmd_path);
+		command_executor_execute_child_process(shell, node, cmd_path, env_array);
 	}
+	ft_free_array(env_array);
+	cleanup_current_command(shell);
+	cleanup_env_cache(shell);
+	free(cmd_path);
 	return (handle_external_parent_process(pid, cmd_path));
 }

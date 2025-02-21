@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "parser/parser.h"
+#include "libft.h"
 
 t_token	*find_last_word_token(t_token *start)
 {
