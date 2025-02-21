@@ -50,7 +50,6 @@ t_ast_node	*handle_heredoc_command(t_token **tokens, t_shell *shell)
 	command_node = create_default_heredoc_command();
 	if (!command_node)
 		return (NULL);
-	// Check for signal right after allocation
 	if (shell->heredoc_sigint || g_signal_status == SIG_HEREDOC_INT)
 	{
 		free_ast(command_node);

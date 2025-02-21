@@ -47,18 +47,17 @@ void	disable_ctrl_char_echo(void)
 	if (tcgetattr(STDIN_FILENO, &term) == -1)
 	{
 		perror("tcgetattr");
-		return;
+		return ;
 	}
 	old_term = term;
 	term.c_lflag &= ~(ECHOCTL | ICANON);
 	term.c_cc[VMIN] = 1;
 	term.c_cc[VTIME] = 0;
-	
 	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
 	{
 		perror("tcsetattr");
 		tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
-		return;
+		return ;
 	}
 }
 
@@ -83,7 +82,7 @@ void	handle_sigint(int sig)
 		rl_done = 1;
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		return;
+		return ;
 	}
 	write(STDOUT_FILENO, "\n", 1);
 	g_signal_status = SIGINT;
@@ -100,7 +99,6 @@ void	restore_signal_handlers(void)
 	sa.sa_handler = handle_sigint;
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
-
 	sa.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &sa, NULL);
 }

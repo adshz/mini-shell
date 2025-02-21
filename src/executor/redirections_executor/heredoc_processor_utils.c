@@ -23,35 +23,40 @@ int	setup_heredoc(t_ast_node *node, int pipe_fds[2], t_shell *shell)
 	return (0);
 }
 
+static int	handle_heredoc_interrupt(char *line, int pipe_fds[2],
+		t_ast_node *node, t_shell *shell)
+{
+	close(pipe_fds[0]);
+	close(pipe_fds[1]);
+	shell->in_heredoc = 0;
+	if (g_signal_status == SIG_HEREDOC_INT)
+	{
+		if (shell->ast && (g_signal_status == SIG_HEREDOC_INT || \
+			shell->heredoc_sigint))
+			cleanup_heredoc_signal_interrupt(shell->ast);
+		shell->heredoc_sigint = true;
+		g_signal_status = SIG_NONE;
+		shell->exit_status = 130;
+		node->data.content_fd = -1;
+		if (line)
+			free(line);
+		return (130);
+	}
+	if (line)
+		free(line);
+	node->data.content_fd = -1;
+	write(STDERR_FILENO, "\n", 1);
+	return (1);
+}
+
 int	handle_heredoc_line(char *line, int pipe_fds[2],
 		t_ast_node *node, t_shell *shell)
 {
 	size_t	len;
 
+	len = 0;
 	if (!line || g_signal_status == SIG_HEREDOC_INT)
-	{
-		close(pipe_fds[0]);
-		close(pipe_fds[1]);
-		shell->in_heredoc = 0;
-		if (g_signal_status == SIG_HEREDOC_INT)
-		{
-      	// Handle signal interruption cleanup first
-      if (shell->ast && (g_signal_status == SIG_HEREDOC_INT || shell->heredoc_sigint))
-        cleanup_heredoc_signal_interrupt(shell->ast);
-			shell->heredoc_sigint = true;
-			g_signal_status = SIG_NONE;
-			shell->exit_status = 130;
-			node->data.content_fd = -1;
-			if (line)
-				free(line);
-			return (130);
-		}
-		if (line)
-			free(line);
-		node->data.content_fd = -1;
-		write(STDERR_FILENO, "\n", 1);
-		return (1);
-	}
+		return (handle_heredoc_interrupt(line, pipe_fds, node, shell));
 	len = ft_strlen(line);
 	if (len > 0 && line[len - 1] == '\n')
 		line[len - 1] = '\0';
@@ -67,7 +72,6 @@ int	write_heredoc_line(char *line, int pipe_fds[2],
 			free(line);
 		return (1);
 	}
-
 	if (ft_strcmp(line, node->right->value) == 0)
 	{
 		free(line);

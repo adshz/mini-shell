@@ -17,11 +17,26 @@
  * @param file_value File token value
  * @return Redirection node or NULL on failure
  */
+static t_ast_node	*init_heredoc_data(t_ast_node *redir_node, \
+									const char *file_value)
+{
+	redir_node->data.content_fd = -1;
+	redir_node->data.content_path = NULL;
+	redir_node->data.delimiter = ft_strdup(file_value);
+	if (!redir_node->data.delimiter)
+	{
+		free(redir_node);
+		return (NULL);
+	}
+	return (redir_node);
+}
+
 static t_ast_node	*init_redirection_by_type(t_token_type type, \
 										const char *file_value)
 {
 	t_ast_node	*redir_node;
 
+	redir_node = NULL;
 	if (type == TOKEN_REDIRECT_OUT)
 		redir_node = create_ast_node(AST_REDIR_OUT, NULL);
 	else if (type == TOKEN_REDIRECT_IN)
@@ -32,47 +47,8 @@ static t_ast_node	*init_redirection_by_type(t_token_type type, \
 	{
 		redir_node = create_ast_node(AST_HEREDOC, NULL);
 		if (redir_node)
-		{
-			redir_node->data.content_fd = -1;
-			redir_node->data.content_path = NULL;
-			redir_node->data.delimiter = ft_strdup(file_value);
-			if (!redir_node->data.delimiter)
-			{
-				free(redir_node);
-				return (NULL);
-			}
-		}
+			return (init_heredoc_data(redir_node, file_value));
 	}
-	else
-		return (NULL);
-	return (redir_node);
-}
-
-static t_ast_node	*create_file_node(const char *file_value, \
-								t_ast_node *redir_node)
-{
-	t_ast_node	*file_node;
-
-	if (redir_node->type == AST_HEREDOC)
-	{
-		// For heredoc, create a node with a duplicate of the delimiter
-		file_node = create_ast_node(AST_COMMAND, (char *)redir_node->data.delimiter);
-		if (!file_node)
-		{
-			free_ast(redir_node);
-			return (NULL);
-		}
-	}
-	else
-	{
-		file_node = create_ast_node(AST_COMMAND, (char *)file_value);
-		if (!file_node)
-		{
-			free_ast(redir_node);
-			return (NULL);
-		}
-	}
-	redir_node->right = file_node;
 	return (redir_node);
 }
 
@@ -83,5 +59,5 @@ t_ast_node	*create_redirection_node(t_token_type type, const char *file_value)
 	redir_node = init_redirection_by_type(type, file_value);
 	if (!redir_node)
 		return (NULL);
-	return (create_file_node(file_value, redir_node));
+	return (create_redir_file_node(file_value, redir_node));
 }

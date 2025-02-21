@@ -158,9 +158,7 @@ void	init_env_vars(t_shell *shell, char *argv[])
 	{
 		hashmap_insert(shell->env, "PATH", \
 				"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", 0);
-         //"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin", 0);
-    mark_env_modified(shell);
-
+		mark_env_modified(shell);
 		return ;
 	}
 	if (!hashmap_search(shell->env, "_"))

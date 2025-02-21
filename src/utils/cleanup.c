@@ -15,45 +15,40 @@
 #include "parser/parser.h"
 #include "utils/utils.h"
 
-void	cleanup_shell(t_shell *shell)
+static void	cleanup_command_resources(t_shell *shell)
 {
-	if (!shell)
-		return ;
-	
-	// Clean up current command resources
 	if (shell->ast || shell->tokens || shell->line)
 		cleanup_current_command(shell);
-	
-	// Clean up command list and environment
 	if (shell->cmds)
 	{
 		ft_lstclear(&shell->cmds, &free_cmd);
 		shell->cmds = NULL;
 	}
-	
-	// Clean up process state (pipes, redirections, etc.)
+}
+
+static void	cleanup_environment_resources(t_shell *shell)
+{
 	cleanup_process_state(shell);
-	
-	// Clean up environment
 	cleanup_env_cache(shell);
 	if (shell->env)
 	{
 		hashmap_destroy(shell->env);
 		shell->env = NULL;
 	}
-	
-	// Clean up history
+}
+
+static void	cleanup_history_resources(t_shell *shell)
+{
 	rl_clear_history();
 	if (shell->history)
 	{
 		free_history(shell->history);
 		shell->history = NULL;
 	}
-	
-	// Clean up terminal state and file descriptors
-	cleanup_terminal_state(shell);
-	
-	// Reset file descriptors to their defaults
+}
+
+static void	cleanup_file_descriptors(t_shell *shell)
+{
 	if (shell->stdin_backup != STDIN_FILENO)
 	{
 		close(shell->stdin_backup);
@@ -64,4 +59,15 @@ void	cleanup_shell(t_shell *shell)
 		close(shell->stdout_backup);
 		shell->stdout_backup = STDOUT_FILENO;
 	}
+}
+
+void	cleanup_shell(t_shell *shell)
+{
+	if (!shell)
+		return ;
+	cleanup_command_resources(shell);
+	cleanup_environment_resources(shell);
+	cleanup_history_resources(shell);
+	cleanup_terminal_state(shell);
+	cleanup_file_descriptors(shell);
 }

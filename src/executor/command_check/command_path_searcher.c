@@ -25,10 +25,8 @@ char	*try_path(const char *path, const char *cmd)
 	path_with_slash = ft_strjoin(path, "/");
 	if (!path_with_slash)
 		return (NULL);
-
 	full_path = ft_strjoin(path_with_slash, cmd);
 	free(path_with_slash);
-
 	if (!full_path)
 		return (NULL);
 	if (access(full_path, F_OK) != 0 || access(full_path, X_OK) != 0)
@@ -69,7 +67,6 @@ static char	**get_path_directories(t_hashmap *env)
 	path_var = hashmap_get(env, "PATH");
 	if (!path_var || !*path_var)
 		path_var = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
-  //path_var = "/usr/local/sbin:/usr/local/bin:/usr/bin:/bin";
 	paths = ft_split(path_var, ':');
 	if (!paths)
 		return (NULL);

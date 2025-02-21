@@ -105,7 +105,8 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	}
 	if (process_heredoc_nodes(shell, redir_nodes, redir_count, saved_fds) != 0)
 		return ;
-	if (process_other_redirections(shell, redir_nodes, redir_count, saved_fds) != 0)
+	if (process_other_redirections(shell, redir_nodes, \
+							redir_count, saved_fds) != 0)
 		return ;
 	shell->exit_status = 0;
 }

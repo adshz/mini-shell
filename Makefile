@@ -34,6 +34,9 @@ OBJ_DIR		:=	./obj
 SRCS		:=	\
 				executor/env_executor/env_array_manager.c \
 				utils/mem_tracker.c \
+				utils/astnode_cleanup.c \
+				parser/redirection/heredoc_chain_handler_utils.c \
+				parser/redirection/redirection_init_utils.c \
 				main.c \
 				core/core.c \
 				core/ft_signals.c \

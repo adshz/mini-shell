@@ -36,5 +36,5 @@ int		print_error(char *cmd, char *msg, int error_code);
 void	free_cmd(void *content);
 void	add_command_to_history(t_shell *shell, t_ast_node *cmd);
 bool	is_only_whitespace(const char *str);
-
+void	cleanup_ast_node_data(t_ast_node *node);
 #endif

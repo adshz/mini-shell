@@ -31,8 +31,7 @@ void	init_env_cache(t_shell *shell)
 void	cleanup_env_cache(t_shell *shell)
 {
 	if (!shell)
-		return;
-
+		return ;
 	if (shell->env_array)
 	{
 		ft_free_array(shell->env_array);
@@ -66,17 +65,14 @@ char	**get_env_array(t_shell *shell)
 {
 	if (!shell->env_modified && shell->env_array)
 		return (shell->env_array);
-
 	if (shell->env_array)
 	{
 		ft_free_array(shell->env_array);
 		shell->env_array = NULL;
 	}
-
 	shell->env_array = create_env_array(shell->env);
 	if (!shell->env_array)
 		return (NULL);
-
 	shell->env_modified = false;
 	return (shell->env_array);
-} 
+}

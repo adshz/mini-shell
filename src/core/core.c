@@ -38,8 +38,6 @@ static bool	build_ast_tree(t_shell *shell)
 	shell->ast = parse(shell->tokens, shell);
 	if (shell->ast != NULL)
 		return (true);
-	
-	// Clean up tokens if parsing fails
 	free_tokens(shell->tokens);
 	shell->tokens = NULL;
 	free(shell->line);
@@ -71,7 +69,7 @@ bool	parse_and_build_ast(t_shell *shell)
 	add_history(shell->line);
 	if (!build_ast_tree(shell))
 	{
-		cleanup_current_command(shell);  // Add full cleanup here
+		cleanup_current_command(shell);
 		return (false);
 	}
 	return (true);
