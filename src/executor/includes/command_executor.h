@@ -43,4 +43,11 @@ int		handle_command_not_found(t_shell *shell, const char *cmd);
 void	handle_child_error(const char *cmd);
 int		check_command(t_shell *shell, t_ast_node *cmd);
 int		validate_and_expand_command(t_shell *shell, t_ast_node *node);
+
+int	execute_external_command(t_shell *shell, t_ast_node *node);
+int	handle_external_parent_process(pid_t pid);
+int	command_executor_execute_child_process(t_shell *shell, \
+												t_ast_node *node, \
+												char *cmd_path, \
+												char **env_array);
 #endif 
