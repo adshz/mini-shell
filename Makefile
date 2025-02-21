@@ -176,10 +176,17 @@ LIBFT_PATH	:=	./libft
 ALL_LIBS	:=	-L$(LIBFT_PATH) -lft -L/usr/local/opt/readline/lib -lreadline
 MKFL		:=	--no-print-directory
 
+# Platform-specific settings
+ifeq ($(shell uname),Darwin)  # macOS
+    READLINE_DIR := $(shell brew --prefix readline)
+    CFLAGS += -I$(READLINE_DIR)/include
+    LDFLAGS += -L$(READLINE_DIR)/lib
+else  # Linux
+    CFLAGS += -I/usr/include/readline
+    LDFLAGS += -L/usr/lib
+endif
 
-READLINE_DIR := $(shell brew --prefix readline)
-CFLAGS += -I$(READLINE_DIR)/include
-LDFLAGS += -L$(READLINE_DIR)/lib -lreadline -fsanitize=address
+LDFLAGS += -lreadline -fsanitize=address
 LIBFT_PATH  := ./libft
 LIBFT       := $(LIBFT_PATH)/libft.a
 ALL_LIBS    := $(LIBFT) $(LDFLAGS)
