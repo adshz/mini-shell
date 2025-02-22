@@ -38,15 +38,13 @@ typedef struct s_heredoc_data
 
 /*########################################*/
 
-/*
- * Environment Structure
-*/
-// typedef struct s_env
-// {
-// 	char	*key;
-// 	char	*value;
-// 	struct s_env	*next;
-// }	t_env;
+typedef struct s_cmd
+{
+	char	**full_cmd;
+	char	*path;
+	int		in_fd;
+	int		out_fd;
+}	t_cmd;
 
 // use t_hash_item as t_env
 typedef t_hash_item			t_env;
@@ -92,8 +90,6 @@ typedef struct s_shell
 	char			*old_pwd;
 	char			**history;
 	int				exit_status;
-	int				stdin_backup;
-	int				stdout_backup;
 	bool			heredoc_sigint;
 	bool			signint_child;
 	bool			in_pipe;

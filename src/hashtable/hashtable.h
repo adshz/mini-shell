@@ -35,6 +35,7 @@ typedef struct s_hash_item
 {
 	char				*key;
 	char				*value;
+	int					flag;
 	struct s_hash_item	*next;
 }	t_hash_item;
 
