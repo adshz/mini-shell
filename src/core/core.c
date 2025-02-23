@@ -734,16 +734,36 @@ static void	heredoc_sigint_handler(int signum)
 	g_signal_status = signum;
 }
 
+void	heredoc_sigquit_handler(int signum)
+{
+	(void)signum;
+	ft_putendl_fd("Quit: 3", 1);
+}
+
 void	handle_sigint_exec(int signum)
 {
 	g_signal_status = signum;
 	write(1, "\n", 1);
 }
 
-void	config_siganls_heredoc(void)
+void	config_signals_heredoc(void)
 {
 	signal(SIGINT, heredoc_sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
+}
+
+void	handle_sigint_input(int signum)
+{
+	g_signal = signum;
+	ioctl(STDINFILENO, TIOCSTI, "\n");
+	rl_replace_line("", 0);
+	rl_on_new_line();
+}
+
+void	restore_signalhandle_postheredoc(void)
+{
+	signal(SIGINT, handle_sigint_input);
+	signal(SIGQUIT, heredoc_sigquit_handler)
 }
 
 void	config_signals_exec(void)
@@ -751,6 +771,67 @@ void	config_signals_exec(void)
 	signal(SIGINT, handle_sigint_exec);
 	signal(SIGQUI, SIG_IGN);
 }
+
+bool	is_delimiter(char	*delimiter, char *str)
+{
+	while (*str)
+	{
+		if (*delimiter == '"' || *delimiter == '\'')
+		{
+			delimiter++;
+			continue ;
+		}
+		else if (*str == *delimiter)
+		{
+			str++;
+			delimiter++;
+		}
+		else
+			return (false);
+	}
+	while (*delimiter == '"' || *delimiter == '\'')
+		delimiter++;
+	return (!*delimiter)
+}
+
+int		heredoc_expand_var_to_fd(t_shell *shell, char *str, int fd)
+{
+	size_t	start;
+	char	*tmp;
+
+	start = ++i;
+	if (str[i] == '?')
+		return (ft_putnbr_fd(shell->exit_status, fd), 2);
+	while (str[i] && str[i] != '$' && str[i] != ' ')
+		i++;
+	if (i != start)
+	{
+		tmp = ft_memory_collector(shell, ft_substr(str, start, i), false);
+		tmp = hashmap_search(shell->env, tmp);
+		if (tmp)
+			ft_putstr_fd(tmp, fd);
+	}
+	return (i);
+}
+
+void	heredoc_expander(t_shell *shell, char *str, int fd)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+			i += heredoc_expand_var_to_fd(shell, str, i, fd);
+		else
+			i += (ft_putchar_fd(str[i], fd), 1);
+	}
+	ft_putchar_fd('\n', fd);
+}
+
+# define HEREDOC_CTRL_C 130
+# define CHILD_EXECUTING 142
+# define NORMAL_OPERATION 0
 
 void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 {
@@ -771,10 +852,15 @@ void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 			if (errno == 0)
 	   			break ;
 			else if (g_signal_status == SIGINT)
-				exit(130);
+			{
+				ft_putchar_fd('\n', 1);
+				exit(HEREDOC_CTRL_C);
+			}
 		}
-		if (ft_is_delimiter(io->value, line))
+		if (is_delimiter(io->value, line))
 			break ;
+		if (!*quotes)
+			heredoc_expander(shell, line, fd[1]);
 		else
 		{
 			ft_putstr_fd(line, fd[1]);
@@ -794,15 +880,15 @@ bool	leave_leaf(t_shell *shell, int fd[2], int *process_info)
 	int	status;
 
 	waitpid(*process_info, &status, 0);
-	config_signals_exec();
+	restore_signalhandle_postheredoc();
 	shell->signint_child = false;
 	close(fd[1]);
-	if (WIFEXITED(status) && WEXITSTATUS(status) == SIGINT)
+	if (WIFEXITED(status) && WEXITSTATUS(status) == HEREDOC_CTRL_C)
 		return (true);
 	return (false);
 
 }
-static void	check_leaf(t_shell *shell, t_ast_node *ast_node)
+static bool	check_leaf(t_shell *shell, t_ast_node *ast_node)
 {
 	t_io_node	*io;
 	int			fd[2];
@@ -821,23 +907,26 @@ static void	check_leaf(t_shell *shell, t_ast_node *ast_node)
 			if (pid == 0)
 				heredoc_handler(shell, io, fd);
 			if (leave_leaf(fd, &pid))
-				return ;
+				return (true);
 			io->here_doc = fd[0];
 		}
 		else
 			io->expanded_value = expand_args(shell, ast_node->args);
 	}
+	return (false);
 }
 
 static void	check_tree(t_shell *shell, t_ast_node *ast_node)
 {
+	bool	heredoc_interrupted;
+
 	if (!ast_node)
 		return ;
 	if (ast_node->type == NODE_PIPE || ast_node->type == NODE_AND \
 		|| ast_node->type == NODE_OR)
 	{
-		check_tree(shell, ast_node->left);
-		if (!shell->heredoc_sigint)
+		heredoc_interrupted = check_tree(shell, ast_node->left);
+		if (!heredoc_interrupted)
 			check_tree(shell, ast_node->right);
 	}
 	else
@@ -862,12 +951,26 @@ void	config_signals_exec(void)
 	signal(SIGQUIT, handle_signquit_handler);
 }
 
+void	handle_signint_input(int signum)
+{
+	g_signal_status = signum;
+
+
+}
+
+void	config_signals_input(void)
+{
+	signal(SIGNINT, handle_sign_input);
+	signal(SIGQUIT, SIG_IGN);
+}
+
 static	void	shell_execution(t_shell *shell)
 {
 	char	**env;
 
 	config_signals_exec(void);
 	check_tree(shell, shell->ast);
+	if (shell->heredoc_sigint)
 }
 /*          execution      */
 /**
