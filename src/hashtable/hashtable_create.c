@@ -40,8 +40,3 @@ t_hashmap	*hashmap_create_table(size_t size)
 	}
 	return (table);
 }
-
-t_hashmap	*hashmap_create(void)
-{
-	return (hashmap_create_table(HASH_SIZE));
-}

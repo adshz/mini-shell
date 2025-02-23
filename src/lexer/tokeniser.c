@@ -12,123 +12,70 @@
 
 #include "lexer/lexer.h"
 
-/**
- * @brief Adds a new token to the end of token list
- *
- * Maintains the linked list structure of tokens by:
- * - Handling empty list case (head is NULL)
- * - Traversing to end of existing list
- * - Attaching new token
- *
- * @param head      Current head of token list
- * @param new_token Token to add to the list
- * @return Updated head of token list, or NULL on failure
- *
- * @note Safe to call with NULL head (creates new list)
- * @note Returns NULL if new_token is NULL
- * @note Sets new_token->prev to NULL when creating new list
- * @note Sets new_token->next to NULL for last token in list
- */
-static t_token	*add_token_to_list(t_token *head, t_token *new_token)
-{
-	t_token	*current;
-
-	if (!new_token)
-		return (NULL);
-	if (!head)
-	{
-		new_token->prev = NULL;
-		return (new_token);
-	}
-	current = head;
-	while (current->next)
-		current = current->next;
-	current->next = new_token;
-	new_token->prev = current;
-	new_token->next = NULL;
-	return (head);
-}
-
-/**
- * @brief Creates a single token from input string
- *
- * Process:
- * 1. Extracts token value from input
- * 2. Determines token type
- * 3. Creates token structure
- *
- * @param input Input string to process
- * @param len   Length of token to extract
- * @return New token structure, or NULL on failure
- *
- * @note Handles memory cleanup on failure
- * @note Returns NULL for EOF tokens
- * @see extract_token() for token value extraction
- * @see get_token_type() for token type determination
- */
-static t_token	*process_single_token(const char *input, size_t len)
+static t_token	*ft_create_new_token(char *value, t_token_type type)
 {
 	t_token	*new_token;
-	char	*value;
-	bool	in_single_quotes;
 
-	value = extract_token(input, len, &in_single_quotes);
-	if (!value)
-		return (NULL);
-	if (value[0] == '\0')
-	{
-		free(value);
-		return (NULL);
-	}
-	new_token = create_token(get_token_type(value), value);
+	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
 	if (!new_token)
-	{
-		free(value);
 		return (NULL);
-	}
-	new_token->in_single_quotes = in_single_quotes;
-	free(value);
+	new_token->value = value;
+	new_token->type = type;
 	return (new_token);
 }
 
-/**
- * @brief Creates and adds a new token to the token list
- *
- * Handles the token creation process by:
- * 1. Creating a new token from input
- * 2. Adding it to the existing token list
- * 3. Managing memory cleanup on failures
- *
- * @param input Input string to process
- * @param len   Length of token to extract
- * @param head  Current head of token list
- * @return Updated head of token list, or NULL on failure
- *
- * @note Frees existing token list on process_single_token failure
- * @note Frees new token on add_token_to_list failure
- * @see process_single_token() for token creation
- * @see add_token_to_list() for list management
- */
-static t_token	*handle_token_creation(const char *input,
-			size_t len, t_token *head)
+static void	ft_token_list_add_back(t_token **lst, t_token *new_token)
 {
-	t_token	*new_token;
+	t_token	*current_node;
 
-	new_token = process_single_token(input, len);
-	if (!new_token)
+	if (!*lst)
 	{
-		free_tokens(head);
-		return (NULL);
+		*lst = new_token;
+		return ;
 	}
-	head = add_token_to_list(head, new_token);
-	if (!head)
-	{
-		free_tokens(new_token);
-		return (NULL);
-	}
-	return (head);
+	current_node = *lst;
+	while (current_node ** current_node->next)
+		current_node = current_node->next;
+	current_node->next = new_token;
+	new_token->prev = current_node;
 }
 
+static int	append_separator(t_token_type type, char **ptr_line, t_token **list)
+{
+	t_token	*token;
+
+	token = ft_create_new_token(NULL, type);
+	if (!token)
+		return (0);
+	ft_token_list_add_back(list, token);
+	(*ptr_line)++;
+	if (type == TOKEN_DLESS || type == TOKEN_DGREAT || type == TOKEN_OR \
+		|| type == TOKEN_AND)
+		(*ptr_line)++;
+	return (1);
+}
+
+static int	handle_separator(char **ptr_line, t_token **token_list)
+{
+	if (!ft_strncmp(*ptr_line, "<<", 2))
+		return (append_separator(TOKEN_DLESS, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, ">>", 2))
+		return (append_separator(TOKEN_DGREAT, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, "<", 1))
+		return (append_separator(TOKEN_LESS, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, ">", 1))
+		return (append_separator(TOKEN_GREAT, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, "(", 1))
+		return (append_separator(TOKEN_O_PARENT, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, ")", 1))
+		return (append_separator(TOKEN_C_PARENT, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, "&&", 2))
+		return (append_separator(TOKEN_AND, ptr_line, token_list) && 1);
+	else if (!ft_strncmp(*ptr_line, "||", 2))
+		return (append_separator(TOKEN_OR, ptr_line, token_list) && 1);
+	else
+		return (append_separator(TOKEN_PIPE, ptr_line, token_list) && 1);
+}
 /**
  * @brief Process input string and build token list
  *
@@ -139,19 +86,21 @@ static t_token	*handle_token_creation(const char *input,
 static t_token	*process_input_tokens(const char *input, t_token *head)
 {
 	size_t	len;
+	int		err;
 
+	err = 0;
 	while (*input)
 	{
-		input = skip_whitespace(input);
-		if (!*input)
-			break ;
-		len = get_token_length_with_state(input);
-		if (len == 0)
-			break ;
-		head = handle_token_creation(input, len, head);
-		if (!head)
-			return (NULL);
-		input += len;
+		if (err)
+			return (ft_clean_token_list(&head), NULL);
+		if (ft_isspace(*input))
+			ft_skipspace(&input);
+		else if (!ft_strncmp(input, "<", 1) || !ft_strncmp(input, ">", 1) || \
+				!ft_strncmp(intput, "|", 1) || !ft_strncmp(intput, "&&", 2) || \
+				!ft_strncmp(input, "(", 1) || !ft_strncmp(input, ")", 1))
+			err = (!handle_separator(&input, &head) && 1);
+		else
+			err= (!handle_separator(&input, &head) && 1)				
 	}
 	return (head);
 }

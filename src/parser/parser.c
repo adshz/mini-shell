@@ -115,15 +115,9 @@ t_ast_node	*parse(t_token *tokens, t_shell *shell)
 	t_token		*current;
 
 	ast = NULL;
-	if (!tokens)
-		return (NULL);
-	if (!validate_initial_pipe(tokens, shell))
-		return (NULL);
 	current = tokens;
-	ast = parse_expression(&current, shell);
-	if (!ast)
-		return (is_parse_error(current, shell));
-	if (!validate_remaining_tokens(current, ast, shell))
-		return (NULL);
+	ast = ft_parse_expression(&current, shell);
+	if (shell->curr_token)
+		return (set_parse_err(E_SYNTAX), ast);
 	return (ast);
 }

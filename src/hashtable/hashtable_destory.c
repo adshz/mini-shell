@@ -34,17 +34,15 @@
  * @param item Start of the item chain to free
  * @see hashmao_destory() Main cleanup function that use free_item_chain
  */
-static void	free_item_chain(t_hash_item *item)
+static void	free_item_chain(t_hash_item *current_item)
 {
 	t_hash_item	*next;
 
-	while (item)
+	while (current_item)
 	{
-		next = item->next;
-		free(item->key);
-		free(item->value);
-		free(item);
-		item = next;
+		next = current_item->next;
+		hashmap_free_item(current_item);
+		current_item = next;
 	}
 }
 

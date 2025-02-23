@@ -12,13 +12,16 @@
 #include "hashtable.h"
 #include "errors.h"
 
-static void	hashmap_replace_item(t_hash_item *current, char *value,
-		t_hash_item *new_item, int flag)
+static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, char *value,
+		t_hash_item *new_item)
 {
+	char	*new_value;
+
+	new_value = ft_memory_collector(shell, ft_strdup(new_item->value), false);
+	if (!new_value)
+		return ;
 	free(current->value);
-	current->value = NULL;
-	current->value = ft_strdup(value);
-	current->flag = flag;
+	ft_memory_delone(shell, current->value);
 	hashmap_free_item(new_item);
 }
 
@@ -29,11 +32,11 @@ static int	hashmap_insert_item(t_hashmap *table, t_hash_item *new_item,
 	{
 		exit_handler(NULL, NULL, HASH_FULL, NOT_EXIT);
 		hashmap_free_item(new_item);
-		return (0);
+		return (HASH_ERR);
 	}
 	table->items[index] = new_item;
 	table->count++;
-	return (1);
+	return (HASH_OK);
 }
 /**
  * @brief Insert or update a key-value pair in the hash table
@@ -57,21 +60,22 @@ static int	hashmap_insert_item(t_hashmap *table, t_hash_item *new_item,
  * @note env_to_hashtable() free_old is set to 1
  * @see env_to_hashtable()
  */
-int	hashmap_insert(t_hashmap *table, char *key, char *value, int flag)
+t_hash_item	*hashmap_insert(t_hashmap *table, char *key, char *value, int flag)
 {
-	unsigned long int	index;
-	t_hash_item			  *new_item;
-	t_hash_item			  *current;
+	unsigned long int		index;
+	t_hash_item				*new_item;
+	t_hash_item				*current;
 
-	if (!table || !key || !value)
-		return (HASH_ERR);
+	if (!key)
+		return (NULL);
 	index = hash_function(key, table->size);
-	new_item = hashmap_create_item(key, value, flag);
+	new_item = ft_memory_collector(shell, \
+								hashmap_create_item(key, value, flag), false);
 	current = table->items[index];
 	if (current == NULL)
 	{
 		if (!hashmap_insert_item(table, new_item, index))
-			return (HASH_ERR);
+			return (NULL);
 	}
 	else
 	{
@@ -80,5 +84,5 @@ int	hashmap_insert(t_hashmap *table, char *key, char *value, int flag)
 		else
 			hashmap_handle_collision(table, index, new_item, flag);
 	}
-	return (HASH_OK);
+	return (NULL);
 }

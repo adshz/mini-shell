@@ -1,6 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit_handler.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/22 11:02:55 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/22 11:44:26 by szhong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#include "errors.h"
+#include "types.h"
+
 void	close_fds(t_shell *shell, t_cmd *cmd)
 {
-	t_cmd	  *node;
+	t_cmd	*node;
 	t_list	*curr;
 
 	curr = shell->cmds;
@@ -20,9 +34,9 @@ void	close_fds(t_shell *shell, t_cmd *cmd)
 	}
 }
 
-void	free_scmd(void *content)
+void	free_cmds(void *content)
 {
-	t_ast_node	*node;
+	t_cmd	*node;
 
 	node = content;
 	ft_matrixfree(&node->full_cmd);
@@ -39,9 +53,9 @@ static void	clean_and_exit(t_shell *shell)
 	if (shell)
 	{
 		if (shell->env)
-			hashmap_free_table(shell->env);
+			hashmap_destroy(shell->env);
 		if (shell->cmds)
-			ft_lstclear(&shell->cmds, free_scmd);
+			ft_lstclear(&shell->cmds, free_cmds);
 		if (shell->pids)
 			free(shell->pids);
 	}
@@ -60,9 +74,9 @@ void	exit_handler(t_shell *shell, char *param, int err, int is_exit)
 	else if (err == IS_DIR)
 		shell->exit_status = 126;
 	else
-		mish->exit_status = err;
+		shell->exit_status = err;
 	if (err != SUCCESS && err != FAILURE && err != ERROR)
-		print_error(param, err);
+		error_print(param, err);
 	if (shell && shell->cmds)
 		close_fds(shell, NULL);
 	if (is_exit)

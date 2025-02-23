@@ -54,6 +54,13 @@ typedef enum e_tokeniser_state
 */
 typedef enum e_token_type
 {
+	TOKEN_IDENTIFIER,
+	TOKEN_LESS,
+	TOKEN_GREAT,
+	TOKEN_DLESS,
+	TOKEN_DGREAT,
+	TOKEN_O_PARENT,
+	TOKEN_C_PARENT,
 	TOKEN_WORD,
 	TOKEN_PIPE,
 	TOKEN_REDIRECT_IN,

@@ -6,52 +6,40 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:06:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/23 16:22:33 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/22 11:48:36 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "hashtable.h"
 #include "errors.h"
 
-/**
- * @brief Process a single environment variable string and add it to hashtable
- *
- * Take a string in the format "KEY=VALUE" and splits it into key-value pair
- * for insertion into the hash table for managing environment variable.
- * Handle memory allocation and cleanup for both successful and failed
- * operations
- *
- * @param env_str String in format "KEY=VALUE" to be processed
- * @param env Target hash table for environement variable 
- * @return SUCCESS(0) on success, ERROR (1) on faliure
- *
- * @note Free all allocated memory on failure
- * @note Return 0 for entries without '=' to skip. Because environement varibale
- * has to be in the format 'KEY=VALUE' if not it is not valid
- * @note Return 0 when skipping invalid environment variables; because
- * invalid environment variable is not an error conditions.   
- */
-static int	process_env_entry(char *env_str, t_hashmap *env)
-{
-	char	*equals_pos;
-	char	*key;
-	char	*value;
-	size_t	key_len;
 
-	equals_pos = ft_strchr(env_str, '=');
-	if (!equals_pos)
-		return (HASH_OK);
-	key_len = equals_pos - env_str;
-	key = ft_substr(env_str, 0, key_len);
-	value = ft_strdup(equals_pos + 1);
-	if (!key || !value || hashmap_insert(env, key, value, 0) != HASH_OK)
-	{
-		free(key);
-		free(value);
-		return (HASH_ERR);
-	}
-	return (HASH_OK);
+static char	*dup_key(char *env_line)
+{
+	char	*key;
+	int		i;
+
+	i = 0;
+	while (env_line[i] != '=')
+		i++;
+	key = ft_substr(env_line, 0, i);
+	return (key);
 }
 
+static char	*dup_value(char *env_line)
+{
+	char	*value;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (env_line[i] != '=' && env_line[i] != '\0')
+		i++;
+	j = i;
+	while (env_line[j] != '\0')
+		j++;
+	value = ft_substr(env_line, i + 1, j);
+	return (value);
+}
 /**
  * @brief Converts environment array to hash table
  *
@@ -71,28 +59,31 @@ static int	process_env_entry(char *env_str, t_hashmap *env)
  *   return (-1);
  * @endcode
  */
-t_hashmap	*env_to_hashtable(char *envp[])
+t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 {
-	t_hashmap	*env;
+	t_hashmap	*table;
+	int			len;
+	char		*key;
+	char		*value;
 	int			i;
 
-	env = hashmap_create_table(HASH_SIZE);
-	if (!envp || !env)
+	len = 0;
+	i = -1;
+	while (envp[len])
+		len++;
+	if (len)
+		table = ft_memory_collector(shell, hashmap_create_table(len * 2), false);
+	else
+		table = ft_memory_collector(shell, hashmap_create_table(100), false);
+	if (!table)
+		exit(FAILURE);
+	while (++i < len)
 	{
-		ft_putendl_fd("Hashing Environment Table Failure!", STDERR_FILENO);
-		return (NULL);
+		key = dup_key(envp[i]);
+		value = dup_value(envp[i]);
+		hashmap_insert(table, key, value, 0);
+		free(key);
+		free(value);
 	}
-	i = 0;
-	while (envp[i])
-	{
-		if (process_env_entry(envp[i], env) != 0)
-		{
-			ft_putendl_fd("Process Environement Variable Failure!", \
-				STDERR_FILENO);
-			hashmap_destroy(env);
-			return (NULL);
-		}
-		i++;
-	}
-	return (env);
+	return (table);
 }

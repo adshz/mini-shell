@@ -92,7 +92,7 @@ void	interactive_loop(t_shell *shell);
  * - SIGQUIT (Ctrl+\)
  * - Other relevant signals
  */
-void	init_signals(void);
+void	config_signals_input(void)
 void	handle_sigint(int sig);
 
 #endif

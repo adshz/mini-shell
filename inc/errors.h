@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:57:11 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 18:22:22 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/22 11:51:21 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,17 @@
 # define ERRORS_H
 
 # include "types.h"
+# include <unistd.h>
 
 /* Shell status codes */
 # define PROMPT "minishell$ "
 # define SHELL_SUCCESS 0
 # define SHELL_ERROR 1
+# define NOT_EXIT 0
+# define IS_EXIT 1
 
 /* Error codes */
-# define ERR_NONE 0
 # define ERR_MALLOC 12
-# define ERR_SYNTAX 2
 # define ERR_CMD_NOT_FOUND 127
 # define ERR_NOT_FOUND 127
 # define ERR_NOT_EXECUTABLE 126
@@ -125,9 +126,34 @@ typedef enum e_rror_type
 	ERROR_ENV
 }	t_error_type;
 
+enum e_shell_err
+{
+	FAILURE,
+	ERROR,
+	INV_ARGS,
+	FORK_ERR,
+	SYNTAX_ERR,
+	PIPE_ERR,
+	UNQUOTE,
+	HASH_FULL,
+	NO_MEM,
+	CMD_NOT_FOUND,
+	IS_DIR,
+	NOT_DIR,
+	HIS_WRONG_ARG,
+	HIS_WRONG_ARGS,
+	CD_ERR,
+	NO_PERM = 126,
+	NO_FILE = 127
+};
+
 /* Error handling functions */
 void	handle_error(t_shell *shell, t_error_type error, const char *detail);
 int		set_error_status(t_shell *shell, int status);
 int		print_error(char *cmd, char *msg, int error_code);
+void	error_print(char *msg, int err);
+void	error_print2(int err);
+void	ft_matrixfree(char ***matrix);
+void	exit_handler(t_shell *shell, char *param, int err, int is_exit);
 
 #endif

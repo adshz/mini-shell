@@ -61,35 +61,18 @@ void	disable_ctrl_char_echo(void)
 	}
 }
 
-/**
- * @brief Signal handler for SIGINT (Ctrl+C)
- *
- * Handles interrupt signal by:
- * 1. Setting global signal status
- * 2. Printing newline
- * 3. Handling heredoc mode specially
- * 4. Clearing and redisplaying prompt if in interactive mode
- *
- * @param signum Signal number (SIGINT)
- */
-void	handle_sigint(int sig)
+void	ft_sigquit_handler(int signum)
 {
-	(void)sig;
-	if (g_signal_status == SIG_HEREDOC_MODE)
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		g_signal_status = SIG_HEREDOC_INT;
-		rl_done = 1;
-		rl_replace_line("", 0);
-		rl_on_new_line();
-		return ;
-	}
-	write(STDOUT_FILENO, "\n", 1);
-	g_signal_status = SIGINT;
+	(void)num;
+	ft_putstr_fd("Quit: 3", 1);
+}
+
+static void	handle_signint_input(int signum)
+{
+	g_signal = signum;
+	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	rl_redisplay();
-	g_signal_status = SIG_NONE;
 }
 
 void	restore_signal_handlers(void)
@@ -103,24 +86,9 @@ void	restore_signal_handlers(void)
 	sigaction(SIGQUIT, &sa, NULL);
 }
 
-/**
- * @brief Initializes signal handling for the shell
- *
- * Sets up signal handlers for:
- * - SIGINT (Ctrl+C): Custom handler for showing a newline,redisplaying prompt
- * - SIGQUIT (Ctrl+\): Ignored in interactive mode
- *
- * Also:
- * - Disables control character echo
- * - Initializes global signal status
- * - Uses SA_RESTART to automatically restart interrupted system calls
- * - Sets rl_catch_signals to 0 because we want to handle signals on
- * our own rather than using readline's default
- */
-void	init_signals(void)
+void	config_signals_input(void)
 {
-	g_signal_status = SIG_NONE;
-	disable_ctrl_char_echo();
-	restore_signal_handlers();
-	rl_catch_signals = 0;
+	signal(SIGNINT, handle_sign_input);
+	signal(SIGQUIT, SIG_IGN);
+
 }

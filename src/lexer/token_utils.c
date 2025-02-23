@@ -11,6 +11,30 @@
 /* ************************************************************************** */
 #include "lexer/lexer.h"
 
+void	ft_skipspace(char **line)
+{
+	while (**line && ft_isspace(**line))
+		(*line)++;
+}
+
+void	ft_clean_token_list(t_token **lst)
+{
+	t_token	*current_node;
+	t_token	*next;
+
+	current_node = *lst;
+	if (!current_node)
+		return ;
+	while (current_node)
+	{
+		free(current_node);
+		next = current_node->next;
+		free(current_node);
+		current_node = next;
+	}
+	*lst = NULL;
+}
+
 /**
  * @brief Creates a new token with specified type and value
  *
@@ -93,7 +117,7 @@ void	free_tokens(t_token *head)
  * @note Safe to call with NULL input
  * @see ft_isspace() for whitespace determination
  */
-const char	*skip_whitespace(const char *input)
+const char	*skip_whitespace(const char **input)
 {
 	while (input && ft_isspace(*input))
 		input++;

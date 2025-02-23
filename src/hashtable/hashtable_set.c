@@ -70,5 +70,5 @@ void	hashmap_set(t_hashmap *table, const char *key, const char *value)
 		table->count++;
 	}
 	else
-		hashmap_handle_collision(table, index, new_item);
+		hashmap_handle_collision(table, index, new_item, 0);
 }

@@ -46,8 +46,6 @@ typedef struct s_cmd
 	int		out_fd;
 }	t_cmd;
 
-// use t_hash_item as t_env
-typedef t_hash_item			t_env;
 
 /* Shell Structure */
 /**
@@ -78,13 +76,14 @@ typedef t_hash_item			t_env;
 */
 typedef struct s_shell
 {
+	t_list			*mem_list;
 	char			*line;
 	t_token			*tokens;
+	t_token			*curr_token;
 	t_ast_node		*ast;
 	t_hashmap		*env;
-	char			**env_array;
-	bool			env_modified;
 	t_list			*cmds;
+	t_parse_err		parse_err;
 	pid_t			pid;
 	pid_t			*pids;
 	char			*old_pwd;
@@ -95,7 +94,7 @@ typedef struct s_shell
 	bool			in_pipe;
 	int				in_heredoc;
 	int				signal;
-	struct termios	term_settings;
+	struct termios	orignal_termset;
 	bool			in_double_quotes;
 	bool			in_single_quotes;
 }	t_shell;

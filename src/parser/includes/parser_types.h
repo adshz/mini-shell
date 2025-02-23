@@ -83,64 +83,6 @@ typedef struct s_word_token
 	t_ast_node		*cmd_node;
 }	t_word_token;
 
-/* Abstract Syntax Tree Node Types */
-/**
- * @brief AST Node types for the shell's command parser
- *
- * Defines all possible types of nodes in the Abstract Syntax Tree
- * Used to represent different command components and operators
- *
- * @param AST_COMMAND		 Simple command node (e.g., "ls", "echo" etc)
- * @param AST_PIPE			Pipe operator node (|)
- * @param AST_REDIR_IN		Input redirection node (<)
- * @param AST_REDIR_OUT		Output redirection node (>)
- * @param AST_REDIR_APPEND	Append redirection node (>>)
- * @param AST_HEREDOC		Here document node (<<)
- * @param AST_AND			Logical AND operator node (&&)
- * @param AST_OR			Logical OR operator node (||)
- * @param AST_VAR_EXPANSION Variable expansion node ($VAR)
-*/
-typedef enum e_ast_type
-{
-	AST_COMMAND,
-	AST_PIPE,
-	AST_REDIR_IN,
-	AST_REDIR_OUT,
-	AST_REDIR_APPEND,
-	AST_HEREDOC,
-	AST_AND,
-	AST_OR,
-	AST_VAR_EXPANSION
-}	t_ast_type;
-
-/* AST Node Structure */
-/**
- * @brief Abstract Syntax Tree Node Structure
- *
- * Represents a node in the AST, containing command information
- * variable expansion status, and binary tree links
- *
- * @param type			Node type (AST_COMMAND, AST_PIPE, AST_REDIR_IN, etc.)
- * @param value			Primary value (command name or filename for redirections)
- * @param args			Array of command arguments, NULL terminated
- * @param is_expanded	Flag indicating if node contains expanded variables
- * @param original		Original string before variable expansions
- * @param left			Left child node (e.g., represents command before pipe)
- * @param right			Right child node (e.g, represents command after pipe)
- * @param data			For storing heredoc data
-*/
-typedef struct s_ast_node
-{
-	t_ast_type			type;
-	char				*value;
-	char				**args;
-	int					is_expanded;
-	char				*original;
-	struct s_ast_node	*left;
-	struct s_ast_node	*right;
-	t_heredoc_data		data;
-}	t_ast_node;
-
 typedef struct s_heredoc_chain
 {
 	t_token		**tokens;
@@ -153,5 +95,49 @@ typedef struct s_heredoc_chain
 	int			total_heredocs;
 	int			processed_count;
 }	t_heredoc_chain;
+
+
+###############################################
+typedef enum e_io_type
+{
+	IO_IN,
+	IO_OUT,
+	IO_HEREDOC,
+	IO_APPEND,
+}	t_io_type;
+
+typedef enum e_ast_type
+{
+	NODE_PIPE,
+	NODE_AND,
+	NODE_OR,
+	NODE_CMD
+}	t_ast_node_type;
+
+typedef enum e_parse_err_type
+{
+	E_MEM = 1;
+	E_SYNTAX
+}	t_parse_err_type;
+
+typedef struct s_io_node
+{
+	t_io_node_type		type;
+	char				*value;
+	char				**expanded_value;
+	int					here_doc;
+	struct s_io_node	*prev;
+	struct s_io_node	*next;
+}	t_io_node;
+
+typedef struct s_ast_node
+{
+	t_ast_node_type			type;
+	t_io_node				*io_list;
+	char					*args;
+	char					**expanded_args;
+	struct s_ast_node		*left;
+	struct s_ast_node		*right;
+}	t_ast_node;
 
 #endif 

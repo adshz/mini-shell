@@ -17,10 +17,10 @@
 void	cleanup_terminal_state(t_shell *shell)
 {
 	tcgetattr(STDIN_FILENO, &shell->term_settings);
-	if (shell->stdin_backup > 2)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup > 2)
-		close(shell->stdout_backup);
+	// if (shell->stdin_backup > 2)
+	// 	close(shell->stdin_backup);
+	// if (shell->stdout_backup > 2)
+	// 	close(shell->stdout_backup);
 	if (tcsetattr(STDIN_FILENO, TCSANOW, &shell->term_settings) == -1)
 		print_error("tcsetattr", "Failed to restore terminal settings", 1);
 }

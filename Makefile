@@ -6,7 +6,7 @@
 #    By: szhong <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/08 12:46:50 by szhong            #+#    #+#              #
-#    Updated: 2024/12/19 17:59:23 by szhong           ###   ########.fr        #
+#    Updated: 2025/02/22 11:58:37 by szhong           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 #Define colour
@@ -33,6 +33,11 @@ SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
+				utils/ft_matrixfree.c \
+				utils/exit_handler_utils.c \
+				utils/exit_handler.c \
+				hashtable/hashtable_create_item.c \
+				hashtable/hashtable_free_item.c \
 				executor/command_executor/command_executor_external_cmd.c \
 				executor/env_executor/env_array_manager.c \
 				utils/mem_tracker.c \

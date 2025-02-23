@@ -47,19 +47,19 @@ static void	cleanup_history_resources(t_shell *shell)
 	}
 }
 
-static void	cleanup_file_descriptors(t_shell *shell)
-{
-	if (shell->stdin_backup != STDIN_FILENO)
-	{
-		close(shell->stdin_backup);
-		shell->stdin_backup = STDIN_FILENO;
-	}
-	if (shell->stdout_backup != STDOUT_FILENO)
-	{
-		close(shell->stdout_backup);
-		shell->stdout_backup = STDOUT_FILENO;
-	}
-}
+// static void	cleanup_file_descriptors(t_shell *shell)
+// {
+// 	if (shell->stdin_backup != STDIN_FILENO)
+// 	{
+// 		close(shell->stdin_backup);
+// 		shell->stdin_backup = STDIN_FILENO;
+// 	}
+// 	if (shell->stdout_backup != STDOUT_FILENO)
+// 	{
+// 		close(shell->stdout_backup);
+// 		shell->stdout_backup = STDOUT_FILENO;
+// 	}
+// }
 
 void	cleanup_shell(t_shell *shell)
 {
@@ -69,5 +69,5 @@ void	cleanup_shell(t_shell *shell)
 	cleanup_environment_resources(shell);
 	cleanup_history_resources(shell);
 	cleanup_terminal_state(shell);
-	cleanup_file_descriptors(shell);
+	// cleanup_file_descriptors(shell);
 }

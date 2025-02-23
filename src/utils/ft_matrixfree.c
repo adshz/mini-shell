@@ -1,22 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hashtable_free_item.c                              :+:      :+:    :+:   */
+/*   ft_matrixfree.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/22 10:29:08 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/22 10:29:09 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/22 11:13:34 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/22 11:46:47 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "utils.h"
 
-#include "hashtable.h"
-
-void	hashmap_free_item(t_shell *shell, t_hash_item *item)
+void	ft_matrixfree(char ***matrix)
 {
-	if (!item)
-		return ;
-	ft_memory_delone(shell, item->key);
-	ft_memory_delone(shell, item->value);
-	ft_memory_delone(shell, item);
+	int	i;
+
+	i = 0;
+	while (matrix && matrix[0] && matrix[0][i])
+	{
+		free(matrix[0][i]);
+		i++;
+	}
+	if (matrix && *matrix)
+	{
+		free(*matrix);
+		*matrix = NULL;
+	}
 }

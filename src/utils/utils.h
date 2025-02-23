@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:24:04 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 23:25:07 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/22 11:16:33 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,10 @@ void	free_cmd(void *content);
 void	add_command_to_history(t_shell *shell, t_ast_node *cmd);
 bool	is_only_whitespace(const char *str);
 void	cleanup_ast_node_data(t_ast_node *node);
+
+
+void	close_fds(t_shell *shell, t_cmd *cmd);
+void	free_cmds(void *content);
+void	exit_handler(t_shell *shell, char *param, int err, int is_exit);
+void	ft_matrixfree(char ***matrix);
 #endif

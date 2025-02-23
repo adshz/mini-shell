@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:31:16 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 12:00:51 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/22 11:58:08 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef HASHTABLE_H
@@ -122,7 +122,9 @@ void		hashmap_iterate(t_hashmap *table, \
 void		hashmap_set(t_hashmap *table, const char *key, const char *value);
 void		hashmap_destroy(t_hashmap *table);
 void		hashmap_handle_collision(t_hashmap *table, size_t index, \
-							t_hash_item *new_item);
+							t_hash_item *new_item, int flag);
 size_t		hashmap_size(t_hashmap *table);
 size_t		hash_function(const char *key, size_t table_size);
+void		hashmap_free_item(t_hash_item *item);
+t_hash_item	*hashmap_create_item(char *key, char *value, int flag);
 #endif
