@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:16:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 22:58:00 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 23:13:31 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,8 @@ void	handle_sigint(int sig)
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		g_signal_status = SIG_HEREDOC_INT;
-		// rl_done = 1;
-		#ifdef __APPLE__
-    /* On macOS, we can try using a different approach */
-    		write(STDIN_FILENO, "\n", 1);
-		#else
-			rl_done = 1;
-		#endif
+		rl_done = 1;
+		/*write(STDIN_FILENO, "\n", 1);*/
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		return ;
@@ -129,6 +124,5 @@ void	init_signals(void)
 	g_signal_status = SIG_NONE;
 	disable_ctrl_char_echo();
 	restore_signal_handlers();
-	// rl_catch_signals = 0;
-	
+	rl_catch_signals = 0;
 }
