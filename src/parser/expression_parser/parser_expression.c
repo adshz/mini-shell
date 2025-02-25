@@ -426,7 +426,7 @@ void	ft_cleanup_ast(t_shell *shell, t_ast_node **ast)
 {
 	recursively_ft_cleanup_ast(*ast);
 	*ast = NULL;
-	clean_token_lst(&t_shell->tokens);
+	clean_token_lst(&shell->tokens);
 }
 
 t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)

@@ -565,7 +565,7 @@ char	**ft_flattern_str_arrays(char ***str_arrays)
 		strs_count += j;
 		i++;
 	}
-	return ()
+	return (ft_free_3d_array(str_arrays), joined);
 }
 char	**ft_globber(char **expanded)
 {
@@ -581,7 +581,7 @@ char	**ft_globber(char **expanded)
 		globbed[i] = globber_helper(expanded[i]);
 		i++;
 	}
-	return (ft_free_2d_array(expanded), ft_join_str_arrs(globbed));
+	return (ft_free_2d_array(expanded), ft_flattern_str_arrays(globbed));
 }
 
 
@@ -726,13 +726,45 @@ void	cleanup_minishell(t_shell *shell)
 }
 
 
+
+/* -------------main signals-----------*/
+static void	main_sigint_handler(int signum)
+{
+	(void)signum;
+	if (g_signal_status == SHELL_STATE_HEREDOC_INPUT)
+	{
+		close(STDIN_FILENO);
+		ft_putstr_fd("\n", 1);
+	}
+	else
+	{
+		ft_putstr_fd("\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
+}
+
+void	main_init_signals(t_shell *shell)
+{
+	struct termios	term;
+
+	term = shell->original_term;
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	signal(SIGINT, main_sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
 /* ------------ HEREDOC ----------------*/
 // #include <errno.h>
+//  may not need this , because I can use the main_signal_handler
 static void	heredoc_sigint_handler(int signum)
 {
-	close(STDIN_FILENO);
+	close(STDIN_FILENO); // i need to clean it up 
 	g_signal_status = signum;
 }
+/*----------- not need ------*/
 
 void	heredoc_sigquit_handler(int signum)
 {
@@ -746,23 +778,30 @@ void	handle_sigint_exec(int signum)
 	write(1, "\n", 1);
 }
 
+/* ---- I don't need this */
+// because I let the main_signal_hanlder to deal with it
+// the second SIGQUIT, in the parent process there has a setting
+// child process will inherent the signal(SIGQUIT, SIG_IGN); from the parent
+// process
 void	config_signals_heredoc(void)
 {
 	signal(SIGINT, heredoc_sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 }
+/* ---- I don't need this above ----*/
 
+/* delete it later */
 void	handle_sigint_input(int signum)
 {
-	g_signal = signum;
+	g_signal_status = signum;
 	ioctl(STDINFILENO, TIOCSTI, "\n");
 	rl_replace_line("", 0);
 	rl_on_new_line();
 }
+/* --------- delete it later above -------*/
 
 void	restore_signalhandle_postheredoc(void)
 {
-	signal(SIGINT, handle_sigint_input);
 	signal(SIGQUIT, heredoc_sigquit_handler)
 }
 
@@ -830,15 +869,16 @@ void	heredoc_expander(t_shell *shell, char *str, int fd)
 }
 
 # define HEREDOC_CTRL_C 130
-# define CHILD_EXECUTING 142
+# define CHILD_EXECUTING 142 // may not need it
 # define NORMAL_OPERATION 0
+# define EXIT_NORMAL 0
+# define HEREDOC_CTRL_D 0
 
 void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 {
 	char	*line;
 	char	*quotes;
 
-	config_signals_heredoc();
 	quotes = io->value;
 	while (*quotes && *quotes != '"' && *quotes != '\'')
 		quotes++;
@@ -847,47 +887,60 @@ void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 		line = readline("> ");
 		if (!line)
 		{
-			close(fd[1]);
+			close(fd[WRITE_END]);
 			cleanup_shell(shell);
-			if (errno == 0)
+			if (errno == HEREDOC_CTRL_D)
 	   			break ;
 			else if (g_signal_status == SIGINT)
 			{
-				ft_putchar_fd('\n', 1);
+				ft_putchar_fd('\n', STDOUT_FILENO);
 				exit(HEREDOC_CTRL_C);
 			}
 		}
 		if (is_delimiter(io->value, line))
 			break ;
 		if (!*quotes)
-			heredoc_expander(shell, line, fd[1]);
+			heredoc_expander(shell, line, fd[WRITE_END]);
 		else
 		{
-			ft_putstr_fd(line, fd[1]);
-			ft_putstr(fd("\n", fd[1]);
+			ft_putstr_fd(line, fd[WRITE_END]);
+			ft_putstr(fd("\n", fd[WRITE_END]);
 		}
 	}
 	cleanup_shell(shell);
-	exit(0);
+	exit(EXIT_NORMAL);
 }
 
 /*---------------------------------------*/
 
 /* -------------------execution--------------- */
 
-bool	leave_leaf(t_shell *shell, int fd[2], int *process_info)
+// 
+// command_executor_signals -> exited_normally
+bool	should_leave_leaf(t_shell *shell, int fd[2], int *process_info)
 {
 	int	status;
 
 	waitpid(*process_info, &status, 0);
-	restore_signalhandle_postheredoc();
-	shell->signint_child = false;
-	close(fd[1]);
-	if (WIFEXITED(status) && WEXITSTATUS(status) == HEREDOC_CTRL_C)
+	restore_signquit_postheredoc();
+	close(fd[WRITE_END]);
+	if (exited_normally(status) && get_exit_status(status) == HEREDOC_CTRL_C)
+	{
+		g_signal_status = SHELL_STATE_HEREDOC_INTERRUPTED;
+		close(fd[READ_END]);
 		return (true);
+	}
 	return (false);
 
 }
+
+// # define WRITE_END 1
+// # define READ_END 0
+// # define SHELL_STATE_HEREDOC_INPUT 42
+// # define SHELL_STATE_HEREDOC_INTERRUPTED 43
+// # define SHELL_STATE_SIGINT 2 i don't think you need that
+// # define SHELL_STATE_NORMAL 0
+
 static bool	check_leaf(t_shell *shell, t_ast_node *ast_node)
 {
 	t_io_node	*io;
@@ -902,13 +955,13 @@ static bool	check_leaf(t_shell *shell, t_ast_node *ast_node)
 		if (io->type == IO_HEREDOC)
 		{
 			pipe(fd);
-			shell->signint_child = true;
+			g_signal_status = SHELL_STATE_HEREDOC_INPUT;
 			pid = (signal(SIGQUIT, SIG_IGN), fork());
 			if (pid == 0)
 				heredoc_handler(shell, io, fd);
-			if (leave_leaf(fd, &pid))
+			if (should_leave_leaf(fd, &pid))
 				return (true);
-			io->here_doc = fd[0];
+			io->here_doc = fd[READ_END];
 		}
 		else
 			io->expanded_value = expand_args(shell, ast_node->args);
@@ -916,7 +969,7 @@ static bool	check_leaf(t_shell *shell, t_ast_node *ast_node)
 	return (false);
 }
 
-static void	check_tree(t_shell *shell, t_ast_node *ast_node)
+static bool	check_tree(t_shell *shell, t_ast_node *ast_node)
 {
 	bool	heredoc_interrupted;
 
@@ -931,8 +984,10 @@ static void	check_tree(t_shell *shell, t_ast_node *ast_node)
 	}
 	else
 		check_leaf(shell, ast_node);
+	
 }
 
+// may delete it later
 void	handle_sigint_exec(int signum)
 {
 	g_signal_status = signum;
@@ -947,7 +1002,6 @@ void	handle_signquit_handler(int signum)
 
 void	config_signals_exec(void)
 {
-	signal(SIGINT, handle_signint_exec);
 	signal(SIGQUIT, handle_signquit_handler);
 }
 
@@ -964,13 +1018,100 @@ void	config_signals_input(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
+/* --------- execution ------------ */
+static void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
+							int pipe_ends[2], t_pipe_role role)
+{
+	int	child_status;
+
+	if (role == PIPE_WRITER)
+	{
+		close(pipe_ends[READ_END]);
+		dup2(pipe_ends[WRITE_END], STDOUT_FILENO);
+		close(pipe_ends[WRITE_END]);
+	}
+	else if (role == PIPE_READER)
+	{
+		close(pipe_ends[WRITE_END]);
+		dup2(pipe_ends[READ_END], STDIN_FILENO);
+		close(pipe_ends[READ_END]);
+	}
+	child_status = execute_ast_node(node, true);
+	(cleanup_shell(shell), exit(child_status));
+
+}
+int	execute_pipeline(t_shell *shell, t_ast_node *ast_tree)
+{
+	int		pipe_exit_status;
+	int		pipe_ends[2];
+	pid_t	pipe_left;
+	pid_t	pipe_right;
+
+	// signal handling TODO
+	if (pipe(pipe_ends) == -1)
+		return (ERRNO_PIPE_FAILURE);
+	pipe_left = fork();
+	if (pipe_left == -1)
+		return (close(pipe_ends[WRITE_END]), close(pipe_ends[READ_END]), ERRNO_FORK_FAILURE);	
+e	if (pipe_left == 0)
+		execute_pipe_child(shell, ast_tree->left, pipe_ends, PIPE_WRITER);
+	pipe_right = fork();
+	if (pipe_right == -1)
+		return (close(pipe_ends[WRITE_END]), close(pipe_ends[READ_END]), ERRNO_FORK_FAILURE);
+	if (pipe_right == 0)
+		execute_pipe_child(shell, ast_tree->right, pipe_ends, PIPE_READER);
+	(close(pipe_ends[WRITE_END]), close(pipe_ends[READ_END]), \
+		waitpid(pipe_left, &pipe_exit_status, 0));
+	//signal handling TODO
+	return (get_exit_status(pipe_exit_status));
+}
+// check mine 
+typedef enum e_err_msg
+{
+	ERRNO_NONE,
+	ERRNO_GENERAL,
+	ERRNO_PIPE_FAILURE,
+	ERRNO_FORK_FAILURE,
+	ERRNO_EXEC_FAILURE,
+	ERRNO_CANT_EXEC = 126,
+	ERRNO_NOT_FOUND,
+	ERRNO_EXEC_255 = 255,
+}	t_err_msg;
+
+typedef enum e_pipe_role
+{
+	PIPE_WRITER,
+	PIPE_READER
+}	t_pipe_role
+
+// # define ERRNO_EMPTY_COMMAND 1
+
+int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe)
+{
+	int	cmd_exit_status;
+
+	if (!ast_tree)
+		return (ERRNO_EMPTY_COMMAND);
+	if (ast_tree->type == NODE_PIPE)
+		return (execute_pipeline(shell, ast_tree));
+}
+
+
+/*---------- end execution --------- */
 static	void	shell_execution(t_shell *shell)
 {
 	char	**env;
 
 	config_signals_exec(void);
 	check_tree(shell, shell->ast);
-	if (shell->heredoc_sigint)
+	if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
+	{
+		ft_cleanup_ast(shell->ast);
+		g_signal_status == SHELL_STATE_NORMAL;
+	}
+	termsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
+	shell->exit_status = execute_ast_tree(shell, shell->ast, false);
+	//TODO clean ast
 }
 /*          execution      */
 /**
