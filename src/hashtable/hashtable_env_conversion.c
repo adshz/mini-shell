@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   hashtable_env_conversion.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:06:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/23 16:22:33 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 15:51:36 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "hashtable.h"
 #include "errors.h"
 
@@ -30,12 +31,13 @@
  * @note Return 0 when skipping invalid environment variables; because
  * invalid environment variable is not an error conditions.   
  */
-static int	process_env_entry(char *env_str, t_hashmap *env)
+static int	process_env_entry(char *env_str, t_hashmap *env) // env_str is a string in the format "KEY=VALUE"
 {
 	char	*equals_pos;
 	char	*key;
 	char	*value;
 	size_t	key_len;
+	int		result;
 
 	equals_pos = ft_strchr(env_str, '=');
 	if (!equals_pos)
@@ -43,13 +45,16 @@ static int	process_env_entry(char *env_str, t_hashmap *env)
 	key_len = equals_pos - env_str;
 	key = ft_substr(env_str, 0, key_len);
 	value = ft_strdup(equals_pos + 1);
-	if (!key || !value || hashmap_insert(env, key, value, 0) != HASH_OK)
+	if (!key || !value)
 	{
 		free(key);
 		free(value);
 		return (HASH_ERR);
 	}
-	return (HASH_OK);
+	result = hashmap_insert(env, key, value, 0); // hashmap_insert creates a copy of key and value
+	free(key); // free key because it is already copied in hashmap_insert
+	free(value); // free value because it is already copied in hashmap_insert
+	return (result); // return result of hashmap_insert
 }
 
 /**

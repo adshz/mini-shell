@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   hashtable_insert.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 16:51:48 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/23 16:55:03 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 16:19:11 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "hashtable.h"
 #include "errors.h"
 
@@ -29,12 +30,23 @@
 static t_hash_item	*create_new_item(char *key, char *value)
 {
 	t_hash_item	*new_item;
+	char		*key_copy; 
+	char		*value_copy;
 
 	new_item = (t_hash_item *)malloc(sizeof(t_hash_item));
 	if (!new_item)
 		return (NULL);
-	new_item->key = key;
-	new_item->value = value;
+	key_copy = ft_strdup(key);
+	value_copy = ft_strdup(value);
+	if (!key_copy || !value_copy)
+	{
+		free(key_copy);
+		free(value_copy);
+		free(new_item);
+		return (NULL);
+	}
+	new_item->key = key_copy;
+	new_item->value = value_copy;
 	new_item->next = NULL;
 	return (new_item);
 }
