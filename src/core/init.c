@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 16:43:27 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 14:14:27 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 22:52:14 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "core.h"
@@ -77,8 +77,10 @@ static void	get_shell_pid(t_shell *shell)
 void	init_shell(t_shell *shell, char *argv[], char *envp[])
 {
 	ft_memset(shell, 0, sizeof(t_shell));
-	shell->env = env_to_hashtable(envp);
 	shell->environ = envp;
+	shell->env = env_to_hashtable(envp);
+	shell->stdin = dup(0);
+	shell->stdout = dup(1);
 	init_env_vars(shell, argv);
 	get_shell_pid(shell);
 }

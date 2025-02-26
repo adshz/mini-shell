@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_signals.c                                       :+:      :+:    :+:   */
+/*   ft_signals_old.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:16:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 23:28:50 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/26 19:55:17 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,20 +75,4 @@ static void	handle_signint_input(int signum)
 	rl_on_new_line();
 }
 
-void	restore_signal_handlers(void)
-{
-	struct sigaction	sa;
 
-	sa.sa_handler = handle_sigint;
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sa.sa_handler = SIG_IGN;
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-void	config_signals_input(void)
-{
-	signal(SIGNINT, handle_sign_input);
-	signal(SIGQUIT, SIG_IGN);
-
-}

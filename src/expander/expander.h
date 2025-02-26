@@ -3,58 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   expander.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 18:04:14 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 18:06:46 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/26 21:51:11 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 21:51:24 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
-# include "shell.h"
-# include <stdlib.h>
-# include <unistd.h>
-# include "libft.h"
-
-typedef struct s_copy_state
-{
-	char		*result;
-	const char	*str;
-	size_t		i;
-	size_t		j;
-}	t_copy_state;
-
-typedef struct s_cmd_expand
-{
-	char	*expanded_value;
-	char	**cmd_args;
-	char	*prefix;
-	char	*dollar_pos;
-	char	*full_cmd;
-	size_t	prefix_len;
-}	t_cmd_expand;
-
-/* Forward declarations */
-struct						s_shell;
-typedef struct s_shell		t_shell;
-
-char	**expand_command(t_shell *shell, const char *cmd);
-char	*expand_simple_variable(t_shell *shell, const char *arg);
-char	*expand_variable(t_shell *shell, const char *var_name);
-char	*expand_tilde(t_shell *shell, const char *arg);
-
-void	init_cmd_expand(t_cmd_expand *exp);
-char	**handle_variable_command(t_shell *shell, const char *cmd);
-
-void	free_expanded_args(char **args);
-char	*get_variable_name(const char *str, size_t *i);
-int		is_valid_variable_char(char c);
-char	*strip_quotes(char *str);
-char	*handle_quoted_string(const char *str, size_t *i, char quote_char);
-int		is_quoted(const char *str);
-char	*expand_exit_status(t_shell *shell);
-char	*expand_home_dir(t_shell *shell, const char *arg);
-
+/* Gllobber Submodule*/
+size_t	ft_mutli_arr_strs_count(char ***strs_arrays);
+char	**ft_flattern_str_arrays(char ***str_arrays);
+size_t	ft_pattern_match_count(char *pattern);
+char	**ft_globber(char **expanded);
+/* End of Globber Submodule*/
+/* Quote Handler Submodule*/
+char	*normal_str_handler(char *str, size_t *i);
+char	*single_quotes_handler(char *str, size_t *i);
+char	*double_quote_str(t_shell *shell, char *str, size_t *i);
+char	*double_quotes_handler(t_shell *shell, char *str, size_t *i);
+/* End of Quote Handler Submodule*/
+/* Quote Stripper Submodule*/
+void	fill_unquoted_str(char *str, size_t *i, char *ret, size_t *j);
+size_t	ft_unquoted_strlen(char *str);
+char	*ft_strip_quotes(char *str);
+/* End of Quote Stripper Submodule*/
+/* Token Expander Submodule*/
+char	*clean_empty_strs(char *str);
+char	**expand_args(t_shell *shell, char *str)
+/* End of Token Expander Submodule*/
+/* Variable Expander Submodule */
+bool	is_valid_var_char(char c);
+char	*dollar_handler(t_shell *shell, char *str, size_t *i);
+/* End of Variable Expander Submodule */
+/* Wildcard Matcher Submodule */
+bool	is_pattern_match(char **pattern, char **last_wildcard, \
+					char **last_match, char **str);
+void	pattern_quotes_handler(char **pattern, char *quotes);
+bool	wildcard_handler(char **pattern, char **last_wildcard, \
+					char **last_match, char *str);
+bool	ft_is_wildcard(char *pattern, char *str);
+/* End of Wildcard Matcher Submodule */
+/* Word Splitter Submodule */
+char	**expand_and_split(char *str);
+void	fill_words(const char *str, char **array, size_t *i, size_t j);
+char	**ft_filler(const char *str, char **array);
 #endif

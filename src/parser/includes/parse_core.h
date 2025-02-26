@@ -9,8 +9,8 @@
 /*   Updated: 2025/02/26 08:46:07 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef CORE_H
-# define CORE_H
+#ifndef PARSE_CORE_H
+# define PARSE_CORE_H
 // Main entry point for parsing tokens into an AST
 t_ast_node	*parse(t_shell *shell, t_token *tokens_lst);
 

@@ -11,8 +11,7 @@
 /* ************************************************************************** */
 #include "executor/executor.h"
 
-
-static void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
+void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
 							int pipe_ends[2], t_pipe_role role)
 {
 	int	child_status;

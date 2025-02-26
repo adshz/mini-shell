@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main_signals.c                                     :+:      :+:    :+:   */
+/*   signal_handlers.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/27 16:16:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 07:08:37 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/26 20:53:34 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 20:54:24 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "shell.h"
+#include "signals/ft_signals.h"
+#include "types.h"
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
@@ -31,6 +31,12 @@
  * instead of using the one defined in main.c
  */
 extern volatile sig_atomic_t	g_signal_status;
+
+void	config_execution_signals(void)
+{
+	g_signal_status = SHELL_STATE_EXECUTION;
+	signal(SIGQUI, SIG_IGN);
+}
 
 static void	main_sigint_handler(int signum)
 {

@@ -34,7 +34,7 @@ static bool	handle_leaf_heredoc(t_shell *shell, t_ast_node *ast_node)
 	int			pid;
 
 	if (ast_node->args)
-		node->expanded_args = expand_args(shell, ast_node->args);
+		node->expanded_argv = expand_args(shell, ast_node->args);
 	io = ast_node->io_list;
 	while (io)
 	{

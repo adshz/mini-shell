@@ -6,47 +6,43 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:06:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 06:17:34 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 22:49:02 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "hashtable.h"
 #include "errors.h"
 
 
-static char	*dup_key(char *env_line)
+static char	*dup_key(t_shell *shell, char *env_line)
 {
-	char	*key;
-	int		i;
+	size_t	i;
 
-	if (!env_line)
-		return (NULL);
 	i = 0;
-	while (env_line[i] != '=')
+	while (env_line[i])
+	{
+		if (env_line[i] == '=')
+			return (ft_memory_collector(shell, \
+							ft_substr(env_line, 0, i), false));
 		i++;
-	if (env_line[i] != '=')
-		return (ft_strdup(key));
-	key = ft_substr(env_line, 0, i);
-	return (key);
+	}
+	return (ft_memory_collector(shell, ft_strdup(env_line), false));
 }
 
 static char	*dup_value(char *env_line)
 {
-	char	*value;
-	int		i;
-	int		j;
+	size_t	i;
 
-	if (!env_line)
-		return (NULL);
 	i = 0;
-	while (env_line[i] != '=' && env_line[i] != '\0')
-		i++;
-	if (env_line[i] != '=' ||| env[i + 1] == '\0')
-		return (ft_strdup(""));
-	j = i;
-	while (env_line[j] != '\0')
-		j++;
-	value = ft_substr(env_line, i + 1, j);
-	return (value);
+	while (env_line[i])
+	{
+		if (env_line[i] == '=')
+		{
+			i++;
+			return (ft_memory_collector(shell, i, \
+							ft_strlen(env_line) - i, false))
+		}
+	}
+	return (NULL);
 }
 /**
  * @brief Converts environment array to hash table
@@ -91,8 +87,8 @@ t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 		key = dup_key(envp[i]);
 		value = dup_value(envp[i]);
 		hashmap_insert(table, key, value, 0);
-		free(key);
-		free(value);
+		ft_memory_delone(shell, key);
+		ft_memory_delone(shell, value);
 	}
 	return (table);
 }

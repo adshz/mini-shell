@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 17:09:43 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 18:33:25 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/26 22:56:33 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,21 +83,14 @@ typedef struct s_shell
 	t_ast_node		*ast;
 	t_hashmap		*env;
 	char			**environ;
-	t_list			*cmds;
+	int				stdin;
+	int				stdout;
 	t_parse_err		parse_err;
 	pid_t			pid;
 	pid_t			*pids;
 	char			*old_pwd;
-	char			**history;
 	int				exit_status;
-	bool			heredoc_sigint;
-	bool			signint_child;
-	bool			in_pipe;
-	int				in_heredoc;
-	int				signal;
-	struct termios	orignal_termset;
-	bool			in_double_quotes;
-	bool			in_single_quotes;
+	struct termios	orignal_term;
 }	t_shell;
 
 #endif

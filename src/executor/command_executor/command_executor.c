@@ -15,12 +15,12 @@ int	execute_command_node(t_shell *shell, t_ast_node *node, bool is_pipe)
 {
 	int	exec_status;
 
-	if (!node->expanded_args)
+	if (!node->expanded_argv)
 	{
 		exec_status = check_redirection(node);
 		return (reset_stds(shell, is_pipe), (exec_status && ERRNO_GENERAL));
 	}
-	else if (is_builtin((node->expanded_args)[0]))
+	else if (is_builtin((node->expanded_argv)[0]))
 	{
 		exec_status = check_redirection(node);
 		if (exec_status != ERRNO_NONE)

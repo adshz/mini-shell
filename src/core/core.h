@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 15:57:55 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 23:25:03 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/26 19:55:07 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,5 @@ void	interactive_loop(t_shell *shell);
  * - SIGQUIT (Ctrl+\)
  * - Other relevant signals
  */
-void	config_signals_input(void)
-void	handle_sigint(int sig);
 
 #endif

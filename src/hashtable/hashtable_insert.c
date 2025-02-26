@@ -6,14 +6,14 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 16:51:48 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/23 16:55:03 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 22:32:57 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "hashtable.h"
 #include "errors.h"
 
-static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, char *value,
-		t_hash_item *new_item)
+static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, \
+								char *value, t_hash_item *new_item)
 {
 	char	*new_value;
 
@@ -22,16 +22,16 @@ static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, char *val
 		return ;
 	free(current->value);
 	ft_memory_delone(shell, current->value);
-	hashmap_free_item(new_item);
+	hashmap_free_item(shell, &new_item);
 }
 
-static int	hashmap_insert_item(t_hashmap *table, t_hash_item *new_item,
-						unsigned long int index)
+static int	hashmap_insert_item(t_shell *shell, t_hashmap *table, \
+							t_hash_item *new_item, unsigned long int index)
 {
 	if (table->count == table->size)
 	{
 		exit_handler(NULL, NULL, HASH_FULL, NOT_EXIT);
-		hashmap_free_item(new_item);
+		hashmap_free_item(shell, &new_item);
 		return (HASH_ERR);
 	}
 	table->items[index] = new_item;
