@@ -16,9 +16,9 @@ int	main(int argc, char *argv[], char **envp)
 {
 	t_shell	shell;
 
-	if (arg != 1)
-		exit_hanlder(NULL, argv[1], INV_ARGS, IS_EXIT)
-	init_shell(&shell, argv, envp)
+	if (argc != 1)
+		exit_handler(NULL, argv[1], INV_ARGS, IS_EXIT);
+	init_shell(&shell, argv, envp);
 	interactive_loop(&shell);
 	rl_clear_history();
 	cleanup_shell(&shell);

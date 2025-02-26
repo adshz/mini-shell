@@ -13,36 +13,6 @@
 
 // Main entry point for parsing tokens into an AST
 
-/**
- * @brief Build AST Tree From Tokenised input
- *
- * Process:
- * 1. Tokenizs the input line
- * 2. Parses tokens into AST
- *
- * @param shell Pointer to shell structure
- * @return true if AST built successfully, false on error
- *
- * @note Frees line on tokenization failure
- */
-bool	build_ast_tree(t_shell *shell)
-{
-	shell->tokens = tokenise(shell, shell->line);
-	if (!shell->tokens)
-	{
-		ft_putendl_fd("minishell: tokenisation failed", STDERR_FILENO);
-		free(shell->line);
-		shell->line = NULL;
-		return (false);
-	}
-	shell->ast = parse(shell, shell->tokens);
-	if (shell->ast != NULL)
-		return (true);
-	shell->tokens = NULL;
-	free(shell->line);
-	shell->line = NULL;
-	return (false);
-}
 
 /**
  * @brief Main parsing function for shell tokenised input

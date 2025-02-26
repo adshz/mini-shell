@@ -19,7 +19,7 @@ typedef enum e_pipe_role
 {
 	PIPE_WRITER,
 	PIPE_READER
-}	t_pipe_role
+}	t_pipe_role;
 
 typedef enum e_err_no
 {

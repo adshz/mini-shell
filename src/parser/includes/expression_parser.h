@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #ifndef PARSER_EXPRESSIONS_H
 # define PARSER_EXPRESSIONS_H
+# include "types.h"
 
 t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec);
 t_ast_node	*ft_parse_atomic_expression(t_shell *shell);

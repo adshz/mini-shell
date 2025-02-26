@@ -11,9 +11,10 @@
 /* ************************************************************************** */
 #ifndef LEXER_SCAN_H
 # define LEXER_SCAN_H
+# include "types.h"
 
 int		is_separator(char *s);
 int		is_single_or_double_quote(char c);
-bool	skip_quotes(char *line, size_t *i);
+bool	lexer_skip_quotes(char *line, size_t *i);
 size_t	get_token_length(char *line, t_shell *shell);
 #endif

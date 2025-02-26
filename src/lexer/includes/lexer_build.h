@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #ifndef LEXER_BUILD_H
 # define LEXER_BUILD_H
-# include "lexer_types.h"
 # include "shell.h"
 
 void	ft_token_list_add_back(t_token **lst, t_token *new_token);

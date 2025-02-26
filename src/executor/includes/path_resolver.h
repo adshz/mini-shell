@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #ifndef PATH_RESOLVER_H
 # define PATH_RESOLVER_H
+# include "executor_types.h"
 
 t_path	get_path(t_shell *shell, char *cmd);
 t_path	get_env_path(t_shell *shell, char *path, char *cmd);

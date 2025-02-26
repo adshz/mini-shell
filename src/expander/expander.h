@@ -31,7 +31,7 @@ char	*ft_strip_quotes(char *str);
 /* End of Quote Stripper Submodule*/
 /* Token Expander Submodule*/
 char	*clean_empty_strs(char *str);
-char	**expand_args(t_shell *shell, char *str)
+char	**expand_args(t_shell *shell, char *str);
 /* End of Token Expander Submodule*/
 /* Variable Expander Submodule */
 bool	is_valid_var_char(char c);

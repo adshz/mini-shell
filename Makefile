@@ -33,23 +33,18 @@ SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
-				utils/ft_matrixfree.c \
-				utils/exit_handler_utils.c \
-				utils/exit_handler.c \
-				hashtable/hashtable_create_item.c \
-				hashtable/hashtable_free_item.c \
-				executor/command_executor/command_executor_external_cmd.c \
-				executor/env_executor/env_array_manager.c \
-				utils/mem_tracker.c \
-				utils/astnode_cleanup.c \
-				parser/redirection/heredoc_chain_handler_utils.c \
-				parser/redirection/redirection_init_utils.c \
 				main.c \
-				core/core.c \
-				core/ft_signals.c \
-				core/init.c \
-				core/init_env.c \
-				core/shell_modes.c \
+				lexer/lexer.c \
+				lexer/lexer_build.c \
+				lexer/lexer_classify.c \
+				lexer/lexer_init.c \
+				lexer/lexer_cleanup.c \
+				lexer/lexer_scan.c \
+				lexer/lexer_validate.c \
+				lexer/tokeniser.c\
+				parser/ast/ast_builder.c \
+				parser/ast/ast_free.c \
+				parser/ast/ast_memory_manager.c \
 				builtins/builtins.c \
 				builtins/builtins_executor.c \
 				builtins/builtin_utils/builtin_utils.c \
@@ -73,65 +68,6 @@ SRCS		:=	\
 				builtins/ft_export/export_parser.c \
 				builtins/ft_pwd.c \
 				builtins/ft_unset.c \
-				executor/ast_executor/ast_executor.c \
-				executor/ast_executor/node_handler.c \
-				executor/ast_executor/redirection_handler.c \
-				executor/command_check/command_path_check.c \
-				executor/command_check/command_path_check_utils.c \
-				executor/command_check/command_path_resolver.c \
-				executor/command_check/command_path_searcher.c \
-				executor/command_executor/command_error_handler.c \
-				executor/command_executor/command_executor.c \
-				executor/command_executor/command_process_handler.c \
-				executor/command_executor/command_executor_signals.c \
-				executor/command_executor/command_external_signals.c \
-				executor/command_expander/path_handler.c \
-				executor/command_expander/variable_expander.c \
-				executor/command_expander/command_name_expander.c \
-				executor/command_expander/args_array_handler.c \
-				executor/command_expander/args_array_handler_utils.c \
-				executor/command_expander/args_array_helper.c \
-				executor/command_expander/args_array_expander_utils.c \
-				executor/command_expander/args_array_split_utils.c \
-				executor/command_expander/command_name_expander_args_build.c \
-				executor/command_expander/command_name_expand_array_build_utils.c \
-				executor/command_expander/command_name_expander_prefix_handler.c \
-				executor/command_expander/command_name_expander_var_expansion.c \
-				executor/env_executor/env_array_creator.c \
-				executor/env_executor/env_array_builder.c \
-				executor/env_executor/env_string_builder.c \
-				executor/env_executor/env_array_string_helper.c \
-				executor/env_executor/env_variable_handler.c \
-				executor/env_executor/env_hashmap_handler.c \
-				executor/env_executor/env_item_processor.c \
-				executor/env_executor/env_item_processor_utils.c \
-				executor/env_executor/env_mem_utils.c \
-				executor/pipe_handler/pipe_child.c \
-				executor/pipe_handler/pipe_executor.c \
-				executor/pipe_handler/pipe_process_handler.c \
-				executor/pipe_handler/pipe_setup.c \
-				executor/pipe_handler/pipe_status_handler.c \
-				executor/pipe_handler/pipe_utils.c \
-				executor/redirections_executor/heredoc_processor.c \
-				executor/redirections_executor/heredoc_processor_utils.c \
-				executor/redirections_executor/redirection_executor.c \
-				executor/redirections_executor/redirection_process_handler.c \
-				executor/redirections_executor/redirection_signal_handler.c \
-				executor/redirections_executor/redirection_filename_expander.c \
-				executor/redirections_executor/redirection_filename_utils.c \
-				executor/redirections_executor/redirection_input_handler.c \
-				executor/redirections_executor/redirection_output_handler.c \
-				executor/redirections_executor/redirection_processor.c \
-				executor/redirections_executor/redirection_fd_handler.c \
-				executor/redirections_executor/redirection_node_handler.c \
-				executor/redirections_executor/redirection_utils.c \
-				expander/expand_variables/command_expander.c \
-				expander/expand_variables/command_expander_var_processor.c \
-				expander/expand_variables/simple_variable_expander.c \
-				expander/expand_variables/tilde_expander.c \
-				expander/expander_utils.c \
-				expander/quote_handling.c \
-				expander/special_expansions.c \
 				hashtable/hashtable_collision.c \
 				hashtable/hashtable_create.c \
 				hashtable/hashtable_destory.c \
@@ -144,33 +80,6 @@ SRCS		:=	\
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
-				lexer/lexer.c \
-				lexer/lexer_validate.c \
-				lexer/lexer_scan.c \
-				lexer/lexer_init.c \
-				lexer/lexer_cleanup.c \
-				lexer/lexer_classify.c \
-				lexer/lexer_build.c \
-				parser/parser.c \
-				parser/ast/ast_free.c \
-				parser/ast/ast_builder.c \
-				parser/command/command_node.c \
-				parser/command/command_init.c \
-				parser/command/command_init_utils.c \
-				parser/command/command_parser.c \
-				parser/command/command_utils.c \
-				parser/expression_parser/parser_expression.c \
-				parser/variable_expansion/parser_variable_expander.c \
-				parser/pipeline/pipeline_parser.c \
-				parser/redirection/heredoc_handler.c \
-				parser/redirection/heredoc_chain_handler.c \
-				parser/redirection/heredoc_token_handler.c \
-				parser/redirection/redirection_handler.c \
-				parser/redirection/redirection_heredoc_handler.c \
-				parser/redirection/redirection_init.c \
-				parser/redirection/redirection_parser.c \
-				parser/redirection/redirection_utils.c \
-				parser/redirection/redirection_token_handler.c \
 				utils/cleanup.c \
 				utils/command_cleanup.c \
 				utils/command_utils.c \

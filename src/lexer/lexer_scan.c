@@ -47,7 +47,7 @@ int	is_single_or_double_quote(char c)
  * @param i Current position (will be updated)
  * @return bool true if quotes are properly closed, false otherwise
  */
-bool	skip_quotes(char *line, size_t *i)
+bool	lexer_skip_quotes(char *line, size_t *i)
 {
 	char	quote;
 

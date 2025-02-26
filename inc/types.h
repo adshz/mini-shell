@@ -19,33 +19,7 @@
 # include "libft.h"
 # include "lexer/lexer.h"
 # include "hashtable/hashtable.h"
-
-# define SIG_HEREDOC_MODE 1
-# define SIG_HEREDOC_INT 2
-# define SIG_NONE 0
-
-/* Forward declarations */
-struct						s_ast_node;
-typedef struct s_ast_node	t_ast_node;
-
-/* Heredoc data structure */
-typedef struct s_heredoc_data
-{
-	char		*content_path;
-	int			content_fd;
-	const char	*delimiter;
-}	t_heredoc_data;
-
-/*########################################*/
-
-typedef struct s_cmd
-{
-	char	**full_cmd;
-	char	*path;
-	int		in_fd;
-	int		out_fd;
-}	t_cmd;
-
+# include "parser/parser.h"
 
 /* Shell Structure */
 /**
@@ -76,21 +50,21 @@ typedef struct s_cmd
 */
 typedef struct s_shell
 {
-	t_list			*mem_list;
-	char			*line;
-	t_token			*tokens;
-	t_token			*curr_token;
-	t_ast_node		*ast;
-	t_hashmap		*env;
-	char			**environ;
-	int				stdin;
-	int				stdout;
-	t_parse_err		parse_err;
-	pid_t			pid;
-	pid_t			*pids;
-	char			*old_pwd;
-	int				exit_status;
-	struct termios	orignal_term;
+	t_parse_err_type		parse_err;
+	t_list					*mem_list;
+	char					*line;
+	t_token					*tokens;
+	t_token					*curr_token;
+	t_ast_node				*ast;
+	t_hashmap				*env;
+	char					**environ;
+	int						stdin;
+	int						stdout;
+	pid_t					pid;
+	pid_t					*pids;
+	char					*old_pwd;
+	int						exit_status;
+	struct termios			orignal_term;
 }	t_shell;
 
 #endif

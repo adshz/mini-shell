@@ -1,22 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   core.h                                             :+:      :+:    :+:   */
+/*   parser_core.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 08:44:49 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 08:46:07 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 23:52:26 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PARSE_CORE_H
 # define PARSE_CORE_H
+# include "parser_types.h"
 // Main entry point for parsing tokens into an AST
 t_ast_node	*parse(t_shell *shell, t_token *tokens_lst);
 
-// High-level function to parse input and build the AST
-bool		parse_and_build_ast(t_shell *shell);
 
-// Function to build AST tree from tokenized input
-static bool	build_ast_tree(t_shell *shell);
 #endif

@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 15:33:21 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 22:49:49 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 23:52:06 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "core.h"
@@ -16,7 +16,7 @@
 /* --------- cleanup process ---------*/
 
 static void	
-void	cleanup_minishell(t_shell *shell)
+void	cleanup_shell(t_shell *shell)
 {
 	ft_memory_collector(shell, NULL, true);
 	ft_cleanup_ast(shell, &shell->ast);

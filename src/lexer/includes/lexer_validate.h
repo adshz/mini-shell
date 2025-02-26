@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #ifndef LEXER_VALIDATE_H
 # define LEXER_VALIDATE_H
+# include "types.h"
 
 void	error_quote_printer(t_shell *shell, char c);
 int		validate_token_list(t_shell *shell, t_token *tokens);

@@ -1,16 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast_free.c                                         :+:      :+:    :+:   */
+/*   cleanup_shell.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 08:06:52 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 08:08:53 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/26 23:49:47 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 23:50:30 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "parser/parser.h"
+#include "utils/utils.h"
 
-static void	recursively_ft_cleanup_ast(t_ast_node *node);
-void		ft_cleanup_ast(t_shell *shell, t_ast_node **ast);
-
+void	cleanup_minishell(t_shell *shell)
+{
+	ft_memory_collector(shell, NULL, true);
+	ft_cleanup_ast(shell, &shell->ast);
+	rl_clear_history();
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_termset);
+}

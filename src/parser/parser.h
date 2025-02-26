@@ -14,7 +14,7 @@
 
 # include "lexer/lexer.h"
 # include "expander/expander.h"
-# include "includes/core.h"
+# include "includes/parser_core.h"
 # include "includes/parser_types.h"
 # include "includes/expression_parser.h"
 # include "includes/ast_manager.h"
