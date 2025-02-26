@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   init_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:44:27 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 14:59:30 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 18:18:31 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "core.h"
 #include "errors.h"
 #include "hashtable/hashtable.h"
@@ -45,7 +46,7 @@ static void	init_shlvl(t_shell *shell)
 		handle_error(shell, ERROR_ENV, "Environment variable SHLVL failure");
 		return ;
 	}
-	hashmap_insert(shell->env, "SHLVL", tmp, 0);
+	hashmap_insert(shell->env, "SHLVL", tmp, 1);
 	mark_env_modified(shell);
 	free(tmp);
 }

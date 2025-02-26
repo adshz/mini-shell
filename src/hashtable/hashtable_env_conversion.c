@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:06:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 15:51:36 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/26 18:22:11 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	process_env_entry(char *env_str, t_hashmap *env) // env_str is a stri
 		free(value);
 		return (HASH_ERR);
 	}
-	result = hashmap_insert(env, key, value, 0); // hashmap_insert creates a copy of key and value
+	result = hashmap_insert(env, key, value, 1); // creates a copy of key and value and inserts it into the hashmap, if it already exists the old value is freed
 	free(key); // free key because it is already copied in hashmap_insert
 	free(value); // free value because it is already copied in hashmap_insert
 	return (result); // return result of hashmap_insert
@@ -80,6 +80,7 @@ t_hashmap	*env_to_hashtable(char *envp[])
 {
 	t_hashmap	*env;
 	int			i;
+	int			result;
 
 	env = hashmap_create_table(HASH_SIZE);
 	if (!envp || !env)
@@ -90,7 +91,8 @@ t_hashmap	*env_to_hashtable(char *envp[])
 	i = 0;
 	while (envp[i])
 	{
-		if (process_env_entry(envp[i], env) != 0)
+		result = process_env_entry(envp[i], env);
+		if (result != 0)
 		{
 			ft_putendl_fd("Process Environement Variable Failure!", \
 				STDERR_FILENO);

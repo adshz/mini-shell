@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 13:40:07 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 13:40:12 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 16:08:28 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser/parser.h"
 
 int	check_input_file(const char *filename)
@@ -31,7 +32,7 @@ static bool	validate_file_token(t_token *file_token)
 	}
 	return (true);
 }
-
+/*
 static t_ast_node	*create_file_node(t_token *file_token, \
 								t_ast_node *redir_node)
 {
@@ -45,24 +46,26 @@ static t_ast_node	*create_file_node(t_token *file_token, \
 	}
 	return (file_node);
 }
-
+*/
 static t_ast_node	*setup_redirection_nodes(t_token *current,
 										t_token *file_token,
 										t_ast_node *result)
 {
 	t_ast_node	*redir_node;
-	t_ast_node	*file_node;
+	// t_ast_node	*file_node;
 
+	if (!file_token)
+		return (NULL);
 	redir_node = create_redirection_node(current->type, file_token->value);
 	if (!redir_node)
 		return (NULL);
-	if (current->type != TOKEN_HEREDOC)
-	{
-		file_node = create_file_node(file_token, redir_node);
-		if (!file_node)
-			return (NULL);
-		redir_node->right = file_node;
-	}
+	// if (current->type != TOKEN_HEREDOC)
+	// {
+	// 	file_node = create_file_node(file_token, redir_node);
+	// 	if (!file_node)
+	// 		return (NULL);
+		// redir_node->right = file_node;
+	// }
 	redir_node->left = result;
 	return (redir_node);
 }

@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_init.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 13:39:44 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/28 13:39:49 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 19:00:53 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "parser/parser.h"
 
 /**
