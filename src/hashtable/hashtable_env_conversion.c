@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 15:06:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/22 11:48:36 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 06:17:34 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "hashtable.h"
@@ -18,9 +18,13 @@ static char	*dup_key(char *env_line)
 	char	*key;
 	int		i;
 
+	if (!env_line)
+		return (NULL);
 	i = 0;
 	while (env_line[i] != '=')
 		i++;
+	if (env_line[i] != '=')
+		return (ft_strdup(key));
 	key = ft_substr(env_line, 0, i);
 	return (key);
 }
@@ -31,9 +35,13 @@ static char	*dup_value(char *env_line)
 	int		i;
 	int		j;
 
+	if (!env_line)
+		return (NULL);
 	i = 0;
 	while (env_line[i] != '=' && env_line[i] != '\0')
 		i++;
+	if (env_line[i] != '=' ||| env[i + 1] == '\0')
+		return (ft_strdup(""));
 	j = i;
 	while (env_line[j] != '\0')
 		j++;
@@ -67,8 +75,9 @@ t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 	char		*value;
 	int			i;
 
-	len = 0;
-	i = -1;
+	if (!envp)
+		return (NULL);
+	(len = 0, i = -1);
 	while (envp[len])
 		len++;
 	if (len)

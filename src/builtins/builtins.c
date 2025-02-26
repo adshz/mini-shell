@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 14:36:50 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 23:04:07 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 12:06:54 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "builtins.h"
@@ -38,11 +38,7 @@ bool	is_builtin(const char *cmd)
 	while (builtins[i])
 	{
 		if (ft_strcmp((char *)cmd, (char *)builtins[i]) == 0)
-		{
-			if (ft_strcmp(cmd, "env") == 0)
-				return (false);
 			return (true);
-		}
 		i++;
 	}
 	return (false);

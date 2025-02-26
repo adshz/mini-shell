@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 14:44:27 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 14:59:30 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 06:22:50 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "core.h"
@@ -33,7 +33,9 @@
 static void	init_shlvl(t_shell *shell)
 {
 	char	*tmp;
+	int		shlvl;
 
+	shlvl = 1;
 	tmp = hashmap_search(shell->env, "SHLVL");
 	if (tmp && ft_atoi(tmp) > 0)
 		shlvl = ft_atoi(tmp) + 1;
@@ -65,7 +67,9 @@ static void	init_pwd(t_shell *shell)
 {
 	char	*tmp;
 
-	if (!hashmap_search(shell->env, "PWD"))
+	if (!shell || !shell->env)
+		return ;
+	if (hashmap_search(shell->env, "PWD") == NULL)
 	{
 		tmp = getcwd(NULL, 0);
 		hashmap_insert(shell->env, "PWD", tmp, 0);

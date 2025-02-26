@@ -39,7 +39,7 @@ static t_token	*process_input_tokens(t_shell *shell, const char *input, \
 	while (*input)
 	{
 		if (err)
-			return (ft_clean_token_list(&head), NULL);
+			return (clean_token_lst(&head), NULL);
 		if (ft_isspace(*input))
 			ft_skipspace(&input);
 		else if (!ft_strncmp(input, "<", 1) || !ft_strncmp(input, ">", 1) || \
@@ -89,7 +89,7 @@ t_token	*tokenise(t_shell *shell, const char *input)
 	head = process_input_tokens(shell, input, head);
 	if (head && !validate_token_list(shell, head))
 	{
-		ft_clean_token_list(&head);
+		clean_token_lst(&head);
 		return (NULL);
 	}
 	return (head);

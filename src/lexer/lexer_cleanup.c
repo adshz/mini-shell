@@ -30,19 +30,20 @@ void	ft_free_token(t_token *token)
  *
  * @param list Pointer to the token list head
  */
-void	ft_clean_token_list(t_token **list)
+void	clean_token_lst(t_token **lst)
 {
-	t_token	*current;
+	t_token	*curr_token;
 	t_token	*next;
 
-	if (!list || !*list)
+	curr_token = *lst;
+	if (!curr_token)
 		return ;
-	current = *list;
-	while (current)
+	while (curr_token)
 	{
-		next = current->next;
-		ft_free_token(current);
-		current = next;
+		free(curr_token->value);
+		next = curr_token->next;
+		free(curr_token);
+		curr_token = next;
 	}
-	*list = NULL;
+	*lst = NULL;
 }

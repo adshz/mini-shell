@@ -82,6 +82,7 @@ typedef struct s_shell
 	t_token			*curr_token;
 	t_ast_node		*ast;
 	t_hashmap		*env;
+	char			**environ;
 	t_list			*cmds;
 	t_parse_err		parse_err;
 	pid_t			pid;

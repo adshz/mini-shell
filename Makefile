@@ -144,12 +144,13 @@ SRCS		:=	\
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
-				lexer/token_length_calculator.c \
-				lexer/token_state_transitions.c \
-				lexer/token_type_handler.c \
-				lexer/token_utils.c \
-				lexer/token_extractor.c \
-				lexer/tokeniser.c \
+				lexer/lexer.c \
+				lexer/lexer_validate.c \
+				lexer/lexer_scan.c \
+				lexer/lexer_init.c \
+				lexer/lexer_cleanup.c \
+				lexer/lexer_classify.c \
+				lexer/lexer_build.c \
 				parser/parser.c \
 				parser/ast/ast_free.c \
 				parser/ast/ast_builder.c \

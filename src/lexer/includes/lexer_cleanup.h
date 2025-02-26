@@ -13,6 +13,6 @@
 # define LEXER_CLEANUP_H
 
 void	ft_free_token(t_token *token);
-void	ft_clean_token_list(t_token **list);
+void	clean_token_lst(t_token **list);
 
 #endif

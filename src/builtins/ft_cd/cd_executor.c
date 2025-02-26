@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 18:41:35 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/12 19:11:25 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 10:36:03 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,22 +30,6 @@ static int	handle_cd_with_path_arg(t_shell *shell, t_ast_node *node)
 	return (ret);
 }
 
-int	builtin_cd(t_shell *shell, t_ast_node *node)
-{
-	char	*path;
-
-	path = NULL;
-	if (!node->args[1])
-		path = get_home_path(shell);
-	else if (ft_strcmp(node->args[1], "-") == 0)
-		path = get_oldpwd_path(shell);
-	else
-		return (handle_cd_with_path_arg(shell, node));
-	if (!path)
-		return (1);
-	return (handle_cd_path(shell, path));
-}
-
 int	handle_cd_path(t_shell *shell, const char *path)
 {
 	char	*old_pwd;
@@ -65,4 +49,20 @@ int	handle_cd_path(t_shell *shell, const char *path)
 	free(old_pwd);
 	cleanup_path((char *)path, path, shell);
 	return (0);
+}
+
+int	builtin_cd(t_shell *shell, t_ast_node *node)
+{
+	char	*path;
+
+	path = NULL;
+	if (!node->args[1])
+		path = get_home_path(shell);
+	else if (ft_strcmp(node->args[1], "-") == 0)
+		path = get_oldpwd_path(shell);
+	else
+		return (handle_cd_with_path_arg(shell, node));
+	if (!path)
+		return (1);
+	return (handle_cd_path(shell, path));
 }

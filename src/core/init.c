@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_shell.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 16:43:27 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 14:52:29 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 14:14:27 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "core.h"
@@ -78,6 +78,7 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 {
 	ft_memset(shell, 0, sizeof(t_shell));
 	shell->env = env_to_hashtable(envp);
+	shell->environ = envp;
 	init_env_vars(shell, argv);
 	get_shell_pid(shell);
 }

@@ -6,11 +6,11 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:49:25 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 23:03:39 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 10:44:01 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "export.h"
-
+//TODO:agrs
 int	builtin_export(t_shell *shell, t_ast_node *node)
 {
 	int	i;

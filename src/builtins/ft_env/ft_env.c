@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:48:53 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 22:04:57 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 10:38:51 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "env.h"
@@ -49,6 +49,7 @@ int	builtin_env(t_shell *shell, t_ast_node *node)
 		hashmap_iterate(shell->env, env_print_env_var);
 		return (0);
 	}
+	//TODO:args
 	cmd_path = get_command_path(shell, node->args[1], shell->env);
 	if (!cmd_path)
 		return (handle_env_command_not_found(node->args[1]));

@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 17:53:05 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 23:09:27 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/25 10:44:43 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ static int	process_unset_var(t_shell *shell, const char *arg)
 	return (status);
 }
 
+//TODO:agrs
 int	builtin_unset(t_shell *shell, t_ast_node *node)
 {
 	int		i;
