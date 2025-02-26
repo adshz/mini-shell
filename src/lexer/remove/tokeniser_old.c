@@ -1,16 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokeniser.c                                        :+:      :+:    :+:   */
+/*   tokeniser_old.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/25 17:38:06 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 01:37:05 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/27 17:09:49 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/25 17:33:37 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "lexer/lexer.h"
 
+static t_token	*ft_create_new_token(char *value, t_token_type type)
+{
+	t_token	*new_token;
+
+	new_token = (t_token *)ft_calloc(sizeof(t_token), 1);
+	if (!new_token)
+		return (NULL);
+	new_token->value = value;
+	new_token->type = type;
+	return (new_token);
+}
 
 static void	ft_token_list_add_back(t_token **lst, t_token *new_token)
 {
@@ -22,7 +34,7 @@ static void	ft_token_list_add_back(t_token **lst, t_token *new_token)
 		return ;
 	}
 	current_node = *lst;
-	while (current_node && current_node->next)
+	while (current_node ** current_node->next)
 		current_node = current_node->next;
 	current_node->next = new_token;
 	new_token->prev = current_node;
@@ -39,7 +51,7 @@ static int	append_separator(t_token_type type, char **ptr_line, t_token **list)
 	(*ptr_line)++;
 	if (type == TOKEN_DLESS || type == TOKEN_DGREAT || type == TOKEN_OR \
 		|| type == TOKEN_AND)
- e		(*ptr_line)++;
+		(*ptr_line)++;
 	return (1);
 }
 
@@ -64,94 +76,14 @@ static int	handle_separator(char **ptr_line, t_token **token_list)
 	else
 		return (append_separator(TOKEN_PIPE, ptr_line, token_list) && 1);
 }
-
-int	ft_is_separator(char *s)
-{
-	if (!ft_strncmp(s, "&&", 2) || *s == ' ' || *s == '\t' || \
-		*s == '<' || *s == '>' || *s == '|' || *s == '(' || *s == ')')
-		return (1);
-	return (0);
-}
-
-int	is_single_or_double_quote(char c)
-{
-	if (c == '\'' || c == '"')
-		return (1);
-	return (0);
-}
-
-bool	skip_quotes(char *line, size_t *i)
-{
-	char	quote;
-
-	quote = line[*i];
-	if (ft_strchr(line + *i + 1, quote))
-	{
-		(*i)++;
-		while (line[*i] != quote)
-			(*i)++;
-		(*i)++;
-		return (true);
-	}
-	return (false);
-}
-
-void	error_quote_printer(t_shell *shell, char c)
-{
-	ft_putstr_fd("minishell: unexpected EOF while looking for matching '", 2);
-	ft_putendl_fd(c, 2);
-	shell->exit_status = 258;
-}
-
-int	append_identifier(t_shell *shell, char **ptr_line, t_token **token_lst)
-{
-	char	*tmp_line;
-	char	*value;
-	t_token	*token;
-	size_t	i;
-
-	tmp_line = *ptr_line;
-	i = 0;
-	while (tmp_line[i] && ft_is_separator(tmp_line[i + 1]))
-	{
-		if (is_single_or_double_quote(tmp_line[i]))
-		{
-			if (!skip_quotes(tmp_line, &i))
-				return (error_quote_printer(shell, tmp_line[i], 0));
-		}
-		else
-			i++;
-	}
-	value = ft_substr(tmp_line, 0, i);
-	if (!value)
-		return (0);
-	token = ft_create_new_token(value, TOKEN_IDENTIFIER);
-	if (!token)
-		return (free(value), 0);
-	*ptr_line += i;
-	return (ft_token_list_add_back(token_lst, token), 1);
-}
 /**
  * @brief Process input string and build token list
  *
  * @param input Input string to process
  * @param head Current head of token list
  * @return Updated head of token list, or NULL on failure
- * @note
- * -> input: mkdir test
- * -> output (t_token - linked list): 
- *               head
- *                 |
- *                 v
- * NULL <---- [0x1000] <-----> [0x2000] <-----> [0x3000] -----> NULL
- *               |                |                 |
- *              |                |                  |
- *      value: "mkdir"      value: NULL         value: "test"
- *     type: IDENTIFIER   type: AND             type: IDENTIFIER
- *
  */
-static t_token	*process_input_tokens(t_shell *shell, const char *input, \
-									t_token *head)
+static t_token	*process_input_tokens(const char *input, t_token *head)
 {
 	size_t	len;
 	int		err;
@@ -168,7 +100,7 @@ static t_token	*process_input_tokens(t_shell *shell, const char *input, \
 				!ft_strncmp(input, "(", 1) || !ft_strncmp(input, ")", 1))
 			err = (!handle_separator(&input, &head) && 1);
 		else
-			err= (!append_identifier(shell, &input, &head) && 1)				
+			err= (!handle_separator(&input, &head) && 1);
 	}
 	return (head);
 }
@@ -198,12 +130,12 @@ static t_token	*process_input_tokens(t_shell *shell, const char *input, \
  * "ls -l | grep foo" becomes:
  * WORD(ls) -> OPTION(-l) -> PIPE(|) -> WORD(grep) -> WORD(foo)
  */
-t_token	*tokenise(t_shell *shell, const char *input)
+t_token	*tokenise(const char *input)
 {
 	t_token	*head;
 
 	if (!input)
 		return (NULL);
 	head = NULL;
-	return (process_input_tokens(shell, input, head));
+	return (process_input_tokens(input, head));
 }

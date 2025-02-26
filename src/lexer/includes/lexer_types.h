@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 02:15:20 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 02:15:23 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 02:08:38 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef LEXER_TYPES_H
@@ -40,16 +40,17 @@ typedef enum e_tokeniser_state
  * Defines all possible token types that can be identified during
  * command line tokenisation. Used by the lexer to classify input components
  *
- * @param TOKEN_WORD         Words, command names, arguments, filenames
- * @param TOKEN_PIPE         Pipe operator (|)
- * @param TOKEN_REDIRECT_IN  Input redirection operator (<)
- * @param TOKEN_REDIRECT_OUT Output redirection operator (>)
- * @param TOKEN_APPEND       Append redirection operator (>>)
- * @param TOKEN_HEREDOC      Here document operator (<<)
- * @param TOKEN_AND          Logical AND operator (&&)
- * @param TOKEN_OR           Logical OR operator (||)
- * @param TOKEN_SEMICOLON    Command separator operator (;)
- * @param TOKEN_NEWLINE      Newline character (\n)
+ * @param TOKEN_PIPE		Pipe operator ('|')
+ * @param TOKEN_AND			Logical AND operator ('&&')
+ * @param TOKEN_OR			Logical OR operator ('||')
+ * @param TOKEN_LESS		Lesser Operator ('<')
+ * @param TOKEN_DLESS		Double Lesser Operator ('<<') Heredoc Mode Token
+ * @param TOKEN_GREAT		Greater Operator ('>') Redirection Output Token
+ * @param TOKEN_DGREAT		Double Greater Operator ('>>') Append Output Token
+ * @param TOKEN_O_PARENT	Open Parenthesis ('(')
+ * @param TOKEN_C_PARENT	Close Parentthesis (')')
+ * @param TOKEN_IDENTIFIER	WORD. eg 'mkdir test && cd test' mkdir->value, type
+ * 							is TOKEN_IDENTIFIER
  * @param TOKEN_EOF          End of input marker
 */
 typedef enum e_token_type
@@ -61,17 +62,11 @@ typedef enum e_token_type
 	TOKEN_DGREAT,
 	TOKEN_O_PARENT,
 	TOKEN_C_PARENT,
-	TOKEN_WORD,
 	TOKEN_PIPE,
-	TOKEN_REDIRECT_IN,
-	TOKEN_REDIRECT_OUT,
-	TOKEN_APPEND,
-	TOKEN_HEREDOC,
 	TOKEN_AND,
 	TOKEN_OR,
-	TOKEN_SEMICOLON,
-	TOKEN_NEWLINE,
-	TOKEN_EOF
+	TOKEN_EOF,
+	TOKEN_UNKNOWN
 }	t_token_type;
 
 /* Token Structure*/
@@ -85,7 +80,6 @@ typedef enum e_token_type
  * @param type   Type classification of token (e.g. TOKEN_WORD, TOKEN_PIPE..)
  * @param next   Pointer to next token in the sequence, NULL if last token
  * @param prev   Pointer to previous token in the sequence, NULL if first token
- * @param in_single_quotes Indicates if the token was in single quotes
 */
 typedef struct s_token
 {
@@ -93,6 +87,5 @@ typedef struct s_token
 	t_token_type	type;
 	struct s_token	*next;
 	struct s_token	*prev;
-	bool			in_single_quotes;
 }	t_token;
 #endif

@@ -14,17 +14,12 @@
 # define LEXER_H
 
 # include "includes/lexer_types.h"
-# include "includes/token_handler.h"
-# include "includes/state_handler.h"
-
-typedef struct s_token_extract
-{
-	char				*result;
-	size_t				i;
-	size_t				j;
-	t_tokeniser_state	state;
-	t_tokeniser_state	prev_state;
-}	t_token_extract;
+# include "includes/lexer_init.h"
+# include "includes/lexer_scan.h"
+# include "includes/lexer_classify.h"
+# include "includes/lexer_build.h"
+# include "includes/lexer_validate.h"
+# include "includes/lexer_cleanup.h"
 
 /* Main Tokenization Function */
 /**
