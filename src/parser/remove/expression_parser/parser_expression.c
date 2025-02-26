@@ -11,16 +11,6 @@
 /* ************************************************************************** */
 #include "parser/parser.h"
 
-void	ft_get_next_token(t_shell *shell)
-{
-	shell->curr_token = shell->curr_token->next;
-}
-
-void	set_parse_err(t_shell *shell, t_parse_err_type type)
-{
-	shell->parse_err.type = type;
-}
-
 bool	is_binary_operator(t_shell *shell)
 {
 	t_token_type	type;
@@ -354,7 +344,7 @@ t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 		if (!shell->curr_token)
 			return (set_parse_err(E_SYNTAX), left);
 		n_prec = ft_precedence(operator) + 1;
-		right = ft_parse_expression(n_prec);
+		right = ft_parse_expression(shell, n_prec);
 		if (!right)
 			return (left);
 		left = ft_combine_node(operator, left, right);

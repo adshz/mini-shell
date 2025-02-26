@@ -66,7 +66,8 @@ typedef enum e_token_type
 	TOKEN_AND,
 	TOKEN_OR,
 	TOKEN_EOF,
-	TOKEN_UNKNOWN
+	TOKEN_UNKNOWN,
+	TOKEN_NEWLINE
 }	t_token_type;
 
 /* Token Structure*/

@@ -67,10 +67,10 @@ int	append_separator(t_token_type type, char **ptr_line, t_token **list)
  */
 int	handle_separator(char **ptr_line, t_token **token_list)
 {
-	t_token_type	type;
+	t_token_type	token_type;
 
-	type = determine_separator_type(*ptr_line);
-	return (append_separator(type, ptr_line, token_list) && 1);
+	token_type = determine_separator_type(*ptr_line);
+	return (append_separator(token_type, ptr_line, token_list) && 1);
 }
 
 /**

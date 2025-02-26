@@ -12,12 +12,68 @@
 #include "parser/parser.h"
 
 // Main entry point for parsing tokens into an AST
-t_ast_node *parse(t_shell *shell, t_token *tokens_lst);
 
-// Function to build AST tree from tokenized input
-static bool build_ast_tree(t_shell *shell);
+/**
+ * @brief Build AST Tree From Tokenised input
+ *
+ * Process:
+ * 1. Tokenizs the input line
+ * 2. Parses tokens into AST
+ *
+ * @param shell Pointer to shell structure
+ * @return true if AST built successfully, false on error
+ *
+ * @note Frees line on tokenization failure
+ */
+bool	build_ast_tree(t_shell *shell)
+{
+	shell->tokens = tokenise(shell, shell->line);
+	if (!shell->tokens)
+	{
+		ft_putendl_fd("minishell: tokenisation failed", STDERR_FILENO);
+		free(shell->line);
+		shell->line = NULL;
+		return (false);
+	}
+	shell->ast = parse(shell, shell->tokens);
+	if (shell->ast != NULL)
+		return (true);
+	shell->tokens = NULL;
+	free(shell->line);
+	shell->line = NULL;
+	return (false);
+}
 
-// High-level function to parse input and build the AST
-bool parse_and_build_ast(t_shell *shell);
+/**
+ * @brief Main parsing function for shell tokenised input
+ *
+ * Constructs Abstract Syntax Tree (AST) from token stream.
+ * Handles syntax validation and error reporting.
+ *
+ * Process:
+ * 1. Validate initial token (can't start with pipe)
+ * 2. Parse complete expression
+ * 3. Ensure all tokens are consumed
+ *
+ * @param tokens Head of token list to parse
+ * @return Root of AST, NULL on syntax error
+ *
+ * Examples:
+ * - "echo hello" -> COMMAND("echo", ["hello"])
+ * - "ls | grep foo" -> PIPE(COMMAND("ls"), COMMAND("grep", ["foo"]))
+ * - "echo hello > file" -> REDIRECT(COMMAND("echo", ["hello"]), "file")
+ *
+ * @note Frees partial AST on syntax error
+ * @see parse_expression() for expression parsing
+ */
+t_ast_node	*parse(t_shell *shell, t_token *tokens_lst)
+{
+	t_ast_node	*ast;
 
-
+	ast = NULL;
+	shell->curr_token = tokens_lst;
+	ast = ft_parse_expression(shell, 0);
+	if (shell->curr_token)
+		return (set_parse_err(E_SYNTAX), ast);
+	return (ast);
+}
