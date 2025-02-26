@@ -76,7 +76,7 @@ void	interactive_loop(t_shell *shell)
 			parse_err_handler(shell);
 			continue ;
 		}
-		shell_start_execution(shell);
+		execute_shell_command(shell);
 		ft_cleanup_ast(shell, &shell->ast);
 	}
 	exit_handler(shell, NULL, SHELL_SUCCESS, IS_EXIT)

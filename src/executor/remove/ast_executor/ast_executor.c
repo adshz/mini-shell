@@ -5,25 +5,29 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 17:24:43 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 17:40:11 by szhong           ###   ########.fr       */
+/*   Created: 2025/01/29 15:00:39 by szhong            #+#    #+#             */
+/*   Updated: 2025/01/29 15:59:08 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "executor/executor.h"
+#include "../executor.h"
 
-int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe)
+int	execute_ast(t_shell *shell, t_ast_node *node)
 {
-	int	cmd_exit_status;
+	int	ret;
 
-	config_execution_signals(void);
-	if (!ast_tree)
-		return (ERRNO_EMPTY_COMMAND);
-	if (ast_tree->type == NODE_PIPE)
-		return (execute_pipeline(shell, ast_tree));
-	else if (ast_tree->type == NODE_AND)
-		return (execute_and_node(shell, ast_tree));
-	else if (ast_tree->type == NODE_OR)
-		return (execute_or_node(shell, ast_tree));
-	else
-		return (execute_command_node(shell, shell->ast, is_pipe));
+	if (!node)
+		return (0);
+	if (shell->heredoc_sigint)
+	{
+		cleanup_current_command(shell);
+		return (130);
+	}
+	ret = handle_node_by_type(shell, node);
+	if (ret != -1)
+		return (ret);
+	if (node->type == AST_REDIR_IN || node->type == AST_REDIR_OUT || \
+		node->type == AST_REDIR_APPEND || node->type == AST_HEREDOC)
+		return (handle_redirection_node(shell, node));
+	shell->exit_status = 1;
+	return (1);
 }

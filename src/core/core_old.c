@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 15:33:21 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 17:19:38 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 17:42:03 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "core.h"
@@ -756,27 +756,6 @@ void	config_execution_signals(void)
 	signal(SIGQUI, SIG_IGN);
 }
 
-bool	is_delimiter(char	*delimiter, char *str)
-{
-	while (*str)
-	{
-		if (*delimiter == '"' || *delimiter == '\'')
-		{
-			delimiter++;
-			continue ;
-		}
-		else if (*str == *delimiter)
-		{
-			str++;
-			delimiter++;
-		}
-		else
-			return (false);
-	}
-	while (*delimiter == '"' || *delimiter == '\'')
-		delimiter++;
-	return (!*delimiter)
-}
 
 int		heredoc_expand_var_to_fd(t_shell *shell, char *str, int fd)
 {
@@ -819,63 +798,12 @@ void	heredoc_expander(t_shell *shell, char *str, int fd)
 # define EXIT_NORMAL 0
 # define HEREDOC_CTRL_D 0
 
-void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
-{
-	char	*line;
-	char	*quotes;
-
-	quotes = io->value;
-	while (*quotes && *quotes != '"' && *quotes != '\'')
-		quotes++;
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-		{
-			close(fd[WRITE_END]);
-			cleanup_shell(shell);
-			if (errno == HEREDOC_CTRL_D)
-	   			break ;
-			else if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
-				exit(HEREDOC_CTRL_C);
-		}
-		if (is_delimiter(io->value, line))
-			break ;
-		if (!*quotes)
-			heredoc_expander(shell, line, fd[WRITE_END]);
-		else
-		{
-			ft_putstr_fd(line, fd[WRITE_END]);
-			ft_putstr(fd("\n", fd[WRITE_END]);
-		}
-	}
-	cleanup_shell(shell);
-	exit(EXIT_NORMAL);
-}
-
 /*---------------------------------------*/
 
 /* -------------------execution--------------- */
 
 // 
 // command_executor_signals -> exited_normally
-bool	should_leave_leaf(t_shell *shell, int fd[2], int *process_info)
-{
-	int	status;
-
-	waitpid(*process_info, &status, 0);
-	// restore_signquit_postheredoc(); // we don't need to restore it because of
-	// main_signals 
-	close(fd[WRITE_END]);
-	if (exited_normally(status) && get_exit_status(status) == HEREDOC_CTRL_C)
-	{
-		g_signal_status = SHELL_STATE_HEREDOC_INTERRUPTED;
-		close(fd[READ_END]);
-		return (true);
-	}
-	return (false);
-
-}
 
 // # define WRITE_END 1
 // # define READ_END 0
@@ -885,52 +813,6 @@ bool	should_leave_leaf(t_shell *shell, int fd[2], int *process_info)
 // # define SHELL_STATE_HEREDOC_INTERRUPTED 43
 // # define SHELL_STATE_SIGINT 2 i don't think you need that
 // # define SHELL_STATE_NORMAL 0
-
-static bool	check_leaf(t_shell *shell, t_ast_node *ast_node)
-{
-	t_io_node	*io;
-	int			fd[2];
-	int			pid;
-
-	if (ast_node->args)
-		node->expanded_args = expand_args(shell, ast_node->args);
-	io = ast_node->io_list;
-	while (io)
-	{
-		if (io->type == IO_HEREDOC)
-		{
-			pipe(fd);
-			g_signal_status = SHELL_STATE_HEREDOC_INPUT;
-			pid = (signal(SIGQUIT, SIG_IGN), fork());
-			if (pid == 0)
-				heredoc_handler(shell, io, fd);
-			if (should_leave_leaf(fd, &pid))
-				return (true);
-			io->here_doc = fd[READ_END];
-		}
-		else
-			io->expanded_value = expand_args(shell, ast_node->args);
-	}
-	return (false);
-}
-
-static bool	check_tree(t_shell *shell, t_ast_node *ast_node)
-{
-	bool	heredoc_interrupted;
-
-	if (!ast_node)
-		return ;
-	if (ast_node->type == NODE_PIPE || ast_node->type == NODE_AND \
-		|| ast_node->type == NODE_OR)
-	{
-		heredoc_interrupted = check_tree(shell, ast_node->left);
-		if (!heredoc_interrupted)
-			check_tree(shell, ast_node->right);
-	}
-	else
-		check_leaf(shell, ast_node);
-	
-}
 
 // may delete it later
 void	handle_sigint_exec(int signum)
@@ -953,7 +835,6 @@ void	config_execution_signals(void)
 void	handle_signint_input(int signum)
 {
 	g_signal_status = signum;
-
 
 }
 
@@ -1004,7 +885,7 @@ int	execute_pipeline(t_shell *shell, t_ast_node *ast_tree)
 	pipe_left = fork();
 	if (pipe_left == -1)
 		return (close(pipe_ends[WRITE_END]), close(pipe_ends[READ_END]), ERRNO_FORK_FAILURE);	
-e	if (pipe_left == 0)
+	if (pipe_left == 0)
 		execute_pipe_child(shell, ast_tree->left, pipe_ends, PIPE_WRITER);
 	else
 	{
@@ -1305,7 +1186,7 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 	return (exec_get_exit_status(tmp_status))
 }
 
-int	execute_simple_cmd(t_shell *shell, t_ast_node *node, bool is_pipe)
+int	execute_command_node(t_shell *shell, t_ast_node *node, bool is_pipe)
 {
 	int	exec_status;
 
@@ -1326,46 +1207,6 @@ int	execute_simple_cmd(t_shell *shell, t_ast_node *node, bool is_pipe)
 		return (execute_external_cmd(shell, node));
 }
 
-int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe)
-{
-	int	cmd_exit_status;
-
-	config_execution_signals(void);
-	if (!ast_tree)
-		return (ERRNO_EMPTY_COMMAND);
-	if (ast_tree->type == NODE_PIPE)
-		return (execute_pipeline(shell, ast_tree));
-	else if (ast_tree->type == NODE_AND)
-	{
-		cmd_exit_status = execute_ast_node(shell, ast_tree->left, false);
-		if (cmd_exit_status == ERRNO_NONE)
-			return (execute_ast_node(shell, ast_tree->right, false));
-		return (cmd_exit_status);
-	}
-	else if (ast_tree->type == NODE_OR)
-	{
-		cmd_exit_status = execute_ast_node(shell, ast_tree->left, false);
-		if (cmd_exit_status == ERRNO_NONE)
-			return (cmd_exit_status);
-		return (execute_ast_node(shell, ast_tree->right, false));
-	}
-	else
-		return (execute_simple_cmd(shell, shell->ast, is_pipe));
-}
 
 
 /*---------- end execution --------- */
-static	void	shell_start_execution(t_shell *shell)
-{
-	char	**env;
-
-	check_tree(shell, shell->ast);
-	if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
-	{
-		ft_cleanup_ast(shell->ast);
-		g_signal_status == SHELL_STATE_READLINE;
-	}
-	termsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
-	shell->exit_status = execute_ast_node(shell, shell->ast, false);
-}
-/*          execution      */
