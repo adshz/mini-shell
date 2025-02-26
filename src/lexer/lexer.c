@@ -87,10 +87,7 @@ t_token	*tokenise(t_shell *shell, const char *input)
 		return (NULL);
 	head = NULL;
 	head = process_input_tokens(shell, input, head);
-	if (head && !validate_token_list(shell, head))
-	{
-		clean_token_lst(&head);
-		return (NULL);
-	}
+	free(shell->line);
+	shell->line = NULL;
 	return (head);
 }
