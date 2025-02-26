@@ -1,24 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
+/*   ast_builder.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 08:46:50 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 08:46:56 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/26 08:03:25 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 08:05:04 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef PARSER_H
-# define PARSER_H
+#include "parser/parser.h"
 
-# include "lexer/lexer.h"
-# include "expander/expander.h"
-# include "includes/core.h"
-# include "includes/parser_types.h"
-# include "includes/expression_parser.h"
-# include "includes/ast_manager.h"
-# include "includes/command_processor.h"
-# include "includes/redirection_handler.h"
-
-#endif
+t_ast_node	*ft_create_new_node(t_ast_node_type type);
+t_ast_node	*ft_combine_node(t_shell *shell, t_token_type operator, \
+							t_ast_node *left, t_ast_node *right);
+t_ast_node_type	ft_get_ast_node_type(t_token_type type);

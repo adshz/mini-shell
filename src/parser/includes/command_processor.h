@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast.h                                              :+:      :+:    :+:   */
+/*   command_processor.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 18:45:16 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/19 18:45:36 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/26 08:39:29 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 08:40:10 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef AST_H
-# define AST_H
-# include "parser_types.h"
+#ifndef COMMAND_PROCESSOR_H
+# define COMMAND_PROCESSOR_H
 
-void		free_ast(t_ast_node *ast);
-t_ast_node	*create_ast_node(t_ast_type type, char *value);
-bool		is_valid_ast(void *ast);
-t_token		*find_last_word_token(t_token *start);
+// Command processing
+t_ast_node *ft_build_command_subtree(t_shell *shell);
+bool ft_build_raw_command_string(t_shell *shell, char **raw_cmd_ptr);
 
-#endif 
+#endif
+

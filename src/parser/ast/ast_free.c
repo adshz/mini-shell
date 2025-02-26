@@ -1,24 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
+/*   ast_free.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 08:46:50 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 08:46:56 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/26 08:06:52 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/26 08:08:53 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef PARSER_H
-# define PARSER_H
+#include "parser/parser.h"
 
-# include "lexer/lexer.h"
-# include "expander/expander.h"
-# include "includes/core.h"
-# include "includes/parser_types.h"
-# include "includes/expression_parser.h"
-# include "includes/ast_manager.h"
-# include "includes/command_processor.h"
-# include "includes/redirection_handler.h"
+static void	recursively_ft_cleanup_ast(t_ast_node *node);
+void		ft_cleanup_ast(t_shell *shell, t_ast_node **ast);
 
-#endif
