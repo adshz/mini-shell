@@ -14,79 +14,6 @@
 #include "lexer/lexer.h"
 #include "expander/expander.h"
 
-static bool	validate_initial_pipe(t_token *token, t_shell *shell)
-{
-	if (token->type == TOKEN_PIPE)
-	{
-		ft_putendl_fd(\
-				"minishell: syntax error near unexpected token '|'", \
-				STDERR_FILENO);
-		shell->exit_status = 258;
-		return (false);
-	}
-	return (true);
-}
-
-static t_ast_node	*is_parse_error(t_token *current, t_shell *shell)
-{
-	if (current && is_redirection_token(current->type))
-		shell->exit_status = 258;
-	return (NULL);
-}
-
-static bool	validate_remaining_tokens(t_token *current, t_ast_node *ast, \
-									t_shell *shell)
-{
-	if (current != NULL)
-	{
-		free_ast(ast);
-		shell->exit_status = 258;
-		return (false);
-	}
-	return (true);
-}
-
-/**
- * @brief Processes multiple consecutive redirection tokens
- * @param node Current AST node (usually a command node)
- * @param tokens Token stream
- * @param shell Shell context for error handling
- * @return Updated AST node with all redirections processed, or NULL on failure
- * 
- * Examples:
- * "echo hello > file1 > file2" becomes:
- *             >
- *            / \
- *           >   file2
- *          / \
- *         /   file1
- *        /
- *     echo
- *      |
- *    hello
- *
- * Where:
- * - echo is a command node with "hello" as its argument
- * - Each '>' is a redirection node
- * - file1 and file2 are the redirection targets
- */
-t_ast_node	*process_consecutive_redirections(t_ast_node *node,
-											t_token **tokens,
-											t_shell *shell)
-{
-	t_token	*current;
-
-	current = *tokens;
-	while (current && is_redirection_token(current->type))
-	{
-		node = parse_redirection_construct(node, tokens, shell);
-		if (!node)
-			return (NULL);
-		current = *tokens;
-	}
-	return (node);
-}
-
 /**
  * @brief Main parsing function for shell command input
  *
@@ -109,14 +36,13 @@ t_ast_node	*process_consecutive_redirections(t_ast_node *node,
  * @note Frees partial AST on syntax error
  * @see parse_expression() for expression parsing
  */
-t_ast_node	*parse(t_token *tokens, t_shell *shell)
+t_ast_node	*parse(t_shell *shell, t_token *tokens_lst)
 {
 	t_ast_node	*ast;
-	t_token		*current;
 
 	ast = NULL;
-	current = tokens;
-	ast = ft_parse_expression(&current, shell);
+	shell->curr_token = tokens_lst;
+	ast = ft_parse_expression(shell, 0);
 	if (shell->curr_token)
 		return (set_parse_err(E_SYNTAX), ast);
 	return (ast);

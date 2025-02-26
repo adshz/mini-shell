@@ -120,6 +120,7 @@ typedef enum e_parse_err_type
 	E_SYNTAX
 }	t_parse_err_type;
 
+/* here_doc is file descriptor*/
 typedef struct s_io_node
 {
 	t_io_node_type		type;
@@ -134,8 +135,8 @@ typedef struct s_ast_node
 {
 	t_ast_node_type			type;
 	t_io_node				*io_list;
-	char					*args;
-	char					**expanded_args;
+	char					*raw_command; //was *args
+	char					**expanded_argv; // was **expanded_argv
 	struct s_ast_node		*left;
 	struct s_ast_node		*right;
 }	t_ast_node;

@@ -11,108 +11,12 @@
 /* ************************************************************************** */
 #include "parser/parser.h"
 
-static bool	handle_next_token_expression(t_token *token, t_shell *shell)
-{
-	char	*expanded;
-
-	expanded = NULL;
-	if (!token->next || !ft_strchr(token->next->value, '$'))
-		return (true);
-	expanded = parse_handle_variable_expansion(shell, token->next->value);
-	if (!expanded)
-		return (false);
-	free(token->next->value);
-	token->next->value = expanded;
-	return (true);
-}
-
-static bool	handle_token_expansion(t_token *token, t_shell *shell)
-{
-	char	*expanded;
-
-	expanded = NULL;
-	expanded = parse_handle_variable_expansion(shell, token->value);
-	if (!expanded)
-		return (false);
-	free(token->value);
-	token->value = expanded;
-	return (true);
-}
-
-/**
- * @brief Expands variables in a token if `$`present.
- * 
- * This function first check if we need to expand, 
- * if not we just build the expression tree 
- * if we need to expand, we check if the variable is 
- * a standalone variable or part of a larger string.
- * 
- * we skip the first tokeen if it has dollar sign in the middle
- * and we expand the next token if it has a dollar sign.
- * @param token The token to expand
- * @param shell The shell instance
- * @return true if the token was expanded, false otherwise
- */
-static bool	expand_variable_in_token(t_token *token, t_shell *shell)
-{
-	char	*dollar_pos;
-
-	if (!ft_strchr(token->value, '$'))
-		return (true);
-	dollar_pos = ft_strchr(token->value, '$');
-	if (dollar_pos > token->value)
-		return (handle_next_token_expression(token, shell));
-	return (handle_token_expansion(token, shell));
-}
-
-static t_ast_node	*build_expression_tree(t_token **tokens, t_shell *shell)
-{
-	t_ast_node	*node;
-
-	node = NULL;
-	node = parse_pipeline(tokens, shell);
-	if (!node)
-		return (NULL);
-	if (*tokens && (*tokens)->type == TOKEN_REDIRECT_IN)
-		node = parse_redirection_construct(node, tokens, shell);
-	return (node);
-}
-
-/**
- * @brief Parses an expression from the token stream.
- *
- * An expression can be:
- * - Simple command: "echo hello"
- * - Pipeline: "ls | grep foo"
- * - Command with redirections: "echo hello > file"
- *
- * Process:
- * 1. Parse pipeline structure
- * 2. Handle any trailing redirections
- *
- * @param tokens Pointer to current position in token stream
- * @return AST node representing the expression, NULL on error
- *
- * @note Advances token pointer during parsing
- * @see parse_pipeline() for pipeline handling
- * @see parse_redirection_construct() for redirection handling
- */
-t_ast_node	*parse_expression(t_token **tokens, t_shell *shell)
-{
-	if (!tokens || !*tokens)
-		return (NULL);
-	if (expand_variable_in_token(*tokens, shell))
-		return (build_expression_tree(tokens, shell));
-	return (NULL);
-}
-###########################################################33
-
 void	ft_get_next_token(t_shell *shell)
 {
 	shell->curr_token = shell->curr_token->next;
 }
 
-void	set_parse_err(t_parse_err_type type, t_shell *shell)
+void	set_parse_err(t_shell *shell, t_parse_err_type type)
 {
 	shell->parse_err.type = type;
 }
@@ -150,7 +54,7 @@ bool	ft_is_redirection(t_token_type type)
 
 char	*ft_strjoin3(const char *s1, const char *s2, char c)
 {
-	char	joined;
+	char	*joined;
 	size_t	total_len;
 	size_t	i;
 	size_t	j;
@@ -177,21 +81,21 @@ char	*ft_strjoin3(const char *s1, const char *s2, char c)
 	return (joined);
 }
 
-bool	ft_join_args(t_shell *shell, char	**args)
+bool	ft_build_raw_command_string(t_shell *shell, char **raw_cmd_ptr)
 {
 	char	*to_free;
 
 	if (shell->parse_err.type)
 		return (false);
-	if (!*args)
-		*args = ft_strdup("");
-	if (!*args)
+	if (!*raw_cmd_ptr)
+		*raw_cmd_ptr = ft_strdup("");
+	if (!*raw_cmd_ptr)
 		return (false);
 	while (shell->curr_token && shell->curr_token->type == TOKEN_IDENTIFIER)
 	{
-		to_free = *args;
-		*args = ft_strjoin3(*args, shell->curr_token->value, ' ');
-		if (!*args)
+		to_free = *raw_cmd_ptr;
+		*raw_cmd_ptr = ft_strjoin3(*raw_cmd_ptr, shell->curr_token->value, ' ');
+		if (!*raw_cmd_ptr)
 			return (free(to_free), false);
 		free(to_free);
 		ft_get_next_token(shell);
@@ -235,11 +139,11 @@ void	clean_cmd_node(t_ast_node *node)
 	if (!node)
 		return ;
 	ft_clear_io_list(&(node->io_list));
-	free(node->args);
-	free_char2(node->expanded_args);
+	free(node->raw_command);
+	free_char2(node->expanded_argv);
 }
 
-t_io_type	get_io_type(t_token_type type)
+t_io_type	convert_to_io_type(t_token_type type)
 {
 	if (type == TOKEN_LESS)
 		return (IO_IN);
@@ -266,7 +170,7 @@ t_io_node	*ft_create_io_node(t_token_type type, char *value)
 	new_io_node = (t_node *)ft_calloc(1, sizeof(t_io_node));
 	if (!new_io_node)
 		return (NULL);
-	new_io_node->type = get_io_type(type);
+	new_io_node->type = convert_to_io_type(type);
 	new_io_node->value = ft_strdup(value);
 	if (!new_io_node->value)
 		return (free(new_io_node), NULL);
@@ -288,22 +192,23 @@ void	append_io_node(t_io_node **lst, t_io_node *new)
 	curr_node->next = new;
 }
 
-bool	get_to_list(t_shell *shell, t_io_node **io_lst)
+bool	ft_process_redirection(t_shell *shell, t_io_node **io_lst)
 {
 	t_token_type	redir_token_type;
 	t_io_node		*tmp_io_node;
 
 	if (shell->parse_err.type)
 		return (false);
-	while (shell->curr_token && ft_is_rediction(shell->curr_token->type))
+	while (shell->curr_token && ft_is_redirection(shell->curr_token->type))
 	{
 		redir_token_type = shell->curr_token->type;
 		ft_get_next_token(shell);
 		if (!shell->curr_token)
 			return (set_parse_err(E_SYNTAX), false);
-		if (shell->curr_token != TOKEN_IDENTIFIER)
+		if (shell->curr_token->type != TOKEN_IDENTIFIER)
 			return (set_parse_err(E_SYNTAX), false);
-		tmp_io_node = ft_create_io_node(redir_token_type, shell->curr_token);
+		tmp_io_node = ft_create_io_node(redir_token_type, \
+								shell->curr_token->value);
 		if (!tmp_io_node)
 			return (set_parse_err(E_MEM), false);
 		append_io_node(io_list, tmp_io_node);
@@ -312,39 +217,40 @@ bool	get_to_list(t_shell *shell, t_io_node **io_lst)
 	return (true);
 }
 
-t_ast_node	*ft_simple_cmd(t_shell *shell)
+t_ast_node	*ft_build_command_subtree(t_shell *shell)
 {
-	t_at_node	*node;
+	t_ast_node	*node;
 
 	if (shell->parse_err.type)
 		return (NULL);
-	node = ft_create_new_node(type);
+	node = ft_create_new_node(NODE_CMD);
 	if (!node)
 		return (set_parse_err(E_MEM), NULL);
 	while (shell->curr_token && (shell->curr_token->type == TOKEN_IDENTIFIER) \
-		|| ft_is_redirction(shell->curr_token->type))
+		|| ft_is_redirection(shell->curr_token->type))
 	{
 		if (shell->curr_token->type == TOKEN_IDENTIFIER)
 		{
-			if (!ft_join_args(shell, &(node->args)))
+			if (!ft_build_raw_command_string(shell, &(node->raw_command)))
 				return (clean_cmd_node(node), set_parse_err(E_MEM), NULL);
 		}
 		else if (ft_is_redirection(shell->curr_token->type))
 		{
-			if (!get_io_list(shell, &(node->io_list)))
-				return (free(node->args), free(node), NULL);
+		if (!ft_process_redirection(shell, &(node->io_list)))
+				return (free(node->raw_command), free(node), NULL);
 		}
 	}
+	return (node);
 }
 
-t_ast_node	*ft_term(t_shell *shell)
+t_ast_node	*ft_parse_atomic_expression(t_shell *shell)
 {
 	t_ast_node	*node;
 
 	if (shell->parse_err.type)
 		return (NULL);
 	if (is_binary_operator(shell) || shell->curr_token->type == TOKEN_C_PARENT)
-		return (set_parse_err(E_SYNTAX), NULL);
+		return (set_parse_err(shell, E_SYNTAX), NULL);
 	else if (shell->curr_token->type == TOKEN_O_PARENT)
 	{
 		ft_get_next_token(shell);
@@ -357,8 +263,7 @@ t_ast_node	*ft_term(t_shell *shell)
 		return (node);
 	}
 	else
-		return (ft_simple_cmd(shell));
-
+		return (ft_build_command_subtree(shell));
 }
 
 int	ft_precedence(t_token_type type)
@@ -404,6 +309,7 @@ void	recursively_ft_cleanup_ast(t_ast_node *node)
 	free(node);
 }
 
+// please check if you have put them in lexer?
 void	clean_token_lst(t_token **lst)
 {
 	t_token	*curr_token;
@@ -438,16 +344,16 @@ t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 
 	if (shell->parse_err.type ||!shell->curr_token)
 		return (NULL);
-	left = ft_term();
+	left = ft_parse_atomic_expression(shell);
 	if (!left)
 		return (NULL);
-	while (is_binary_operator(shell) && ft_curr_token_precd(shell) >= mini_prec)
+	while (is_binary_operator(shell) && curr_token_precd(shell) >= mini_prec)
 	{
 		operator = shell->curr_token->type;
 		ft_get_next_token(shell);
 		if (!shell->curr_token)
 			return (set_parse_err(E_SYNTAX), left);
-		n_prec = ft_precendence(n_prec);
+		n_prec = ft_precedence(operator) + 1;
 		right = ft_parse_expression(n_prec);
 		if (!right)
 			return (left);

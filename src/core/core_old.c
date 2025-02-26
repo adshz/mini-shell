@@ -35,7 +35,7 @@ static bool	build_ast_tree(t_shell *shell)
 		shell->line = NULL;
 		return (false);
 	}
-	shell->ast = parse(shell->tokens, shell);
+	shell->ast = parse(shell, shell->tokens);
 	if (shell->ast != NULL)
 		return (true);
 	shell->tokens = NULL;
