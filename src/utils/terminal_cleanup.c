@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:17:17 by evmouka           #+#    #+#             */
-/*   Updated: 2025/02/13 23:23:24 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/27 10:29:57 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@
 void	cleanup_terminal_state(t_shell *shell)
 {
 	tcgetattr(STDIN_FILENO, &shell->term_settings);
-	if (shell->stdin_backup > 2)
-		close(shell->stdin_backup);
-	if (shell->stdout_backup > 2)
-		close(shell->stdout_backup);
+	// if (shell->stdin_backup > 2)
+	// 	close(shell->stdin_backup);
+	// if (shell->stdout_backup > 2)
+	// 	close(shell->stdout_backup);
 	if (tcsetattr(STDIN_FILENO, TCSANOW, &shell->term_settings) == -1)
 		print_error("tcsetattr", "Failed to restore terminal settings", 1);
 }

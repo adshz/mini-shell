@@ -3,22 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_fd_handler.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:46:41 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:47:00 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 21:36:37 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../executor.h"
 
 void	cleanup_and_exit(int saved_stdin, int saved_stdout, int status)
 {
-	if (saved_stdin != -1)
+	if (saved_stdin >= 0)
 	{
 		dup2(saved_stdin, STDIN_FILENO);
 		close(saved_stdin);
 	}
-	if (saved_stdout != -1)
+	if (saved_stdout >= 0)
 	{
 		dup2(saved_stdout, STDOUT_FILENO);
 		close(saved_stdout);
@@ -36,4 +37,18 @@ int	setup_saved_fds(int *saved_stdin, int *saved_stdout)
 		return (1);
 	}
 	return (0);
+}
+
+void restore_saved_fds(int saved_stdin, int saved_stdout)
+{
+    if (saved_stdin >= 0)
+    {
+        dup2(saved_stdin, STDIN_FILENO);
+        close(saved_stdin);
+    }
+    if (saved_stdout >= 0)
+    {
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdout);
+    }
 }

@@ -6,7 +6,7 @@
 /*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 16:16:12 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 23:13:31 by evmouka          ###   ########.fr       */
+/*   Updated: 2025/02/26 12:31:41 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	handle_sigint(int sig)
 		write(STDOUT_FILENO, "\n", 1);
 		g_signal_status = SIG_HEREDOC_INT;
 		rl_done = 1;
-		/*write(STDIN_FILENO, "\n", 1);*/
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		return ;
@@ -97,7 +96,8 @@ void	restore_signal_handlers(void)
 {
 	struct sigaction	sa;
 
-	sigemptyset(&sa.sa_mask); //!! initializes the signal set given by set to an empty set
+	sigemptyset(&sa.sa_mask); //!! Initializes the signal set to exclude all signals, ensuring no signals are blocked during the execution of the signal handler
+
 	sa.sa_handler = handle_sigint;
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);

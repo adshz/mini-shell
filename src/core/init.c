@@ -1,15 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_shell.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 16:43:27 by szhong            #+#    #+#             */
-/*   Updated: 2025/01/27 14:52:29 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/27 10:15:27 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "core.h"
+
 #include "shell.h"
 #include "errors.h"
 #include "hashtable/hashtable.h"
