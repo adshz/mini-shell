@@ -22,11 +22,19 @@
  */
 #ifndef CORE_H
 # define CORE_H
-// Signal states for global signal handling
-# define SIG_NONE 0          // No signal/normal operation
-# define SIG_HEREDOC_MODE 1  // Currently in heredoc mode
-# define SIG_HEREDOC_INT 2   // Heredoc was interrupted
-# define SIG_REGULAR_INT 3   // Regular interrupt
+
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdbool.h>
+# include <signal.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <string.h>
+# include <termios.h>
 # include "shell.h"
 # include <signal.h>
 # include "lexer/lexer.h"
@@ -36,18 +44,7 @@
  * instead of using the one defined in main.c
  */
 extern volatile sig_atomic_t	g_signal_status;
-
-/* Signal handling functions */
-void	setup_signals(void);
-void	setup_terminal_settings(void);
-void	disable_ctrl_char_echo(void);
-void	restore_signal_handlers(void);
-
 /* Shell initialization functions */
-int		init_terminal(t_shell *shell);
-int		init_environment(t_shell *shell, char **envp);
-int		init_env(t_shell *shell, char **envp);
-int		init_io(t_shell *shell);
 void	init_env_vars(t_shell *shell, char **argv);
 
 /* Core structure initialisation */
@@ -61,15 +58,6 @@ void	init_env_vars(t_shell *shell, char **argv);
  */
 int		init_shell(t_shell *shell, char *argv[], char *envp[]);
 
-/* AST building and parsing */
-/**
- * @brief Parses command line and builds abstract syntax tree
- *
- * @param shell Pointer to shell structure
- * @return true if parsing and AST building succeed, false otherwise
- */
-bool	parse_and_build_ast(t_shell *shell);
-
 /**
  * @brief Main shell interactive loop
  *
@@ -82,15 +70,4 @@ bool	parse_and_build_ast(t_shell *shell);
  * @param shell Pointer to shell structure
  */
 void	interactive_loop(t_shell *shell);
-
-/* Signal handling */
-/*
- * @brief Initializes signal handlers for the shell
- *
- * Sets up handlers for:
- * - SIGINT (Ctrl+C)
- * - SIGQUIT (Ctrl+\)
- * - Other relevant signals
- */
-
 #endif

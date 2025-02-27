@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/27 17:45:50 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/13 20:58:12 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/27 17:24:23 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/27 17:24:26 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer/lexer.h"

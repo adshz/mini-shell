@@ -45,9 +45,9 @@ t_ast_node	*ft_combine_node(t_shell *shell, t_token_type operator, \
 
 	if (shell->parse_err.type)
 		return (NULL);
-	node = ft_create_new_node(ft_get_ast_node_type(operator)));
+	node = ft_create_new_node(ft_get_ast_node_type(operator));
 	if (!node)
-		return (set_parse_err(E_MEM), NULL);
+		return (set_parse_err(shell, E_MEM), NULL);
 	node->left = left;
 	node->right = right;
 	return (node);

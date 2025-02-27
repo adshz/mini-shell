@@ -45,7 +45,7 @@ void	clean_cmd_node(t_ast_node *node)
 {
 	if (!node)
 		return ;
-	ft_clear_io_list(&(node->io_list));
+	cleanup_io_list(&(node->io_list));
 	free(node->raw_command);
 	free_char2(node->expanded_argv);
 }
@@ -62,24 +62,3 @@ void	free_char2(char **tofree)
 		free(tofree[i++]);
 	free(tofree);
 }
-
-// Clean up token list
-void	clean_token_lst(t_token **lst)
-{
-	t_token	*curr_token;
-	t_token	*next;
-
-	curr_token = *lst;
-	if (!curr_token)
-		return ;
-	while (curr_token)
-	{
-		free(curr_token->value);
-		next = curr_token->next;
-		free(curr_token);
-		curr_token = next;
-	}
-	*lst = NULL;
-}
-
-

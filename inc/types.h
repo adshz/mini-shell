@@ -17,10 +17,10 @@
 # include <termios.h>
 # include <sys/types.h>
 # include "libft.h"
-# include "lexer/lexer.h"
+# include "lexer/includes/lexer_types.h"
+# include "executor/includes/executor_types.h"
 # include "hashtable/hashtable.h"
-# include "parser/parser.h"
-
+# include "parser/includes/parser_types.h"
 /* Shell Structure */
 /**
  * @brief Main shell structure holding program data
@@ -50,7 +50,7 @@
 */
 typedef struct s_shell
 {
-	t_parse_err_type		parse_err;
+	t_parse_err				parse_err;
 	t_list					*mem_list;
 	char					*line;
 	t_token					*tokens;

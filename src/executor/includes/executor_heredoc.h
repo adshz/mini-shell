@@ -15,6 +15,7 @@
 # define NORMAL_OPERATION 0
 # define EXIT_NORMAL 0
 # define HEREDOC_CTRL_D 0
+# include "../executor.h"
 
 int		heredoc_expand_var_to_fd(t_shell *shell, char *str, int fd);
 void	heredoc_expander(t_shell *shell, char *str, int fd);

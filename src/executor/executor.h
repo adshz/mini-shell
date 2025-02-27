@@ -14,6 +14,9 @@
 # define EXECUTOR_H
 
 # include <signal.h>
+# include <unistd.h>
+# include <termios.h>
+# include <stdbool.h>
 # include "types.h"
 # include "includes/ast_executor.h"
 # include "includes/command_executor.h"
@@ -23,10 +26,13 @@
 # include "includes/executor_heredoc.h"
 # include "includes/executor_types.h"
 # include "includes/executor_utils.h"
+# include "signals/ft_signals.h"
 # include "expander/expander.h"
 # include "utils/utils.h"
 # include "errors.h"
 # include <sys/wait.h>
+
+extern volatile sig_atomic_t g_signal_status;
 
 /* Main execution function entry*/
 void	execute_shell_command(t_shell *shell);

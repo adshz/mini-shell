@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast_executor.h                                     :+:      :+:    :+:   */
+/*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 21:33:38 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 21:33:58 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/27 17:26:08 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/27 17:27:07 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef AST_EXECUTOR_H
-# define AST_EXECUTOR_H
-# include "../executor.h"
+#include "lexer/lexer.h"
 
-int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe);
-int	execute_and_node(t_shell *shell, t_ast_node *node);
-int	execute_or_node(t_shell *shell, t_ast_node *node);
-#endif
+void	ft_skipspace(char **line)
+{
+	while (**line && ft_isspace(**line))
+		(*line)++;
+}

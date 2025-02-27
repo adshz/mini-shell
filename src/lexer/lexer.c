@@ -6,7 +6,7 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 02:11:38 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 02:13:13 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/27 17:32:55 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "lexer/lexer.h"
@@ -30,8 +30,7 @@
  *     type: IDENTIFIER   type: AND             type: IDENTIFIER
  *
  */
-static t_token	*process_input_tokens(t_shell *shell, const char *input, \
-									t_token *head)
+static t_token	*process_input_tokens(t_shell *shell, char *input, t_token *head)
 {
 	int		err;
 
@@ -43,11 +42,11 @@ static t_token	*process_input_tokens(t_shell *shell, const char *input, \
 		if (ft_isspace(*input))
 			ft_skipspace(&input);
 		else if (!ft_strncmp(input, "<", 1) || !ft_strncmp(input, ">", 1) || \
-				!ft_strncmp(intput, "|", 1) || !ft_strncmp(intput, "&&", 2) || \
+				!ft_strncmp(input, "|", 1) || !ft_strncmp(input, "&&", 2) || \
 				!ft_strncmp(input, "(", 1) || !ft_strncmp(input, ")", 1))
-			err = (!handle_separator((char **)&input, &head) && 1);
+			err = (!handle_separator(&input, &head) && 1);
 		else
-			err = (!append_identifier(shell, (char **)&input, &head) && 1);
+			err = (!append_identifier(shell, &input, &head) && 1);
 	}
 	return (head);
 }
@@ -80,13 +79,15 @@ static t_token	*process_input_tokens(t_shell *shell, const char *input, \
 t_token	*tokenise(t_shell *shell, const char *input)
 {
 	t_token	*head;
+	char	*mutable_input;
 
 	if (!input)
 		return (NULL);
 	if (!init_lexer(shell))
 		return (NULL);
 	head = NULL;
-	head = process_input_tokens(shell, input, head);
+	mutable_input = (char *)input;  // Cast const away as we need to modify the pointer
+	head = process_input_tokens(shell, mutable_input, head);
 	free(shell->line);
 	shell->line = NULL;
 	return (head);

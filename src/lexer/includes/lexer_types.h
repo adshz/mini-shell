@@ -12,28 +12,8 @@
 #ifndef LEXER_TYPES_H
 # define LEXER_TYPES_H
 
-# include <stdbool.h>
-# include "libft.h"
+# include "../lexer.h"
 
-/* Tokeniser States */
-/**
- * @brief Tokeniser state especial for quote and escape handling 
- *
- * Tracks the current parsing state during tokenisation, particularly
- * for handling quoted strings and escaped characters correctly.
- *
- * @param STATE_NORMAL          Default state, processing regular input
- * @param STATE_IN_SINGLE_QUOTE Inside single quotes, everything as literal
- * @param STATE_IN_DOUBLE_QUOTE Inside double quotes, variables can be expanded
- * @param STATE_IN_BACKSLASH    After backslash, escaping next character
-*/
-typedef enum e_tokeniser_state
-{
-	STATE_NORMAL,
-	STATE_IN_SINGLE_QUOTE,
-	STATE_IN_DOUBLE_QUOTE,
-	STATE_IN_BACKSLASH
-}	t_tokeniser_state;
 /**
  * @brief Token types for lexical analysis
  *

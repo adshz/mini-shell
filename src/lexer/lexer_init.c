@@ -25,7 +25,7 @@ int	init_lexer(t_shell *shell)
 	if (!shell)
 		return (0);
 	if (shell->tokens)
-		ft_clean_token(&(shell->tokens));
+		clean_token_lst(&(shell->tokens));
 	shell->tokens = NULL;
 	return (1);
 }

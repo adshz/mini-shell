@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/25 15:56:47 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include "shell.h"
 /**
  * @brief Signal handler for handling signals
  *
@@ -67,6 +67,7 @@ void	interactive_loop(t_shell *shell)
 			break ;
 		if (is_empty_input(shell))
 			continue ;
+		add_history(shell->line);
 		shell->tokens = tokenise(shell, shell->line);
 		if (!shell->tokens)
 			continue ;

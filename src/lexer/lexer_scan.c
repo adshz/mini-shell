@@ -81,7 +81,7 @@ size_t	get_token_length(char *line, t_shell *shell)
 	{
 		if (is_single_or_double_quote(line[i]))
 		{
-			if (!skip_quotes(line, &i))
+			if (!lexer_skip_quotes(line, &i))
 			{
 				error_quote_printer(shell, line[i]);
 				return (0);

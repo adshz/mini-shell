@@ -15,8 +15,8 @@ void	reset_stds(t_shell *shell, bool is_pipe)
 {
 	if (is_pipe)
 		return ;
-	dup2(shell->stdin_backup, STDIN_FILENO);
-	dup2(shell->stdout_backup, STDOUT_FILENO);
+	dup2(shell->stdin, STDIN_FILENO);
+	dup2(shell->stdout, STDOUT_FILENO);
 }
 
 int	check_redirection(t_shell *shell, t_ast_node *node)

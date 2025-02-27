@@ -1,19 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_core.h                                      :+:      :+:    :+:   */
+/*   lexer_utils.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/26 08:44:49 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/26 23:52:26 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/27 17:27:41 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/27 17:28:21 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#ifndef PARSE_CORE_H
-# define PARSE_CORE_H
-# include "parser_types.h"
-// Main entry point for parsing tokens into an AST
-t_ast_node	*parse(t_shell *shell, t_token *tokens_lst);
+#ifndef LEXER_UTILS_H
+# define LEXER_UTILS_H
 
-
+void	ft_skipspace(char **line);
 #endif

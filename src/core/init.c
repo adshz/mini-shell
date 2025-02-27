@@ -9,10 +9,8 @@
 /*   Updated: 2025/02/26 22:52:14 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "core.h"
 #include "shell.h"
 #include "errors.h"
-#include "hashtable/hashtable.h"
 #include <sys/wait.h>
 
 /**

@@ -22,7 +22,7 @@ BOLD = \033[91m
 ORANGE = \033[38;5;208m
 
 NAME		:=	minishell
-CC			:=	cc
+CC			:=	gcc
 CFLAGS		:=	-Wall -Werror -Wextra -g3
 INCLUDE		:=	-I./inc \
                 -I./libft/inc \
@@ -33,6 +33,8 @@ SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
+				signals/signal_handlers.c \
+				signals/signal_status.c \
 				main.c \
 				lexer/lexer.c \
 				lexer/lexer_build.c \
@@ -41,10 +43,16 @@ SRCS		:=	\
 				lexer/lexer_cleanup.c \
 				lexer/lexer_scan.c \
 				lexer/lexer_validate.c \
-				lexer/tokeniser.c\
-				parser/ast/ast_builder.c \
-				parser/ast/ast_free.c \
+				parser/ast/ast_node_builder.c \
 				parser/ast/ast_memory_manager.c \
+				parser/command/command_node_builder.c \
+				parser/command/command_text_processor.c \
+				parser/parser.c \
+				parser/parser_utils/parser_state.c \
+				parser/parser_expression/atomic_expression_handler.c \
+				parser/parser_expression/expression_parser.c \
+				parser/parser_redirection/io_node_manager.c \
+				parser/parser_redirection/redirection_processor.c \
 				builtins/builtins.c \
 				builtins/builtins_executor.c \
 				builtins/builtin_utils/builtin_utils.c \
@@ -80,13 +88,8 @@ SRCS		:=	\
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
-				utils/cleanup.c \
-				utils/command_cleanup.c \
-				utils/command_utils.c \
-				utils/error_handler.c \
-				utils/history.c \
-				utils/string_utils.c \
-				utils/terminal_cleanup.c
+				utils/cleanup_shell.c 
+
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 MKFL		:=	--no-print-directory

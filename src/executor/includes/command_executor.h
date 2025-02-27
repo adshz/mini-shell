@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #ifndef COMMAND_EXECUTOR_H
 # define COMMAND_EXECUTOR_H
+# include "../executor.h"
 
 int	execute_command_node(t_shell *shell, t_ast_node *node, bool is_pipe);
 int	execute_external_cmd(t_shell *shell, t_ast_node *node);

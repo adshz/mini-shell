@@ -14,9 +14,14 @@
 
 # include <stdbool.h>
 # include "libft.h"
-# include "types.h"
+# include "parser/includes/parser_forward_types.h"
 # include "lexer/lexer.h"
 
+typedef enum e_parse_err_type
+{
+	E_MEM = 1,
+	E_SYNTAX
+}	t_parse_err_type;
 
 typedef enum e_io_type
 {
@@ -34,31 +39,31 @@ typedef enum e_ast_type
 	NODE_CMD
 }	t_ast_node_type;
 
-typedef enum e_parse_err_type
+typedef struct s_parse_err
 {
-	E_MEM = 1,
-	E_SYNTAX
-}	t_parse_err_type;
+    t_parse_err_type    type;
+    char                *msg;
+}   t_parse_err;
 
 /* here_doc is file descriptor*/
 typedef struct s_io_node
 {
 	t_io_type		type;
-	char				*value;
-	char				**expanded_value;
-	int					here_doc;
+	char			*value;
+	char			**expanded_value;
+	int				here_doc;
 	struct s_io_node	*prev;
 	struct s_io_node	*next;
 }	t_io_node;
 
 typedef struct s_ast_node
 {
-	t_ast_node_type			type;
-	t_io_node				*io_list;
-	char					*raw_command; //was *args
-	char					**expanded_argv; // was **expanded_argv
-	struct s_ast_node		*left;
-	struct s_ast_node		*right;
+	t_ast_node_type		type;
+	t_io_node			*io_list;
+	char				*raw_command;
+	char				**expanded_argv;
+	struct s_ast_node	*left;
+	struct s_ast_node	*right;
 }	t_ast_node;
 
 #endif 

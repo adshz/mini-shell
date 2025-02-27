@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #ifndef EXECUTOR_TYPE_H
 # define EXECUTOR_TYPE_H
-
+# include "../executor.h"
 # define WRITE_END 1
 # define READ_END 0
 
@@ -25,6 +25,7 @@ typedef enum e_err_no
 {
 	ERRNO_NONE,
 	ERRNO_GENERAL,
+	ERRNO_EMPTY_COMMAND,
 	ERRNO_PIPE_FAILURE,
 	ERRNO_FORK_FAILURE,
 	ERRNO_EXEC_FAILURE,
