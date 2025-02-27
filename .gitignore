@@ -4,3 +4,8 @@ tags
 reference/
 libft.a
 ./src/utils/mem_block/
+settings.json
+readline_wrapper
+draft.c
+readline_wrapper.h
+draft.c
