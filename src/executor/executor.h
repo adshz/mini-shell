@@ -31,6 +31,12 @@
 # include "utils/utils.h"
 # include "errors.h"
 # include <sys/wait.h>
+# define WRITE_END 1
+# define READ_END 0
+# define HEREDOC_CTRL_C 130
+# define NORMAL_OPERATION 0
+# define EXIT_NORMAL 0
+# define HEREDOC_CTRL_D 0
 
 extern volatile sig_atomic_t g_signal_status;
 
