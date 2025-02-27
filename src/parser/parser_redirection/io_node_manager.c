@@ -46,7 +46,7 @@ void	append_io_node(t_io_node **lst, t_io_node *new)
 }
 
 // Clear a list of IO nodes
-void	ft_clear_io_list(t_io_node	**lst)
+void	cleanup_io_list(t_io_node	**lst)
 {
 	t_io_node	*curr_node;
 	t_io_node	*next;
