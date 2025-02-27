@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_processor.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 01:15:30 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 01:15:33 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/26 21:45:46 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../executor.h"
 
 static int	collect_heredoc_contents(t_shell *shell, t_ast_node **redir_nodes,
@@ -108,5 +109,6 @@ void	setup_redirections(t_shell *shell, t_ast_node *node)
 	if (process_other_redirections(shell, redir_nodes, \
 							redir_count, saved_fds) != 0)
 		return ;
+	restore_saved_fds(saved_fds[0], saved_fds[1]);
 	shell->exit_status = 0;
 }

@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_process_handler.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:22:39 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:22:43 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 10:29:50 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "executor/executor.h"
 
 t_ast_node	*find_command_node(t_ast_node *node)

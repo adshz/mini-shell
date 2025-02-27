@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_processor.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:25:06 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:25:35 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/24 16:16:15 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../executor.h"
 #include "utils/utils.h"
 
@@ -18,9 +19,17 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 	char	*line;
 	int		ret;
 
+	pipe_fds[0] = -1;
+	pipe_fds[1] = -1;
 	ret = setup_heredoc(node, pipe_fds, shell);
 	if (ret != 0)
+	{
+		if (pipe_fds[0] >= 0)
+			close(pipe_fds[0]);
+		if (pipe_fds[1] >= 0)
+			close(pipe_fds[1]);
 		return (ret);
+	}
 	while (1)
 	{
 		write(STDERR_FILENO, "> ", 2);
@@ -28,6 +37,10 @@ int	collect_heredoc_content(t_ast_node *node, t_shell *shell)
 		ret = handle_heredoc_line(line, pipe_fds, node, shell);
 		if (ret != 0)
 		{
+			if (pipe_fds[0] >= 0)
+				close(pipe_fds[0]);
+			if (pipe_fds[1] >= 0)
+				close(pipe_fds[1]);
 			shell->in_heredoc = 0;
 			g_signal_status = SIG_NONE;
 			return (ret);

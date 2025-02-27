@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_signal_handler.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:22:51 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:22:57 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 10:30:37 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "executor/executor.h"
 
 int	handle_signal_interrupt(t_shell *shell)

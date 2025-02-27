@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_processor_utils.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:35:40 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:35:52 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/25 10:16:00 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "executor/executor.h"
 #include "utils/utils.h"
 
@@ -17,7 +18,11 @@ int	setup_heredoc(t_ast_node *node, int pipe_fds[2], t_shell *shell)
 	if (!node || !node->right || !node->right->value)
 		return (print_error("heredoc", "invalid delimiter", 1));
 	if (pipe(pipe_fds) == -1)
+	{
+		pipe_fds[0] = -1;
+		pipe_fds[1] = -1;
 		return (print_error("heredoc", "pipe creation failed", 1));
+	}
 	g_signal_status = SIG_HEREDOC_MODE;
 	shell->in_heredoc = 1;
 	return (0);
@@ -76,7 +81,7 @@ int	write_heredoc_line(char *line, int pipe_fds[2],
 	{
 		free(line);
 		close(pipe_fds[1]);
-		write(STDERR_FILENO, "\n", 1);
+		// write(STDERR_FILENO, "\n", 1);
 		return (1);
 	}
 	ft_putendl_fd(line, pipe_fds[1]);

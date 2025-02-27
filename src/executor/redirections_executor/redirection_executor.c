@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_executor.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
+/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 00:22:14 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/18 00:22:18 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/21 17:49:18 by evmouka          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../executor.h"
 
 int	execute_redirection(t_shell *shell, t_ast_node *node)
