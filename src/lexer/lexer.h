@@ -13,7 +13,6 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-# include "types.h"
 # include "includes/lexer_types.h"
 # include "includes/lexer_init.h"
 # include "includes/lexer_scan.h"
@@ -22,6 +21,7 @@
 # include "includes/lexer_validate.h"
 # include "includes/lexer_cleanup.h"
 # include "includes/lexer_utils.h"
+# include "types.h"
 
 /* Main Tokenization Function */
 /**

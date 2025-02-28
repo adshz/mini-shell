@@ -17,10 +17,10 @@
 # include <termios.h>
 # include <sys/types.h>
 # include "libft.h"
+# include "hashtable/hashtable_types.h"
 # include "lexer/includes/lexer_types.h"
-# include "executor/includes/executor_types.h"
-# include "hashtable/hashtable.h"
 # include "parser/includes/parser_types.h"
+# include "executor/includes/executor_types.h"
 /* Shell Structure */
 /**
  * @brief Main shell structure holding program data

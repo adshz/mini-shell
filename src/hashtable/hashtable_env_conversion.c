@@ -28,7 +28,7 @@ static char	*dup_key(t_shell *shell, char *env_line)
 	return (ft_memory_collector(shell, ft_strdup(env_line), false));
 }
 
-static char	*dup_value(char *env_line)
+static char	*dup_value(t_shell *shell,char *env_line)
 {
 	size_t	i;
 
@@ -38,9 +38,11 @@ static char	*dup_value(char *env_line)
 		if (env_line[i] == '=')
 		{
 			i++;
-			return (ft_memory_collector(shell, i, \
-							ft_strlen(env_line) - i, false))
+			return (ft_memory_collector(shell, \
+			ft_substr(env_line, i, \
+							ft_strlen(env_line) - i), false))
 		}
+		i++;
 	}
 	return (NULL);
 }
@@ -65,10 +67,8 @@ static char	*dup_value(char *env_line)
  */
 t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 {
-	t_hashmap	*table;
+	t_hashmap_insert_params	params;
 	int			len;
-	char		*key;
-	char		*value;
 	int			i;
 
 	if (!envp)
@@ -77,18 +77,19 @@ t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 	while (envp[len])
 		len++;
 	if (len)
-		table = ft_memory_collector(shell, hashmap_create_table(len * 2), false);
+		params.table = hashmap_create_table(shell, len * 2);
 	else
-		table = ft_memory_collector(shell, hashmap_create_table(100), false);
-	if (!table)
+		params.table = hashmap_create_table(shell, 100);
+	if (!params.table)
 		exit(FAILURE);
+	params.flag = 0;
 	while (++i < len)
 	{
-		key = dup_key(envp[i]);
-		value = dup_value(envp[i]);
-		hashmap_insert(table, key, value, 0);
-		ft_memory_delone(shell, key);
-		ft_memory_delone(shell, value);
+		params.key = dup_key(shell, envp[i]);
+		params.value = dup_value(shell, envp[i]);
+		hashmap_insert(shell, params);
+		ft_memory_delone(shell, params.key);
+		ft_memory_delone(shell, params.value);
 	}
-	return (table);
+	return (params.table);
 }

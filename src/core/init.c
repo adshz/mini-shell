@@ -77,8 +77,8 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 	ft_memset(shell, 0, sizeof(t_shell));
 	shell->environ = envp;
 	shell->env = env_to_hashtable(envp);
-	shell->stdin = dup(0);
-	shell->stdout = dup(1);
+	shell->stdin = dup(STDIN_FILENO);
+	shell->stdout = dup(STDOUT_FILENO);
 	init_env_vars(shell, argv);
 	get_shell_pid(shell);
 }

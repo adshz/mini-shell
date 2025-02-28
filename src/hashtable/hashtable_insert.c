@@ -60,29 +60,57 @@ static int	hashmap_insert_item(t_shell *shell, t_hashmap *table, \
  * @note env_to_hashtable() free_old is set to 1
  * @see env_to_hashtable()
  */
-t_hash_item	*hashmap_insert(t_hashmap *table, char *key, char *value, int flag)
+t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap_insert_params params)
 {
 	unsigned long int		index;
 	t_hash_item				*new_item;
 	t_hash_item				*current;
 
-	if (!key)
+	if (!params.key)
 		return (NULL);
-	index = hash_function(key, table->size);
+	index = hash_function(params.key, params.table->size);
 	new_item = ft_memory_collector(shell, \
-								hashmap_create_item(key, value, flag), false);
-	current = table->items[index];
+								hashmap_create_item(shell, params.key, \
+								params.value, params.flag), false);
+	current = params.table->items[index];
 	if (current == NULL)
 	{
-		if (!hashmap_insert_item(table, new_item, index))
+		if (!hashmap_insert_item(shell, params.table, new_item, index))
 			return (NULL);
 	}
 	else
 	{
-		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-			hashmap_replace_item(current, value, new_item, flag);
+		if (ft_strncmp(current->key, params.key, ft_strlen(params.key) + 1) == 0)
+			hashmap_replace_item(shell, current, params.value, new_item, params.flag);
 		else
-			hashmap_handle_collision(table, index, new_item, flag);
+			hashmap_handle_collision(params.table, index, new_item, params.flag);
 	}
 	return (NULL);
 }
+// To put this into libft later on.
+// t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap *table, char *key, char *value, int flag)
+// {
+// 	unsigned long int		index;
+// 	t_hash_item				*new_item;
+// 	t_hash_item				*current;
+
+// 	if (!key)
+// 		return (NULL);
+// 	index = hash_function(key, table->size);
+// 	new_item = ft_memory_collector(shell, \
+// 								hashmap_create_item(key, value, flag), false);
+// 	current = table->items[index];
+// 	if (current == NULL)
+// 	{
+// 		if (!hashmap_insert_item(table, new_item, index))
+// 			return (NULL);
+// 	}
+// 	else
+// 	{
+// 		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+// 			hashmap_replace_item(current, value, new_item, flag);
+// 		else
+// 			hashmap_handle_collision(table, index, new_item, flag);
+// 	}
+// 	return (NULL);
+// }

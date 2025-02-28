@@ -21,7 +21,7 @@
  * @param param_name Parameter description
  * @return Return value description
  */
-t_hashmap	*hashmap_create_table(size_t size)
+t_hashmap	*hashmap_create_table(t_shell *shell, size_t size)
 {
 	t_hashmap	*table;
 
@@ -38,5 +38,7 @@ t_hashmap	*hashmap_create_table(size_t size)
 		free(table);
 		return (NULL);
 	}
+	ft_memory_collector(shell, table, false);
+	ft_memory_collector(shell, table->items, false);
 	return (table);
 }

@@ -17,54 +17,11 @@
 
 # define HASH_SIZE 1024
 
-# include "libft.h"
 # include <stdlib.h>
-
-/* Hash Table - Hash Item Structure */
-/**
- * @brief Hash Table Item Structure
- *
- * Represents a single key-value pair in the hash table,
- * with support for collision resolution through chaining
- *
- * @param key   Environment variable name (e.g., "PATH", "HOME")
- * @param value Environment variable value (e.g., "/usr/bin:/bin")
- * @param next  Pointer to next item in case of hash collision
-*/
-typedef struct s_hash_item
-{
-	char				*key;
-	char				*value;
-	int					flag;
-	struct s_hash_item	*next;
-}	t_hash_item;
-
-typedef struct s_hash_count
-{
-	size_t		count;
-	size_t		i;
-	t_hash_item	*current;
-	size_t		max_items_per_bucket;
-	size_t		items_in_bucket;
-}	t_hash_count;
-
-/* Hash Table Structure */
-/**
- * @brief Hash table structure for environment variables
- *
- * Manages environment variables using a hash table implementation.
- * Provides O(1) average case access time for variable lookups
- *
- * @param items Array of hash item pointers (the hash table buckets)
- * @param size  Number of buckets in the hash table
- * @param count Number of items currently stored in the table
- */
-typedef struct s_hashmap
-{
-	t_hash_item	**items;
-	size_t		size;
-	size_t		count;
-}	t_hashmap;
+# include "hashtable_types.h"
+# include "types.h"
+# include "memory_collector/memory_collector.h"
+# include "libft.h"
 
 /* Function Prototypes */
 t_hashmap	*hashmap_create_table(size_t size);
@@ -101,8 +58,7 @@ void		hashmap_destroy(t_hashmap *table);
  * @return 1 if key was inserted, 
  * 0 if key already exists and update_existing is false
  */
-int			hashmap_insert(t_hashmap *table, char *key, \
-				char *value, int free_old);
+int			hashmap_insert(t_shell *shell, t_hashmap_insert_params params);
 /**
  * @brief Gets a value from the hash table
  * @param table Hash table to get from
@@ -126,5 +82,5 @@ void		hashmap_handle_collision(t_hashmap *table, size_t index, \
 size_t		hashmap_size(t_hashmap *table);
 size_t		hash_function(const char *key, size_t table_size);
 void		hashmap_free_item(t_hash_item *item);
-t_hash_item	*hashmap_create_item(char *key, char *value, int flag);
+t_hash_item	*hashmap_create_item(t_shell *shell, char *key, char *value, int flag);
 #endif
