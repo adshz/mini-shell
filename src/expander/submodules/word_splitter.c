@@ -15,14 +15,14 @@ static void	skip_word(const char *str, size_t *i)
 {
 	char	quotes;
 
-	while (s[*i] && s[*i] != ' ')
+	while (str[*i] && str[*i] != ' ')
 	{
-		if (s[*i] != '\'' && s[*i] != '"')
+		if (str[*i] != '\'' && str[*i] != '"')
 			(*i)++;
 		else
 		{
-			quotes = s[(*i)++];
-			while (s[(*i)] != quotes)
+			quotes = str[(*i)++];
+			while (str[(*i)] != quotes)
 				(*i)++;
 			(*i)++;
 		}
@@ -40,15 +40,15 @@ char	**expand_and_split(char *str)
 		return (NULL);
 	i = 0;
 	count = 0;
-	while (s[i])
+	while (str[i])
 	{
 		if (s[i] != ' ' && ++count)
-			skip_word(s, &i);
-		while (s[i] && s[i] == ' ')
+			skip_word(str, &i);
+		while (str[i] && str[i] == ' ')
 			i++;
 	}
 	array = ft_calloc(count + 1, sizeof(char));
-	tofree = ft_allcoate_array(s, array);
+	tofree = ft_allcoate_array(str, array);
 	if (!array || !count)
 		return (ft_free_2d_array(to_free), NULL);
 	return (ft_filler(str, array));
@@ -67,7 +67,7 @@ static char	**ft_allocate_array(char const *str, char **array)
 		if (str[i] != ' ')
 		{
 			start = i;
-			skip_word(s, &i);
+			skip_word(str, &i);
 			array[j] = ft_calloc(i - start + 1, sizeof(char));
 			if (!array[j])
 				return (NULL);
@@ -85,9 +85,9 @@ void	fill_words(const char *str, char **array, size_t *i, size_t j)
 	size_t	k;
 
 	k = 0;
-	while (s[(*i)] && s[(*i) != ' '])
+	while (str[(*i)] && str[(*i) != ' '])
 	{
-		if (s[(*i)] != '\'' && s[(*i)] != '"')
+		if (str[(*i)] != '\'' && str[(*i)] != '"')
 			array[j][k++] = str[(*i)++];
 		else
 		{
@@ -107,7 +107,7 @@ char	**ft_filler(const char *str, char **array)
 
 	i = 0;
 	j = 0;
-	while (str[i] && strs[j])
+	while (str[i] && str[j])
 	{
 		if (str[i] != ' ')
 		{

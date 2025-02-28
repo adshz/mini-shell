@@ -6,73 +6,50 @@
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 21:26:08 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/16 21:26:39 by szhong           ###   ########.fr       */
+/*   Updated: 2025/02/28 20:34:31 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "./echo.h"
 
-static bool	is_valid_n_flag(const char *arg)
+static int	check_option(char *str)
 {
 	int	i;
 
-	i = 1;
-	if (!arg || !*arg || arg[0] != '-')
-		return (false);
-	while (arg[i])
+	i = 0;
+	if (str[0] != '-')
+		return (0);
+	i++;
+	if (str[i] == '\0')
+		return (0);
+	while (str[i])
 	{
-		if (arg[i] != 'n')
-			return (false);
+		if (str[i] != 'n')
+			return (0);
 		i++;
 	}
-	return (i > 1);
+	return (0);
 }
 
-static int	skip_and_check_n_flags(char **args, int *has_n_flag)
+int	builtin_echo(char **argv)
 {
 	int	i;
+	int	opt;
 
 	i = 1;
-	*has_n_flag = 0;
-	while (args[i] && is_valid_n_flag(args[i]))
+	opt = 0;
+	while (argv[i] != NULL && check_option(argv[i]) == 1)
 	{
-		*has_n_flag = 1;
+		opt = 1;
 		i++;
 	}
-	return (i);
-}
-
-static void	echo_print_single_argument(const char *arg, int *is_first_arg)
-{
-	if (!*is_first_arg)
-		ft_putchar_fd(' ', STDOUT_FILENO);
-	if (arg)
-		ft_putstr_fd((char *)arg, STDOUT_FILENO);
-	*is_first_arg = 0;
-}
-
-static void	echo_print_all_arguments(t_ast_node *node, int start_idx)
-{
-	int	is_first_arg;
-
-	is_first_arg = 1;
-	while (node->args[start_idx])
+	while (argv[i])
 	{
-		echo_print_single_argument(node->args[start_idx], &is_first_arg);
-		start_idx++;
+		ft_putstr_fd(argv[i], 1);
+		if (argv[i + 1])
+			ft_putstr_fd(" ", 1);
+		i++;
 	}
-}
-
-int	ft_echo(t_shell *shell, t_ast_node *node)
-{
-	int	start_idx;
-	int	has_n_flag;
-
-	if (!node || !node->args)
-		return (1);
-	start_idx = skip_and_check_n_flags(node->args, &has_n_flag);
-	echo_print_all_arguments(node, start_idx);
-	if (!has_n_flag)
-		ft_putchar_fd('\n', STDOUT_FILENO);
-	shell->exit_status = 0;
+	if (opt == 0)
+		ft_putstr_fd("\n", 1);
 	return (0);
 }

@@ -41,8 +41,8 @@ char	*clean_empty_strs(char *str)
 	char	*ret;
 	size_t	dst_size;
 
-	if ((str[0] == '\'' && str[1] == '\'' str[2] == '\0') || \ 
-		(str[0] == '"' && str[1] == '"' && str[2] == '\0'))
+	if ((str[0] == '\'' && str[1] == '\'' str[2] == '\0' && !str[2]) || \ 
+		(str[0] == '"' && str[1] == '"' && str[2] == '\0' && !str[2]))
 		return (str);
 	tmp = ft_calloc(ft_strlen(str) + 1, sizeof(char));
 	i = 0;
@@ -65,6 +65,7 @@ char	**expand_args(t_shell *shell, char *str)
 {
 	char	**expanded;
 	char	**globbed;
+	size_t	i;
 
 	str = cmd_inital_expand(shell, str);
 	if (!str)

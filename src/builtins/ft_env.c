@@ -1,25 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   ft_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/28 21:37:28 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/28 21:38:34 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/28 21:25:35 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/28 21:35:38 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "builtins/builtins.h"
 
-int	ft_pwd(void)
+int	ft_env(t_shell *shell)
 {
-	char	*cwd;
+	t_hash_item	*current;
+	size_t		index;
 
-	cwd = NULL;
-	cwd = getcwd(cwd, 0);
-	if (!cwd)
-		return (1);
-	ft_putendl_fd(cwd, 1);
-	return (0);
+	index = 0;
+	while (index < shell->env->size)
+	{
+		current = shell->env->items[index];
+		while (current != NULL)
+		{
+			ft_printf("%s=%s\n", current->key, current->value);
+			current = current->next;
+		}
+		index++;
+	}
+	return (ERRNO_SUCCESS);
 }
 

@@ -13,11 +13,13 @@
 
 void	execute_shell_command(t_shell *shell)
 {
-	traverse_tree_heredoc(shell, shell->ast);
-	if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
+	bool	heredoc_interrupted;
+	
+	heredoc_interrupted = traverse_expand_tree(shell, shell->ast);
+	if (heredoc_interrupted || g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
 	{
 		ft_cleanup_ast(shell->ast);
-		g_signal_status == SHELL_STATE_READLINE;
+		g_signal_status = SHELL_STATE_READLINE;
 	}
 	termsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 	shell->exit_status = execute_ast_node(shell, shell->ast, false);

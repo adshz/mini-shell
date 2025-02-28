@@ -44,5 +44,5 @@ char	*dollar_handler(t_shell *shell, char *str, size_t *i)
 	env_val = hashmap_search(shell->env, var);
 	if (!env_val)
 		return (free(var), ft_strdup(""));
-	return (free(var), ft_strdup(env_var));
+	return (free(var), ft_strdup(env_val));
 }

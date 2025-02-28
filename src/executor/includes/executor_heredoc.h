@@ -20,6 +20,6 @@
 int		heredoc_expand_var_to_fd(t_shell *shell, char *str, int fd);
 void	heredoc_expander(t_shell *shell, char *str, int fd);
 void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2]);
-bool	traverse_tree_heredoc(t_shell *shell, t_ast_node *ast_node);
-bool	is_delimiter(char	*delimiter, char *str);
+bool	traverse_expand_tree(t_shell *shell, t_ast_node *ast_node);
+bool	is_delimiter(char *delimiter, char *str);
 #endif

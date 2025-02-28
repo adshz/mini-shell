@@ -27,14 +27,14 @@ static bool	should_leave_leaf(t_shell *shell, int fd[2], int *process_info)
 	return (false);
 }
 
-static bool	handle_leaf_heredoc(t_shell *shell, t_ast_node *ast_node)
+static bool	handle_leaf(t_shell *shell, t_ast_node *ast_node)
 {
 	t_io_node	*io;
 	int			fd[2];
 	int			pid;
 
-	if (ast_node->args)
-		node->expanded_argv = expand_args(shell, ast_node->args);
+	if (ast_node->raw_command)
+		ast_node->expanded_argv = expand_raw_command(shell, ast_node->raw_command);
 	io = ast_node->io_list;
 	while (io)
 	{
@@ -50,25 +50,27 @@ static bool	handle_leaf_heredoc(t_shell *shell, t_ast_node *ast_node)
 			io->here_doc = fd[READ_END];
 		}
 		else
-			io->expanded_value = expand_args(shell, ast_node->args);
+			io->expanded_value = expand_raw_command(shell, io->value);
+		io = io->next;
 	}
 	return (false);
 }
 
-bool	traverse_tree_heredoc(t_shell *shell, t_ast_node *ast_node)
+bool	traverse_expand_tree(t_shell *shell, t_ast_node *ast_node)
 {
 	bool	heredoc_interrupted;
 
 	if (!ast_node)
-		return ;
+		return (false);
 	if (ast_node->type == NODE_PIPE || ast_node->type == NODE_AND \
 		|| ast_node->type == NODE_OR)
 	{
-		heredoc_interrupted = traverse_tree_heredoc(shell, ast_node->left);
-		if (!heredoc_interrupted)
-			traverse_tree_heredoc(shell, ast_node->right);
+		heredoc_interrupted = traverse_expand_tree(shell, ast_node->left);
+		if (heredoc_interrupted)
+			return (true);
+		return (traverse_expand_tree(shell, ast_node->right));
 	}
 	else
-		handle_leaf_heredoc(shell, ast_node);
+		return (handle_leaf(shell, ast_node));
 }
 

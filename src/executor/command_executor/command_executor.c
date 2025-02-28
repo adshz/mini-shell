@@ -25,8 +25,8 @@ int	execute_command_node(t_shell *shell, t_ast_node *node, bool is_pipe)
 		exec_status = check_redirection(node);
 		if (exec_status != ERRNO_NONE)
 			return (reset_stds(shell, is_pipe), ERRNO_GENERAL);
-		exec_status = execute_builtin(shell, node);
-		return (reset_stds(shell, is_pipe), ERRNO_GENERAL);
+		exec_status = execute_builtin(shell, node->expanded_argv);
+		return (reset_stds(shell, is_pipe), tmp_status);
 	}
 	else
 		return (execute_external_cmd(shell, node));

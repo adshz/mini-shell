@@ -40,7 +40,7 @@ char	*hashmap_search(t_hashmap *table, char *key)
 	item = table->items[index];
 	while (item)
 	{
-		if (ft_strcmp(item->key, key) == 0)
+		if (ft_strncmp(item->key, key, ft_strlen(key) + 1) == 0)
 			return (item->value);
 		item = item->next;
 	}

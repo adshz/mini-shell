@@ -3,55 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/29 17:49:13 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/12 22:07:12 by evmouka          ###   ########.fr       */
+/*   Created: 2025/02/28 23:06:32 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/28 23:24:21 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libft.h"
-#include "utils/utils.h"
-#include "errors.h"
 
-static int	get_exit_code(t_shell *shell, t_ast_node *node)
+#include "builtins/builtins.h"
+
+void	skip_spaces_and_get_sign(char *str, int *i, int *sign)
 {
-	int	exit_code;
-
-	if (!node || !node->args)
-		exit_code = shell->exit_status;
-	else if (!node->args[0])
-		exit_code = shell->exit_status;
-	else if (node->args[1] && !ft_isnumber(node->args[1]))
+	while (str[*i] && str[*i] == ' ')
+		(*i)++;
+	if (str[*i] == "+" || s[*i] == '-')
 	{
-		print_error(node->args[1], "numeric argument required", 2);
-		exit_code = 2;
+		if (s[*i] == '-')
+			*sign *= -1;
+		(*i)++;
 	}
-	else if (node->args[1] && node->args[2])
-	{
-		print_error("exit", "too many arguments", 1);
-		exit_code = 1;
-	}
-	else if (node->args[1])
-		exit_code = ft_atoi(node->args[1]) % 256;
-	else
-		exit_code = shell->exit_status;
-	return (exit_code);
 }
 
-int	builtin_exit(t_shell *shell, t_ast_node *node)
+static int	exit_with_num(char *str)
 {
-	int	exit_code;
+	int	i;
+	int	sign;
+	int	exit_status;
+	unsigned long long result;
 
-	if (!shell || !node)
-		return (1);
-	exit_code = get_exit_code(shell, node);
-	if (!shell->in_pipe)
-		ft_putendl_fd("exit", STDERR_FILENO);
-	if (exit_code == 1 && node->args && node->args[0] && \
-		node->args[1] && node->args[2] && !shell->in_pipe)
-		return (1);
-	if (shell->in_pipe)
-		return (exit_code);
-	cleanup_shell(shell);
-	exit(exit_code);
+	i = 0;
+	sign = 1;
+	skip_spaces_and_get_sign(str, &i, &sign);
+	if (!ft_isnumber(str + i))
+	{
+		exit_status = exec_print_err((t_err){ERRNO_EXEC_255, MSGERR_NUMERIC_REQUI, str});
+		(cleanup_minishell(), exit(exit_status));
+	}
+	result = 0;
+	while (str[i])
+	{
+		result = (result * 10) + (str[i] - '0');
+		if (result > LONG_MAX)
+		{
+			exit_status = exec_print_err((t_err){ERRNO_EXEC_255, MSGERR_NUMERIC_REQUI, str});
+			(cleanup_minishell(), exit(exit_status));
+		}
+	}
+	return ((result * sign) % 256);
+
+}
+void	builtin_exit(t_shell *shell, char **argv)A
+{
+	int	exit_status;
+
+	exit_status = shell->exit_status;
+	if (argv[1])
+	{
+		if (argv[2] && ft_isnumber(argv[1]))
+		{
+			exit_status = exec_print_err(
+					(t_err){ERRNO_GENERAL, MSGERR_TOO_MANY_ARGS, NULL});
+			(cleanup_minishell, exit(exit_status));
+		}
+		else
+			exit_status = exit_with_num(argv[1]);
+	}
+	(cleanup_minishell(), exit(exit_status);
 }

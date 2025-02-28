@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "expander/expander.h"
 
-bool	is_pattern_match(char **pattern, char **last_wildcard, \
+static bool	is_pattern_match(char **pattern, char **last_wildcard, \
 					char **last_match, char **str)
 {
 	if (**pattern == **str)
@@ -30,7 +30,7 @@ bool	is_pattern_match(char **pattern, char **last_wildcard, \
 		return (false);
 }
 
-void	pattern_quotes_handler(char **pattern, char *quotes)
+static void	pattern_quotes_handler(char **pattern, char *quotes)
 {
 	if (**pattern == '"' || **pattern == '\'')
 	{
@@ -47,7 +47,7 @@ void	pattern_quotes_handler(char **pattern, char *quotes)
 	}
 }
 
-bool	wildcard_handler(char **pattern, char **last_wildcard, \
+static bool	wildcard_handler(char **pattern, char **last_wildcard, \
 					char **last_match, char *str)
 {
 	while (**pattern == '*')
@@ -74,7 +74,7 @@ bool	ft_is_wildcard(char *pattern, char *str)
 		if (*pattern == '*' && !quotes && \
 			wildcard_handler(&pattern, &last_wildcard, &last_match, str))
 			return (true);
-		else if (!is_pattern_match(&pattern, &last_wilcard, &last_match, &str))
+		else if (!is_pattern_match(&pattern, &last_wildcard, &last_match, &str))
 			return (false);
 	}
 	if (*pattern == '*')

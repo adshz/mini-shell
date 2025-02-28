@@ -3,71 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: evmouka <evmouka@student.42london.com>     +#+  +:+       +#+        */
+/*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/29 17:53:05 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/25 10:44:43 by szhong           ###   ########.fr       */
+/*   Created: 2025/02/28 22:23:22 by szhong            #+#    #+#             */
+/*   Updated: 2025/02/28 23:05:43 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins/builtin_utils/builtin_utils.h"
-#include "expander/expander.h"
+#include "builtins/builtins.h"
 
-static char	*expand_var_name(t_shell *shell, const char *arg)
+int	ft_unset(t_shell *shell, char **argv)
 {
-	char	*expanded;
+	int	i;
+	bool	err;
+	char	*key;
 
-	if (!arg || !*arg)
-		return (NULL);
-	if (arg[0] == '$')
-	{
-		expanded = expand_simple_variable(shell, arg + 1);
-		if (!expanded)
-			return (ft_strdup(arg + 1));
-		return (expanded);
-	}
-	return (ft_strdup(arg));
-}
-
-static int	process_unset_var(t_shell *shell, const char *arg)
-{
-	char	*expanded_name;
-	int		status;
-
-	status = 0;
-	expanded_name = expand_var_name(shell, arg);
-	if (!expanded_name)
-		return (0);
-	if (!is_valid_identifier(expanded_name))
-	{
-		ft_putstr_fd("unset: '", STDERR_FILENO);
-		ft_putstr_fd(expanded_name, STDERR_FILENO);
-		ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-		status = 1;
-	}
-	else
-		hashmap_remove(shell->env, expanded_name);
-	free(expanded_name);
-	return (status);
-}
-
-//TODO:agrs
-int	builtin_unset(t_shell *shell, t_ast_node *node)
-{
-	int		i;
-	int		status;
-	int		current_status;
-
-	if (!node->args[1])
-		return (0);
 	i = 1;
-	status = 0;
-	while (node->args[i])
+	if (!argv[1])
+		return (0);
+	err = false;
+	while (argv[i])
 	{
-		current_status = process_unset_var(shell, node->args[i]);
-		if (current_status)
-			status = current_status;
+		if (!check_valid_key(argv[i]))
+		{
+			ft_putstr_fd("minishell: unset: '", 2);
+			ft_putstr_fd(agrv[i], 2);
+			ft_putstr_fd(": not a valid identifier\n", 2);
+			err = true;
+		}
+		else
+		{
+			key = ft_memory_collector(shell, dup_key(shell, argv[1]), false);
+			hashmap_remove(shell, shell->env, key);
+		}
 		i++;
 	}
-	return (status);
 }

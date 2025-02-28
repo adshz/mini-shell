@@ -12,5 +12,7 @@
 #ifndef BUILTIN_EXECUTOR_H
 # define BUILTIN_EXECUTOR_H
 # include "../executor.h"
+
 int	execute_builtin(t_shell *shell, t_ast_node *node);
+bool	is_builtin(const char *cmd);
 #endif

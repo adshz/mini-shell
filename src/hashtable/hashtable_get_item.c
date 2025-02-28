@@ -12,20 +12,20 @@
 
 #include "hashtable.h"
 
-char	*hashmap_get(t_hashmap *table, const char *key)
+t_hash_item	*hashmap_get_item(t_hashmap *table, const char *key)
 {
 	size_t		index;
-	t_hash_item	*item;
+	t_hash_item	*current;
 
 	if (!table || !key)
 		return (NULL);
 	index = hash_function(key, table->size);
-	item = table->items[index];
-	while (item)
+	current = table->items[index];
+	while (current)
 	{
-		if (ft_strcmp(item->key, key) == 0)
-			return (item->value);
-		item = item->next;
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+			return (current);
+		current = current->next;
 	}
 	return (NULL);
 }

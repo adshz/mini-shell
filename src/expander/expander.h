@@ -12,7 +12,16 @@
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
-/* Gllobber Submodule*/
+# include <stdbool.h>
+# include "types.h"
+# include <stdlib.h>
+# include <dirent.h>
+# include "libft.h"
+/* Main Expander API Entry Point	*/
+char	**expand_raw_command(t_shell *shell, char *raw_cmd);
+/* End of Main Expander API Entry Point*/
+/* Expander Submodules*/
+/* Globber Submodule*/
 size_t	ft_mutli_arr_strs_count(char ***strs_arrays);
 char	**ft_flattern_str_arrays(char ***str_arrays);
 size_t	ft_pattern_match_count(char *pattern);
@@ -49,4 +58,15 @@ bool	ft_is_wildcard(char *pattern, char *str);
 char	**expand_and_split(char *str);
 void	fill_words(const char *str, char **array, size_t *i, size_t j);
 char	**ft_filler(const char *str, char **array);
+/* Utils Submodule */
+char	*ft_strjoin_with_char_free_both(char *s1, char *s2, char c);
+char	*ft_strjoin_free_both(char *s1, char *s2);
+bool	ft_contains_asterisk(char *str);
+bool	ft_set_direntry(struct dirent **entry, DIR *dir);
+bool	ft_should_show_file(char *pattern, char *str);
+size_t	ft_array_len(char **array);
+void	ft_free_2d_array(char **tofree);
+void	ft_free_3d_array(char ***tofree);
+/* End of Utils Submodule */
+/* End of Expander Submodules*/
 #endif

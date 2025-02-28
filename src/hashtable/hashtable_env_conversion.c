@@ -13,7 +13,7 @@
 #include "errors.h"
 
 
-static char	*dup_key(t_shell *shell, char *env_line)
+char	*dup_key(t_shell *shell, char *env_line)
 {
 	size_t	i;
 
@@ -28,7 +28,7 @@ static char	*dup_key(t_shell *shell, char *env_line)
 	return (ft_memory_collector(shell, ft_strdup(env_line), false));
 }
 
-static char	*dup_value(t_shell *shell,char *env_line)
+char	*dup_value(t_shell *shell,char *env_line)
 {
 	size_t	i;
 
