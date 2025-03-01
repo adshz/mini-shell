@@ -19,7 +19,6 @@ int	main(int argc, char *argv[], char **envp)
 		exit_handler(NULL, argv[1], INV_ARGS, IS_EXIT);
 	init_shell(&shell, argv, envp);
 	interactive_loop(&shell);
-	rl_clear_history();
-	cleanup_shell(&shell);
+	cleanup_minishell(&shell);
 	return (shell.exit_status);
 }

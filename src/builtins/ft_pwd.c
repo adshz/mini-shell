@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "builtins/builtins.h"
 
-int	ft_pwd(void)
+int	built_pwd(void)
 {
 	char	*cwd;
 

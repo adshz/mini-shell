@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #ifndef LEXER_SCAN_H
 # define LEXER_SCAN_H
-# include "types.h"
+# include "shell_forward.h"
 
 int		is_separator(char *s);
 int		is_single_or_double_quote(char c);

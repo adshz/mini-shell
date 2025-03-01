@@ -1,29 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_matrixfree.c                                    :+:      :+:    :+:   */
+/*   shell_forward.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: szhong <szhong@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/22 11:13:34 by szhong            #+#    #+#             */
-/*   Updated: 2025/02/22 11:46:47 by szhong           ###   ########.fr       */
+/*   Created: 2025/03/01 21:18:21 by szhong            #+#    #+#             */
+/*   Updated: 2025/03/01 21:18:23 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "utils.h"
+#ifndef SHELL_FORWARD_H
+# define SHELL_FORWARD_H
 
-void	ft_matrixfree(char ***matrix)
-{
-	int	i;
+typedef struct s_shell t_shell;
 
-	i = 0;
-	while (matrix && matrix[0] && matrix[0][i])
-	{
-		free(matrix[0][i]);
-		i++;
-	}
-	if (matrix && *matrix)
-	{
-		free(*matrix);
-		*matrix = NULL;
-	}
-}
+#endif

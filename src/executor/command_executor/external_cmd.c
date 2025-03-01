@@ -25,7 +25,7 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 		if (tmp_status != ERRNO_NONE)
 			(cleanup_minishell(shell), exit(ERRNO_GENERAL));
 		path_status = get_path(shell, (node->expanded_argv)[0]);
-		if (path_status.err.no != ERRNO_NONE)
+		if (path_status.err.num != ERRNO_NONE)
 		{
 			tmp_status = exec_print_err(path_status.err);
 			(cleanup_minishell(shell), exit(tmp_status));
@@ -33,7 +33,7 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 		if (execve(path_status.path, node->expanded_argv, shell->environ) == -1)
 			(cleanup_minishell(shell), exit(1));
 	}
-	waitpid(fork_pid, &tmp_status, 0);
+	waitpid(child_pid, &tmp_status, 0);
 	g_signal_status = SHELL_STATE_NORMAL;
 	return (exec_get_exit_status(tmp_status))
 }

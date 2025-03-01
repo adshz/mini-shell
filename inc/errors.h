@@ -131,20 +131,7 @@ enum e_shell_err
 	FAILURE,
 	ERROR,
 	INV_ARGS,
-	FORK_ERR,
-	SYNTAX_ERR,
-	PIPE_ERR,
-	UNQUOTE,
 	HASH_FULL,
-	NO_MEM,
-	CMD_NOT_FOUND,
-	IS_DIR,
-	NOT_DIR,
-	HIS_WRONG_ARG,
-	HIS_WRONG_ARGS,
-	CD_ERR,
-	NO_PERM = 126,
-	NO_FILE = 127
 };
 
 /* Error handling functions */

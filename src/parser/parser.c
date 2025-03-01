@@ -44,6 +44,6 @@ t_ast_node	*parse(t_shell *shell, t_token *tokens_lst)
 	shell->curr_token = tokens_lst;
 	ast = ft_parse_expression(shell, 0);
 	if (shell->curr_token)
-		return (set_parse_err(E_SYNTAX), ast);
+		return (set_parse_err(shell, E_SYNTAX), ast);
 	return (ast);
 }

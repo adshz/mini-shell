@@ -17,10 +17,10 @@ static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, \
 {
 	char	*new_value;
 
-	new_value = ft_memory_collector(shell, ft_strdup(new_item->value), false);
+	new_value = ft_strdup(new_item->value);
 	if (!new_value)
 		return ;
-	free(current->value);
+	(void)ft_memory_collector(shell, new_value, false);
 	ft_memory_delone(shell, current->value);
 	hashmap_free_item(shell, &new_item);
 }
@@ -69,9 +69,8 @@ t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap_insert_params params)
 	if (!params.key)
 		return (NULL);
 	index = hash_function(params.key, params.table->size);
-	new_item = ft_memory_collector(shell, \
-								hashmap_create_item(shell, params.key, \
-								params.value, params.flag), false);
+	new_item = hashmap_create_item(shell, params.key, \
+								params.value, params.flag);
 	current = params.table->items[index];
 	if (current == NULL)
 	{

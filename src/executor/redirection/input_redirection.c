@@ -14,11 +14,11 @@
 t_err	ft_validate_read_perm(char *file)
 {
 	if (!*file)
-		return ((t_err){ERRNO_GENERAL, MSGERR_PER_DENIED, file});
+		return ((t_err){ERRNO_GENERAL, MSGERR_PERM_DENIED, file});
 	if (access(file, F_OK) == 0)
 	{
 		if (access(file, R_OK) == -1)
-			return ((t_err){ERRNO_GENERAL, MSGERR_PER_DENIED, file});
+			return ((t_err){ERRNO_GENERAL, MSGERR_PERM_DENIED, file});
 		return ((t_err){ERRNO_NONE, 42, NULL});
 	}
 	return ((t_err){ERRNO_NOT_FOUND, MSGERR_NO_SUCH_FILE, file});

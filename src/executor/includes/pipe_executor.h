@@ -12,6 +12,8 @@
 #ifndef PIPE_EXECUTOR_H
 # define PIPE_EXECUTOR_H
 # include "../executor.h"
+# include "executor_types.h"
+
 void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
 							int pipe_ends[2], t_pipe_role role);
 int	execute_pipeline(t_shell *shell, t_ast_node *ast_tree);

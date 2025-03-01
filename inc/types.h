@@ -17,10 +17,16 @@
 # include <termios.h>
 # include <sys/types.h>
 # include "libft.h"
-# include "hashtable/hashtable_types.h"
-# include "lexer/includes/lexer_types.h"
 # include "parser/includes/parser_types.h"
-# include "executor/includes/executor_types.h"
+
+// Forward declarations
+typedef struct s_token t_token;
+typedef struct s_ast_node t_ast_node;
+typedef struct s_hashmap t_hashmap;
+typedef struct s_parse_err t_parse_err;
+typedef struct s_err t_err;
+typedef struct s_path t_path;
+
 /* Shell Structure */
 /**
  * @brief Main shell structure holding program data
@@ -60,11 +66,8 @@ typedef struct s_shell
 	char					**environ;
 	int						stdin;
 	int						stdout;
-	pid_t					pid;
-	pid_t					*pids;
-	char					*old_pwd;
 	int						exit_status;
-	struct termios			orignal_term;
+	struct termios			original_term;
 }	t_shell;
 
 #endif

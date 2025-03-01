@@ -10,11 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "signals/ft_signals.h"
-#include "types.h"
-#include <signal.h>
-#include <termios.h>
-#include <unistd.h>
-#include <errno.h>
 
 // extern is a keyword that is used to declare a variable that is defined
 // outside of the current file.
@@ -35,7 +30,7 @@ extern volatile sig_atomic_t	g_signal_status;
 void	config_execution_signals(void)
 {
 	g_signal_status = SHELL_STATE_EXECUTION;
-	signal(SIGQUI, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 static void	main_sigint_handler(int signum)
@@ -45,7 +40,7 @@ static void	main_sigint_handler(int signum)
 	{
 		close(STDIN_FILENO);
 		ft_putstr_fd("\n", 1);
-		g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED;
+		g_signal_status = SHELL_STATE_HEREDOC_INTERRUPTED;
 	}
 	else if (g_signal_status == SHELL_STATE_READLINE)
 	{

@@ -14,6 +14,7 @@
 
 # include "types.h"
 # include <stdlib.h>
+# include <stdbool.h>
 # include "libft.h"
 
 void	ft_delete_mem(void *ptr);

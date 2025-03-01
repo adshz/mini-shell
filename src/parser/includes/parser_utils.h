@@ -12,9 +12,10 @@
 #ifndef PARSE_UTILS_H
 # define PARSE_UTILS_H
 # include "parser_types.h"
+
 // Main entry point for parsing tokens into an AST
 t_ast_node	*parse(t_shell *shell, t_token *tokens_lst);
-
+void	ft_get_next_token(t_shell *shell);
 // Set parser error state
 void		set_parse_err(t_shell *shell, t_parse_err_type err_type);
 

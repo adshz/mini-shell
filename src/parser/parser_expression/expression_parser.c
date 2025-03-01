@@ -12,7 +12,6 @@
 #include "parser/parser.h"
 
 // Main expression parsing function
-
 t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 {
 	t_ast_node		*left;
@@ -41,6 +40,7 @@ t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 	}
 	return (left);
 }
+
 // Get precedence level for a token type
 int	ft_precedence(t_token_type type)
 {

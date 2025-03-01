@@ -12,6 +12,9 @@
 #ifndef PARSER_H
 # define PARSER_H
 
+# include <stdlib.h>
+# include <stdbool.h>
+# include "libft.h"
 # include "types.h"
 # include "lexer/lexer.h"
 # include "expander/expander.h"
@@ -21,5 +24,6 @@
 # include "includes/ast_manager.h"
 # include "includes/command_processor.h"
 # include "includes/io_processor.h"
+# include "utils/utils.h"
 
 #endif

@@ -87,7 +87,7 @@ t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 	{
 		params.key = dup_key(shell, envp[i]);
 		params.value = dup_value(shell, envp[i]);
-		hashmap_insert(shell, params);
+		(void)hashmap_insert(shell, params);
 		ft_memory_delone(shell, params.key);
 		ft_memory_delone(shell, params.value);
 	}

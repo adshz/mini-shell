@@ -14,6 +14,8 @@
  * This file processes redirection tokens in commands
  *
  **/
+#include "parser/parser.h"
+
 // Process redirection tokens in a command
 bool	ft_process_redirection(t_shell *shell, t_io_node **io_lst)
 {
@@ -34,7 +36,7 @@ bool	ft_process_redirection(t_shell *shell, t_io_node **io_lst)
 								shell->curr_token->value);
 		if (!tmp_io_node)
 			return (set_parse_err(E_MEM), false);
-		append_io_node(io_list, tmp_io_node);
+		append_io_node(io_lst, tmp_io_node);
 		ft_get_next_token(shell);
 	}
 	return (true);

@@ -41,5 +41,5 @@ int	check_redirection(t_shell *shell, t_ast_node *node)
 				close(current_io->here_doc))
 		current_io = current_io->next;
 	}
-	return (ERRNO_NO);
+	return (ERRNO_NONE);
 }

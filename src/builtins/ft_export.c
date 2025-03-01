@@ -13,18 +13,10 @@
 
 static int	export_error(char *identifier)
 {
-	ft_printf("minishell: export: `%s': not a valid identifier\n", identifier);
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(identifier, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
 	return (1);
-}
-
-bool	has_env_key(t_shell *shell, char *key)
-{
-	char	*value;
-
-	value = hashmap_search(shell->env, key);
-	if (value)
-		return (true);
-	return (false);
 }
 
 static void	export_list(t_shell *shell)
@@ -40,13 +32,13 @@ static void	export_list(t_shell *shell)
 		current = shell->env->items[i];
 		while (current != NULL)
 		{
-			if (current->value != NULL && (ft_strcmp(current->key, "_") != 0)
+			if (current->value != NULL && (ft_strcmp(current->key, "_") != 0))
 			{
 				ft_printf("=\"");
 				j = 0;
 				while ((current->value)[j])
 				{
-					if  ((current->value)[j] == $ || (current->value[j] == '"')
+					if  ((current->value)[j] == $ || (current->value[j] == '"'))
 						ft_printf("\\%c", (current->value)[j++]);
 					else
 						ft_printf("%c", (current->value)[j++]);
@@ -75,7 +67,7 @@ bool	check_valid_key(char *key)
 	return (true);
 }
 
-int	ft_export(t_shell *shell, char **argv)
+int	builtin_export(t_shell *shell, char **argv)
 {
 	int	i;
 	int	exit_status;

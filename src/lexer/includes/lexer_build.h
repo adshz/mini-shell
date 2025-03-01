@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #ifndef LEXER_BUILD_H
 # define LEXER_BUILD_H
-# include "shell.h"
+# include "types.h"
 
 void	ft_token_list_add_back(t_token **lst, t_token *new_token);
 int		append_separator(t_token_type type, char **ptr_line, t_token **list);

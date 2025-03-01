@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 #ifndef EXECUTOR_TYPE_H
 # define EXECUTOR_TYPE_H
-# include "../executor.h"
 # define WRITE_END 1
 # define READ_END 0
 
@@ -51,7 +50,6 @@ typedef struct s_err
 	char		*prob;
 }	t_err;
 
-// going to executor_types.h
 typedef struct s_path
 {
 	t_err	err;

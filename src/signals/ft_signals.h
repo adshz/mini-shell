@@ -17,7 +17,15 @@
 # define SHELL_STATE_HEREDOC_INPUT 42
 # define SHELL_STATE_HEREDOC_INTERRUPTED 43
 # define SHELL_STATE_NORMAL 0
+# include <signal.h>
+# include <termios.h>
+# include <unistd.h>
+# include <errno.h>
+# include "libft.h"
+# include "types.h"
+# include <readline/readline.h>
+# include <readline/history.h>
 
 void	config_main_signals(t_shell *shell);
-void	config_execution_signals(void)
+void	config_execution_signals(void);
 #endif

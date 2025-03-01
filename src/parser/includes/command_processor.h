@@ -15,6 +15,6 @@
 // Command processing
 t_ast_node	*ft_build_command_subtree(t_shell *shell);
 bool		ft_build_raw_command_string(t_shell *shell, char **raw_cmd_ptr);
-
+char	    *ft_strjoin3(const char *s1, const char *s2, char c);
 #endif
 

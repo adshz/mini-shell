@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 #ifndef LEXER_INIT_H
 # define LEXER_INIT_H
-# include "lexer_types.h"
+# include "shell_forward.h"
 
-typedef struct s_shell t_shell;
 int			init_lexer(t_shell *shell);
 t_token		*ft_create_new_token(char *value, t_token_type type);
 #endif

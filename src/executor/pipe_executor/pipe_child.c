@@ -28,6 +28,6 @@ void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
 		dup2(pipe_ends[READ_END], STDIN_FILENO);
 		close(pipe_ends[READ_END]);
 	}
-	child_status = execute_ast_node(node, true);
+	child_status = execute_ast_node(shell, node, true);
 	(cleanup_minishell(shell), exit(child_status));
 }

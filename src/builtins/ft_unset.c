@@ -12,7 +12,7 @@
 
 #include "builtins/builtins.h"
 
-int	ft_unset(t_shell *shell, char **argv)
+int	builtin_unset(t_shell *shell, char **argv)
 {
 	int	i;
 	bool	err;
@@ -38,4 +38,5 @@ int	ft_unset(t_shell *shell, char **argv)
 		}
 		i++;
 	}
+	return (err);
 }

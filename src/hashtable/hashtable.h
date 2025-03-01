@@ -83,6 +83,6 @@ size_t		hashmap_size(t_hashmap *table);
 size_t		hash_function(const char *key, size_t table_size);
 void		hashmap_free_item(t_shell *shell, t_hash_item **item_ptr);
 t_hash_item	*hashmap_create_item(t_shell *shell, char *key, char *value, int flag);
-void	hashmap_replace_value(t_shell *shell, t_hashmap *table, \
+void		hashmap_replace_value(t_shell *shell, t_hashmap *table, \
 							const char *key, const char *new_value);
 #endif

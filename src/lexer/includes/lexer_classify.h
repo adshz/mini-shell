@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #ifndef LEXER_CLASSIFY_H
 # define LEXER_CLASSIFY_H
-# include "lexer_types.h"
+# include "types.h"
 
 t_token_type	determine_separator_type(char *str);
 t_token_type	classify_token(char *str);

@@ -21,10 +21,10 @@ t_err	ft_validate_write_perm(char *file)
 			return ((t_err){ERRNO_GENERAL, MSGERR_PERM_DENIED, file});
 		return ((t_err){ERRNO_NONE, 42, NULL});
 	}
-	return ((t_err){ERRNO_NOT_FOUND, MSGERR_NO_SUCH_FILE,, file});
+	return ((t_err){ERRNO_NOT_FOUND, MSGERR_NO_SUCH_FILE, file});
 }
 
-int	ft_handle_output_redirection(t_io_node io_lst, int *status)
+int	ft_handle_output_redirection(t_io_node *io_lst, int *status)
 {
 	int	fd;
 
@@ -59,7 +59,7 @@ int	ft_handle_append_redirection(t_io_node *io_lst, int *status)
 						io_lst->value});
 		return (*status);
 	}
-	fd = open(io_lst->expanded_value[0], O_CREATE | O_WRONLY | O_APPEND, 0644);
+	fd = open(io_lst->expanded_value[0], O_CREAT | O_WRONLY | O_APPEND, 0644);
 	if (fd == -1)
 	{
 		*status = exec_print_err(\

@@ -24,14 +24,14 @@ t_ast_node	*ft_build_command_subtree(t_shell *shell)
 		return (NULL);
 	node = ft_create_new_node(NODE_CMD);
 	if (!node)
-		return (set_parse_err(E_MEM), NULL);
-	while (shell->curr_token && (shell->curr_token->type == TOKEN_IDENTIFIER) \
-		|| ft_is_redirection(shell->curr_token->type))
+		return (set_parse_err(shell, E_MEM), NULL);
+	while (shell->curr_token && (shell->curr_token->type == TOKEN_IDENTIFIER \
+		|| ft_is_redirection(shell->curr_token->type)))
 	{
 		if (shell->curr_token->type == TOKEN_IDENTIFIER)
 		{
 			if (!ft_build_raw_command_string(shell, &(node->raw_command)))
-				return (clean_cmd_node(node), set_parse_err(E_MEM), NULL);
+				return (clean_cmd_node(node), set_parse_err(shell, E_MEM), NULL);
 		}
 		else if (ft_is_redirection(shell->curr_token->type))
 		{

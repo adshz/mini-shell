@@ -12,8 +12,6 @@
 #ifndef LEXER_TYPES_H
 # define LEXER_TYPES_H
 
-# include "../lexer.h"
-
 /**
  * @brief Token types for lexical analysis
  *

@@ -15,6 +15,7 @@
  *
  */
 #include "parser/parser.h"
+
 // Create a new IO node
 t_io_node	*ft_create_io_node(t_token_type type, char *value)
 {
@@ -64,4 +65,3 @@ void	cleanup_io_list(t_io_node	**lst)
 	}
 	*lst = NULL;
 }
-

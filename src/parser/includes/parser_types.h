@@ -14,7 +14,6 @@
 
 # include <stdbool.h>
 # include "libft.h"
-# include "parser/includes/parser_forward_types.h"
 # include "lexer/lexer.h"
 
 typedef enum e_parse_err_type

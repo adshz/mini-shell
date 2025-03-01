@@ -14,34 +14,113 @@
 #include <sys/wait.h>
 
 /**
- * @brief Gets the shell's process ID using fork technique
+ * @brief Initialises or increments the SHLVL (Shell Level) enviornment variable
  *
- * This function determines the shell's PID by using a fork() trick;
- * 1. Creates a child process using fork()
- * 2. Child process exits immediately
- * 3. Parent process waits for child to exit
- * 4. Parent process calculates its PID using child's PID
+ * This static function manages the shell level counter, which tracks how many
+ * nested shell deep we are. It either initialises SHLVL to 1 or increments to
+ * the existing value
  *
- * The calculation works because
- *  - fork() returns child's PID to parent
- *  - Child PIDs are typically parent's PID + 1
- *  - Therefore parent's PID = child's PID -1
+ * @param shell Pointer to the shell structure containing environement variable
  *
- * @param shell Pointer to the shell structure to store PID
- *
- * @note Exits program if fork fails;
+ * @note SHLVL defaults to 1 if not present or invalid
+ * 
+ * @see hashmap_search() for environement variable lookup
+ * @see ft_itoa() for integer to string conversion
  */
-static void	get_shell_pid(t_shell *shell)
+static void	init_shlvl(t_shell *shell)
 {
-	pid_t	pid;
+	char	*tmp;
+	int		shlvl;
 
-	pid = fork();
-	if (pid < 0)
-		exit_hanlder(shell, NULL, FORK_ERR, IS_EXIT);
-	if (pid == 0)
-		exit_handler(shell, NULL, FAILURE, IS_EXIT);
-	waitpid(pid, NULL, 0);
-	shell->pid = pid - 1;
+	shlvl = 1;
+	tmp = hashmap_search(shell->env, "SHLVL");
+	if (tmp && ft_atoi(tmp) > 0)
+		shlvl = ft_atoi(tmp) + 1;
+	tmp = ft_itoa(shlvl);
+	hashmap_insert(shell, (t_hashmap_insert_params){.table=shell->env, \
+		.key="SHLVL", .value=tmp, .flag=0);
+	free(tmp);
+}
+
+/**
+ * @brief Initialises the PWD (Present working directory) environement variable
+ *
+ * This static function checks if PWD exists in the environment variable,
+ * if not, the function sets the current present working directory to PWD.
+ * getcwd() dynamically allocates memory 
+ *
+ * @param shell Pointer to the shell structure containing environment hashmap
+ * 
+ * @note Only sets PWD if it doesn't already exist in environment
+ * @note Uses getcwd(NULL, 0) for dynamic buffer allocation
+ * @note Handles memory cleanup after hashmap insertion
+ *
+ * @see hashmap_search() for environment variable lookup
+ * @see hashmap_insert() for environment variable setting
+ * @see getcwd() for current working directory retrieval
+ */
+static void	init_pwd(t_shell *shell)
+{
+	char	*tmp;
+
+	if (!shell || !shell->env)
+		return ;
+	if (hashmap_search(shell->env, "PWD") == NULL)
+	{
+		tmp = getcwd(NULL, 0);
+		hashmap_insert(shell, (t_hashmap_insert_params){.table=shell->env, \
+			.key="PWD", .vaule=tmp, .flag=0});
+		free(tmp);
+	}
+}
+
+/**
+ * @brief Initialises essential environement variables for the shell
+ *
+ * This function sets up the core environement variables required for shell
+ * operation
+ *   - PWD: Current working directory (via init_pwd())
+ *   - SHLVL: Shell level counter (via init_shlvl())
+ *   - PATH: System path for executable lookup (if not already set)
+ *   - _ : Name of the shell executable
+ *
+ * The function also removes OLDPWD to ensue clean directory tracking
+ *
+ * @param shell Pointer to the shell structure containing environment hashmap
+ * @param agrv Array of command line arguments (argv[0] is ./minishell)
+ *
+ * @note PATH is only set if not already present in environement
+ * @note Default PATH includes standard system directories
+ * @note OLDPWD is explicitly removed to ensure clean PWD tracking
+ *
+ * @see init_pwd() for PWD initialisation
+ * @see init_shlvl() for shell level handling
+ * @see hashmap_search() for environement variable lookup
+ * @see hashmap_insert() for environment variable setting
+ *
+ * Example:
+ * @code
+ * t_shell shell;
+ * char *argv[] = {"./minishell", NULL};
+ * init_env_var(&shell, argv);
+ * @endcode
+ */
+void	init_env_vars(t_shell *shell, char *argv[])
+{
+	init_pwd(shell);
+	init_shlvl(shell);
+	if (!hashmap_search(shell->env, "PATH"))
+		(void)hashmap_insert(shell, \
+					(t_hashmap_insert_params){.table=shell->env, \
+					.key="PATH", \
+					.value="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", \
+					.flag=0});
+	if (!hashmap_search(shell->env, "_"))
+		(void)hashmap_insert(shell, (t_hashmap_insert_params){\
+			.table=shell->env, \
+			.key="_", .value=argv[0], \
+			.flag=0});
+	return ;
 }
 
 /**
@@ -80,5 +159,4 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 	shell->stdin = dup(STDIN_FILENO);
 	shell->stdout = dup(STDOUT_FILENO);
 	init_env_vars(shell, argv);
-	get_shell_pid(shell);
 }

@@ -19,5 +19,5 @@ t_err	ft_validate_write_perm(char *file);
 int		ft_handle_output_redirection(t_io_node *io_lst, int *status);
 int		ft_handle_append_redirection(t_io_node *io_lst, int *status);
 void	reset_stds(t_shell *shell, bool is_pipe);
-int	check_redirection(t_shell *shell, t_ast_node *node);
+int	    check_redirection(t_shell *shell, t_ast_node *node);
 #endif

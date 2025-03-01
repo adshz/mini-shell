@@ -40,6 +40,3 @@ t_ast_node	*ft_parse_atomic_expression(t_shell *shell)
 	else
 		return (ft_build_command_subtree(shell));
 }
-
-
-

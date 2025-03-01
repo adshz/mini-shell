@@ -24,7 +24,7 @@ void	skip_spaces_and_get_sign(char *str, int *i, int *sign)
 	}
 }
 
-static int	exit_with_num(char *str)
+static int	exit_with_num(t_shell *shell, char *str)
 {
 	int	i;
 	int	sign;
@@ -46,13 +46,13 @@ static int	exit_with_num(char *str)
 		if (result > LONG_MAX)
 		{
 			exit_status = exec_print_err((t_err){ERRNO_EXEC_255, MSGERR_NUMERIC_REQUI, str});
-			(cleanup_minishell(), exit(exit_status));
+			(cleanup_minishell(shell), exit(exit_status));
 		}
 	}
 	return ((result * sign) % 256);
 
 }
-void	builtin_exit(t_shell *shell, char **argv)A
+void	builtin_exit(t_shell *shell, char **argv)
 {
 	int	exit_status;
 
@@ -66,7 +66,7 @@ void	builtin_exit(t_shell *shell, char **argv)A
 			(cleanup_minishell, exit(exit_status));
 		}
 		else
-			exit_status = exit_with_num(argv[1]);
+			exit_status = exit_with_num(shell, argv[1]);
 	}
-	(cleanup_minishell(), exit(exit_status);
+	(cleanup_minishell(shell), exit(exit_status));
 }

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #ifndef LEXER_CLEANUP_H
 # define LEXER_CLEANUP_H
+# include "types.h"
 
 void	ft_free_token(t_token *token);
 void	clean_token_lst(t_token **list);

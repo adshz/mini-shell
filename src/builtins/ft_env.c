@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "builtins/builtins.h"
 
-int	ft_env(t_shell *shell)
+int	builtin_env(t_shell *shell)
 {
 	t_hash_item	*current;
 	size_t		index;

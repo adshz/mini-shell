@@ -15,12 +15,10 @@ t_hash_item	*hashmap_create_item(t_shell *shell, char *key, char *value, int fla
 {
 	t_hash_item	*new_item;
 
-	new_item = \
-		ft_memory_collector(shell, \
-								(t_hash_item *)ft_calloc(1, \
-								sizeof(t_hash_item)), false);
+	new_item = (t_hash_item *)ft_calloc(1, sizeof(t_hash_item));
 	if (!new_item)
 		return (NULL);
+	(void)ft_memory_collector(shell, new_item, false);
 	new_item->key = ft_memory_collector(shell, ft_strdup(key), false);
 	new_item->value = ft_memory_collector(shell, ft_strdup(value), false);
 	new_item->flag = flag;

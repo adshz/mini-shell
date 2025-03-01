@@ -28,7 +28,7 @@ int	execute_builtin(t_shell *shell, char **argv)
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (builtin_env(shell));
 	builtin_exit(shell);
-	return (ERRNO_GENRAL);
+	return (ERRNO_GENERAL);
 }
 
 static const char	**get_builtins(void)
