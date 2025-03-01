@@ -38,16 +38,16 @@ void	parse_err_handler(t_shell *shell)
 	err_type = shell->parse_err.type;
 	(void)token_type;
 	(void)types;
-	if (type)
+	if (err_type)
 	{
-		if (type == E_SYNTAX)
+		if (err_type == E_SYNTAX)
 		{
 			if (!shell->curr_token)
 				token_type = TOKEN_NEWLINE;
 			else
 				token_type = shell->curr_token->type;
-			ft_putstr("minishell: syntax error near unexpected token '", 2);
-			ft_putstr(types[token_type], 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+			ft_putstr_fd(types[token_type], 2);
 			shell->exit_status = 258;
 		}
 		ft_cleanup_ast(shell, &(shell->ast));

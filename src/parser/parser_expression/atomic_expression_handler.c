@@ -31,9 +31,9 @@ t_ast_node	*ft_parse_atomic_expression(t_shell *shell)
 		ft_get_next_token(shell);
 		node = ft_parse_expression(shell, 0);
 		if (!node)
-			return (set_parse_err(E_MEM), NULL);
+			return (set_parse_err(shell, E_MEM), NULL);
 		if (!shell->curr_token || shell->curr_token->type != TOKEN_C_PARENT)
-			return (set_parse_err(E_SYNTAX), node);
+			return (set_parse_err(shell, E_SYNTAX), node);
 		ft_get_next_token(shell);
 		return (node);
 	}

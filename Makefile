@@ -53,27 +53,12 @@ SRCS		:=	\
 				parser/parser_expression/expression_parser.c \
 				parser/parser_redirection/io_node_manager.c \
 				parser/parser_redirection/redirection_processor.c \
-				builtins/builtins.c \
-				builtins/builtins_executor.c \
-				builtins/builtin_utils/builtin_utils.c \
-				builtins/ft_cd/cd_env_handler.c \
-				builtins/ft_cd/cd_executor.c \
-				builtins/ft_cd/cd_path_handler.c \
-				builtins/ft_cd/cd_utils.c \
-				builtins/ft_echo/ft_echo.c \
-				builtins/ft_echo/echo_variable_expander.c \
-				builtins/ft_echo/echo_state_handler.c \
-				builtins/ft_echo/echo_character_handler.c \
-				builtins/ft_echo/echo_variable_handler.c \
-				builtins/ft_echo/echo_command_handler.c \
-				builtins/ft_echo/echo_number_utils.c \
-				builtins/ft_env/ft_env.c \
-				builtins/ft_env/env_utils.c \
+				parser/parser_utils/parser_state.c \
+				builtins/ft_cd.c \
+				builtins/ft_echo.c \
+				builtins/ft_env.c \
 				builtins/ft_exit.c \
-				builtins/ft_export/ft_export.c \
-				builtins/ft_export/export_utils.c \
-				builtins/ft_export/export_value_expansion.c \
-				builtins/ft_export/export_parser.c \
+				builtins/ft_export.c \
 				builtins/ft_pwd.c \
 				builtins/ft_unset.c \
 				hashtable/hashtable_collision.c \
@@ -88,6 +73,9 @@ SRCS		:=	\
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
+				hashtable/hashtable_replace_value.c \
+				memory_collector/memory_collector.c \
+				memory_collector/memory_deleter.c \
 				utils/cleanup_shell.c 
 
 

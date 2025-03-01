@@ -27,6 +27,6 @@ int	builtin_env(t_shell *shell)
 		}
 		index++;
 	}
-	return (ERRNO_SUCCESS);
+	return (ERRNO_NONE);
 }
 

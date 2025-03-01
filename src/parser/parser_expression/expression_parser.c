@@ -24,12 +24,12 @@ t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 	left = ft_parse_atomic_expression(shell);
 	if (!left)
 		return (NULL);
-	while (is_binary_operator(shell) && curr_token_precd(shell) >= mini_prec)
+	while (is_binary_operator(shell) && curr_token_precd(shell) >= min_prec)
 	{
 		operator = shell->curr_token->type;
 		ft_get_next_token(shell);
 		if (!shell->curr_token)
-			return (set_parse_err(E_SYNTAX), left);
+			return (set_parse_err(shell, E_SYNTAX), left);
 		n_prec = ft_precedence(operator) + 1;
 		right = ft_parse_expression(shell, n_prec);
 		if (!right)
