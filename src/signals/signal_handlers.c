@@ -38,9 +38,14 @@ static void	main_sigint_handler(int signum)
 	(void)signum;
 	if (g_signal_status == SHELL_STATE_HEREDOC_INPUT)
 	{
-		close(STDIN_FILENO);
+		struct termios term;
+		tcgetattr(STDIN_FILENO, &term);
+		term.c_lflag |= (ECHOCTL | ICANON);
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+		
 		ft_putstr_fd("\n", 1);
 		g_signal_status = SHELL_STATE_HEREDOC_INTERRUPTED;
+		close(STDIN_FILENO);
 	}
 	else if (g_signal_status == SHELL_STATE_READLINE)
 	{

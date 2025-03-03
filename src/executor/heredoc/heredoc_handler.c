@@ -44,7 +44,7 @@ void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 		{
 			close(fd[WRITE_END]);
 			cleanup_minishell(shell);
-			else if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
+			if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
 				exit(HEREDOC_CTRL_C);
 			exit(EXIT_NORMAL);
 		}
