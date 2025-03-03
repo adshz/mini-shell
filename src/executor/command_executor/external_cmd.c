@@ -23,6 +23,19 @@ static void	debug_external_cmd(const char *msg, const char *extra)
 	ft_putstr_fd("\n", 2);
 }
 
+static void	debug_error_num(const char *msg, int num)
+{
+	char	*num_str;
+	char	buffer[32];
+
+	ft_putstr_fd("DEBUG [external]: ", 2);
+	ft_putstr_fd(msg, 2);
+	ft_putstr_fd(": ", 2);
+	ft_itoa_buffer(num, buffer, sizeof(buffer));
+	ft_putstr_fd(buffer, 2);
+	ft_putstr_fd("\n", 2);
+}
+
 static void	debug_argv(char **argv)
 {
 	int	i;
@@ -38,6 +51,15 @@ static void	debug_argv(char **argv)
 		ft_putstr_fd("\n", 2);
 		i++;
 	}
+}
+
+static void	debug_path_resolution(t_shell *shell, const char *cmd)
+{
+	char	*path_var;
+
+	path_var = hashmap_search(shell->env, "PATH");
+	debug_external_cmd("Resolving path for command", cmd);
+	debug_external_cmd("PATH environment variable", path_var ? path_var : "NULL");
 }
 
 int	execute_external_cmd(t_shell *shell, t_ast_node *node)
@@ -63,7 +85,9 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 		}
 		debug_external_cmd("Redirection check passed", NULL);
 
+		debug_path_resolution(shell, (node->expanded_argv)[0]);
 		path_status = get_path(shell, (node->expanded_argv)[0]);
+		debug_error_num("Path status error number", path_status.err.num);
 		if (path_status.err.num != ERRNO_NONE)
 		{
 			debug_external_cmd("Path resolution failed", path_status.path);
