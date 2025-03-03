@@ -51,11 +51,16 @@ static void	debug_argv(char **argv)
 
 static void	debug_path_resolution(t_shell *shell, const char *cmd)
 {
-	char	*path_var;
-
-	path_var = hashmap_search(shell->env, "PATH");
-	debug_external_cmd("Resolving path for command", cmd);
-	debug_external_cmd("PATH environment variable", path_var ? path_var : "NULL");
+	char *path = hashmap_search(shell->env, "PATH");
+	ft_putstr_fd("DEBUG [external]: Resolving command: ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd("\n", 2);
+	ft_putstr_fd("DEBUG [external]: Using PATH: ", 2);
+	if (path)
+		ft_putstr_fd(path, 2);
+	else
+		ft_putstr_fd("(null)", 2);
+	ft_putstr_fd("\n", 2);
 }
 
 int	execute_external_cmd(t_shell *shell, t_ast_node *node)
