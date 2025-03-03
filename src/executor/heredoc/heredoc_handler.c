@@ -44,10 +44,9 @@ void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 		{
 			close(fd[WRITE_END]);
 			cleanup_minishell(shell);
-			if (errno == HEREDOC_CTRL_D)
-				exit(EXIT_NORMAL);
 			else if (g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
 				exit(HEREDOC_CTRL_C);
+			exit(EXIT_NORMAL);
 		}
 		if (is_delimiter(io->value, line))
 		{
