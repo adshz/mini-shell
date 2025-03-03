@@ -54,22 +54,19 @@ static void	main_sigint_handler(int signum)
 static void	disable_ctrl_char_echo(void)
 {
 	struct termios	term;
-	struct termios	old_term;
 
 	if (tcgetattr(STDIN_FILENO, &term) == -1)
 	{
 		perror("tcgetattr");
 		return ;
 	}
-	old_term = term;
 	term.c_lflag &= ~(ECHOCTL | ICANON);
 	term.c_oflag |= OPOST;  // Enable output processing
 	term.c_cc[VMIN] = 1;
 	term.c_cc[VTIME] = 0;
 	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
 	{
-		perror("tcgetattr");
-		tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+		perror("tcsetattr");
 		return ;
 	}
 }

@@ -158,5 +158,7 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 	shell->env = env_to_hashtable(shell, envp);
 	shell->stdin_backup = dup(STDIN_FILENO);
 	shell->stdout_backup = dup(STDOUT_FILENO);
+	if (tcgetattr(STDIN_FILENO, &shell->original_term) == -1)
+		perror("tcgetattr");
 	init_env_vars(shell, argv);
 }
