@@ -38,7 +38,6 @@ char	*clean_empty_strs(char *str)
 	size_t	j;
 	char	*tmp;
 	char	*ret;
-	size_t	dst_size;
 
 	if ((str[0] == '\'' && str[1] == '\'' && !str[2]) || \
 		(str[0] == '"' && str[1] == '"' && !str[2]))
@@ -54,10 +53,26 @@ char	*clean_empty_strs(char *str)
 		else
 			tmp[j++] = str[i++];
 	}
+	tmp[j] = '\0';
 	free(str);
-	dst_size = ft_strlen(tmp + 1);
-	ret = ft_calloc(dst_size, sizeof(char));
-	return (ft_strlcpy(ret, tmp, dst_size), free(tmp), ret);
+	ret = ft_strdup(tmp);
+	return (free(tmp), ret);
+}
+
+static void	debug_print(t_shell *shell, const char *msg, const char *str, bool is_array)
+{
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
+	ft_putstr_fd(msg, 2);
+	if (!is_array)
+	{
+		if (str)
+		{
+			ft_putstr_fd("'", 2);
+			ft_putstr_fd(str, 2);
+			ft_putstr_fd("'", 2);
+		}
+		ft_putstr_fd("\n", 2);
+	}
 }
 
 char	**expand_args(t_shell *shell, char *str)
@@ -66,29 +81,22 @@ char	**expand_args(t_shell *shell, char *str)
 	char	**globbed;
 	size_t	i;
 
-	ft_putstr_fd("DEBUG: Initial string to expand: '", 2);
-	ft_putstr_fd(str, 2);
-	ft_putstr_fd("'\n", 2);
-
+	debug_print(shell, "DEBUG: Initial string to expand: ", str, false);
 	str = cmd_inital_expand(shell, str);
 	if (!str)
 		return (NULL);
-	ft_putstr_fd("DEBUG: After initial expansion: '", 2);
-	ft_putstr_fd(str, 2);
-	ft_putstr_fd("'\n", 2);
+	debug_print(shell, "DEBUG: After initial expansion: ", str, false);
 
 	str = clean_empty_strs(str);
 	if (!str)
 		return (NULL);
-	ft_putstr_fd("DEBUG: After cleaning empty strings: '", 2);
-	ft_putstr_fd(str, 2);
-	ft_putstr_fd("'\n", 2);
+	debug_print(shell, "DEBUG: After cleaning empty strings: ", str, false);
 
 	expanded = expand_and_split(str);
 	free(str);
 	if (!expanded)
 		return (NULL);
-	ft_putstr_fd("DEBUG: After expansion and split:\n", 2);
+	debug_print(shell, "DEBUG: After expansion and split:\n", NULL, true);
 	i = 0;
 	while (expanded[i])
 	{
@@ -101,7 +109,7 @@ char	**expand_args(t_shell *shell, char *str)
 	globbed = ft_globber(expanded);
 	if (!globbed)
 		return (NULL);
-	ft_putstr_fd("DEBUG: After globbing:\n", 2);
+	debug_print(shell, "DEBUG: After globbing:\n", NULL, true);
 	i = 0;
 	while (globbed[i])
 	{
@@ -117,7 +125,7 @@ char	**expand_args(t_shell *shell, char *str)
 		globbed[i] = ft_strip_quotes(globbed[i]);
 		i++;
 	}
-	ft_putstr_fd("DEBUG: Final expanded args:\n", 2);
+	debug_print(shell, "DEBUG: Final expanded args:\n", NULL, true);
 	i = 0;
 	while (globbed[i])
 	{
