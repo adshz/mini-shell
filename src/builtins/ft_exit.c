@@ -47,10 +47,11 @@ static int	exit_with_num(t_shell *shell, char *str)
 			exit_status = exec_print_err((t_err){ERRNO_EXEC_255, MSGERR_NUMERIC_REQUI, str});
 			(cleanup_minishell(shell), exit(exit_status));
 		}
+		i++;
 	}
 	return ((result * sign) % 256);
-
 }
+
 void	builtin_exit(t_shell *shell, char **argv)
 {
 	int	exit_status;
