@@ -23,6 +23,23 @@ static void	debug_external_cmd(const char *msg, const char *extra)
 	ft_putstr_fd("\n", 2);
 }
 
+static void	debug_argv(char **argv)
+{
+	int	i;
+
+	i = 0;
+	ft_putstr_fd("DEBUG [external]: argv contents:\n", 2);
+	while (argv && argv[i])
+	{
+		ft_putstr_fd("  argv[", 2);
+		ft_putnbr_fd(i, 2);
+		ft_putstr_fd("]: ", 2);
+		ft_putstr_fd(argv[i], 2);
+		ft_putstr_fd("\n", 2);
+		i++;
+	}
+}
+
 int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 {
 	t_path	path_status;
@@ -53,12 +70,19 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 			tmp_status = exec_print_err(path_status.err);
 			(cleanup_minishell(shell), exit(tmp_status));
 		}
+		if (!path_status.path)
+		{
+			debug_external_cmd("Path is NULL", NULL);
+			(cleanup_minishell(shell), exit(1));
+		}
 		debug_external_cmd("Found command path", path_status.path);
+		debug_argv(node->expanded_argv);
 
 		debug_external_cmd("Attempting to execute command", NULL);
 		if (execve(path_status.path, node->expanded_argv, shell->environ) == -1)
 		{
 			debug_external_cmd("execve failed with error", strerror(errno));
+			free(path_status.path);
 			(cleanup_minishell(shell), exit(1));
 		}
 	}
