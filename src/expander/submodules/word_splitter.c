@@ -65,6 +65,9 @@ char	**expand_and_split(char *str)
 		return (NULL);
 	i = 0;
 	count = 0;
+	ft_putstr_fd("DEBUG [split]: Input string: '", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd("'\n", 2);
 	while (str[i])
 	{
 		if (str[i] != ' ' && ++count)
@@ -72,7 +75,10 @@ char	**expand_and_split(char *str)
 		while (str[i] && str[i] == ' ')
 			i++;
 	}
-	array = ft_calloc(count + 1, sizeof(char));
+	ft_putstr_fd("DEBUG [split]: Word count: ", 2);
+	ft_putnbr_fd(count, 2);
+	ft_putstr_fd("\n", 2);
+	array = ft_calloc(count + 1, sizeof(char *));
 	tofree = ft_allocate_array(str, array);
 	if (!array || !count)
 		return (ft_free_2d_array(tofree), NULL);
