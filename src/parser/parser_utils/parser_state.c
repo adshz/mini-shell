@@ -31,23 +31,39 @@ void	parse_err_handler(t_shell *shell)
 {
 	t_parse_err_type	err_type;
 	t_token_type		token_type;
-	char				**types;
 
-	types = (char *[]){"TOKEN_IDENTIFIER", "<", ">", "<<", ">>", \
-		"|", "(", ")", "&&", "||", "newline"};
 	err_type = shell->parse_err.type;
-	(void)token_type;
-	(void)types;
 	if (err_type)
 	{
 		if (err_type == E_SYNTAX)
 		{
 			if (!shell->curr_token)
-				token_type = TOKEN_NEWLINE;
+				ft_putstr_fd("minishell: syntax error near unexpected token 'newline'\n", 2);
 			else
-				token_type = shell->curr_token->type;
-			ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
-			ft_putstr_fd(types[token_type], 2);
+			{
+				ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+				if (shell->curr_token->type == TOKEN_IDENTIFIER)
+					ft_putstr_fd(shell->curr_token->value, 2);
+				else if (shell->curr_token->type == TOKEN_LESS)
+					ft_putstr_fd("<", 2);
+				else if (shell->curr_token->type == TOKEN_GREAT)
+					ft_putstr_fd(">", 2);
+				else if (shell->curr_token->type == TOKEN_DLESS)
+					ft_putstr_fd("<<", 2);
+				else if (shell->curr_token->type == TOKEN_DGREAT)
+					ft_putstr_fd(">>", 2);
+				else if (shell->curr_token->type == TOKEN_PIPE)
+					ft_putstr_fd("|", 2);
+				else if (shell->curr_token->type == TOKEN_O_PARENT)
+					ft_putstr_fd("(", 2);
+				else if (shell->curr_token->type == TOKEN_C_PARENT)
+					ft_putstr_fd(")", 2);
+				else if (shell->curr_token->type == TOKEN_AND)
+					ft_putstr_fd("&&", 2);
+				else if (shell->curr_token->type == TOKEN_OR)
+					ft_putstr_fd("||", 2);
+				ft_putstr_fd("'\n", 2);
+			}
 			shell->exit_status = 258;
 		}
 		ft_cleanup_ast(shell, &(shell->ast));
