@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <dirent.h>
 # include "libft.h"
+# include "hashtable/hashtable.h"
 /* Main Expander API Entry Point	*/
 char	**expand_raw_command(t_shell *shell, char *raw_cmd);
 /* End of Main Expander API Entry Point*/
@@ -30,7 +31,7 @@ char	**ft_globber(char **expanded);
 /* Quote Handler Submodule*/
 char	*normal_str_handler(char *str, size_t *i);
 char	*single_quotes_handler(char *str, size_t *i);
-char	*double_quote_str(t_shell *shell, char *str, size_t *i);
+char	*double_quote_str(char *str, size_t *i);
 char	*double_quotes_handler(t_shell *shell, char *str, size_t *i);
 /* End of Quote Handler Submodule*/
 /* Quote Stripper Submodule*/
@@ -47,11 +48,6 @@ bool	is_valid_var_char(char c);
 char	*dollar_handler(t_shell *shell, char *str, size_t *i);
 /* End of Variable Expander Submodule */
 /* Wildcard Matcher Submodule */
-bool	is_pattern_match(char **pattern, char **last_wildcard, \
-					char **last_match, char **str);
-void	pattern_quotes_handler(char **pattern, char *quotes);
-bool	wildcard_handler(char **pattern, char **last_wildcard, \
-					char **last_match, char *str);
 bool	ft_is_wildcard(char *pattern, char *str);
 /* End of Wildcard Matcher Submodule */
 /* Word Splitter Submodule */

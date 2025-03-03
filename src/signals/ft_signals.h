@@ -28,4 +28,8 @@
 
 void	config_main_signals(t_shell *shell);
 void	config_execution_signals(void);
+int	get_signal_from_status(int status);
+int	exited_normally(int status);
+int	get_exit_status(int status);
+int	was_signaled(int status);
 #endif

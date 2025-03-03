@@ -16,7 +16,7 @@ void	*ft_memory_collector(t_shell *shell, void *ptr, bool clean_flag)
 	if (clean_flag)
 	{
 		ft_lstclear(&shell->mem_list, ft_delete_mem);
-		return (NULL)
+		return (NULL);
 	}
 	else
 	{

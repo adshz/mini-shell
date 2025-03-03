@@ -20,14 +20,14 @@ int	execute_builtin(t_shell *shell, char **argv)
 	if (ft_strcmp(argv[0], "cd") == 0)
 		return (builtin_cd(shell, argv[1]));
 	if (ft_strcmp(argv[0], "pwd") == 0)
-		return (builtin_pwd(shell));
+		return (builtin_pwd());
 	if (ft_strcmp(argv[0], "export") == 0)
 		return (builtin_export(shell, argv));
 	if (ft_strcmp(argv[0], "unset") == 0)
 		return (builtin_unset(shell, argv));
 	if (ft_strcmp(argv[0], "env") == 0)
 		return (builtin_env(shell));
-	builtin_exit(shell);
+	builtin_exit(shell, argv);
 	return (ERRNO_GENERAL);
 }
 

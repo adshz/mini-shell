@@ -27,7 +27,7 @@ bool	ft_contains_asterisk(char *str)
 
 bool	ft_set_direntry(struct dirent **entry, DIR *dir)
 {
-	*entry = reddir(dir);
+	*entry = readdir(dir);
 	return (true);
 }
 

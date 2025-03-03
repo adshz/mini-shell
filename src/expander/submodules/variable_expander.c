@@ -38,7 +38,7 @@ char	*dollar_handler(t_shell *shell, char *str, size_t *i)
 	else if (!is_valid_var_char(str[*i]))
 		return (ft_strdup("$"));
 	start = *i;
-	while (is_valid_var_char(start[*i]))
+	while (is_valid_var_char(str[*i]))
 		(*i)++;
 	var = ft_substr(str, start, *i - start);
 	env_val = hashmap_search(shell->env, var);

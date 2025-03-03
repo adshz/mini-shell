@@ -18,5 +18,5 @@ void	cleanup_minishell(t_shell *shell)
 	close(shell->stdin);
 	close(shell->stdout);
 	rl_clear_history();
-	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_termset);
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 }

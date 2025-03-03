@@ -19,6 +19,7 @@ bool		ft_process_redirection(t_shell *shell, t_io_node **io_lst);
 bool	ft_is_redirection(t_token_type type);
 t_io_node	*ft_create_io_node(t_token_type type, char *value);
 void	    cleanup_io_list(t_io_node	**lst);
-
+t_io_type	convert_to_io_type(t_token_type type);
+void	append_io_node(t_io_node **lst, t_io_node *new);
 
 #endif

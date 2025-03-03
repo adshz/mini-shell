@@ -22,9 +22,10 @@
 # include "types.h"
 # include "memory_collector/memory_collector.h"
 # include "libft.h"
+# include "utils/utils.h"
 
 /* Function Prototypes */
-t_hashmap	*hashmap_create_table(size_t size);
+t_hashmap	*hashmap_create_table(t_shell *shell, size_t size);
 /**
  * @brief Creates a new hash table with default size
  * @return Pointer to new hash table, NULL if allocation fails
@@ -36,19 +37,19 @@ t_hashmap	*hashmap_create(void);
  * @param envp Array of environment strings in "key=value" format
  * @return Pointer to new hash table, NULL if conversion fails
  */
-t_hashmap	*env_to_hashtable(char **envp);
+t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[]);
 
 /**
  * @brief Removes an item from the hash table
  * @param table Hash table to remove from
  * @param key Key of item to remove
  */
-void		hashmap_remove(t_hashmap *table, const char *key);
+void		hashmap_remove(t_shell *shell, t_hashmap *table, const char *key);
 /**
  * @brief Destroys hash table and frees all memory
  * @param table Hash table to destroy
  */
-void		hashmap_destroy(t_hashmap *table);
+void		hashmap_destroy(t_shell *shell, t_hashmap *table);
 /**
  * @brief Inserts a key-value pair into the hash table
  * @param table Hash table to insert into
@@ -58,7 +59,7 @@ void		hashmap_destroy(t_hashmap *table);
  * @return 1 if key was inserted, 
  * 0 if key already exists and update_existing is false
  */
-int			hashmap_insert(t_shell *shell, t_hashmap_insert_params params);
+t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap_insert_params params);
 /**
  * @brief Gets an item from the hash table by the key
  * @param table Hash table to get from
@@ -76,7 +77,7 @@ char		*hashmap_search(t_hashmap *table, char *key);
 void		hashmap_iterate(t_hashmap *table, \
 					void (*f)(const char *, const char *));
 void		hashmap_set(t_hashmap *table, const char *key, const char *value);
-void		hashmap_destroy(t_hashmap *table);
+void		hashmap_destroy(t_shell *shell, t_hashmap *table);
 void		hashmap_handle_collision(t_hashmap *table, size_t index, \
 							t_hash_item *new_item, int flag);
 size_t		hashmap_size(t_hashmap *table);
@@ -85,4 +86,7 @@ void		hashmap_free_item(t_shell *shell, t_hash_item **item_ptr);
 t_hash_item	*hashmap_create_item(t_shell *shell, char *key, char *value, int flag);
 void		hashmap_replace_value(t_shell *shell, t_hashmap *table, \
 							const char *key, const char *new_value);
+char	*dup_key(t_shell *shell, char *env_line);
+char	*dup_value(t_shell *shell,char *env_line);
+
 #endif

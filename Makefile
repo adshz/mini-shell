@@ -33,6 +33,8 @@ SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
 SRCS		:=	\
+				core/core.c \
+				core/init.c \
 				signals/signal_handlers.c \
 				signals/signal_status.c \
 				main.c \
@@ -43,6 +45,7 @@ SRCS		:=	\
 				lexer/lexer_cleanup.c \
 				lexer/lexer_scan.c \
 				lexer/lexer_validate.c \
+				lexer/lexer_utils.c \
 				parser/ast/ast_node_builder.c \
 				parser/ast/ast_memory_manager.c \
 				parser/command/command_node_builder.c \
@@ -53,7 +56,17 @@ SRCS		:=	\
 				parser/parser_expression/expression_parser.c \
 				parser/parser_redirection/io_node_manager.c \
 				parser/parser_redirection/redirection_processor.c \
-				parser/parser_utils/parser_state.c \
+				expander/expander.c \
+				expander/expander_utils/array_utils.c \
+				expander/expander_utils/globber_utils.c \
+				expander/expander_utils/expander_string_utils.c \
+				expander/submodules/globber.c \
+				expander/submodules/quote_handler.c \
+				expander/submodules/quote_stripper.c \
+				expander/submodules/token_expander.c \
+				expander/submodules/variable_expander.c \
+				expander/submodules/wildcard_matcher.c \
+				expander/submodules/word_splitter.c \
 				builtins/ft_cd.c \
 				builtins/ft_echo.c \
 				builtins/ft_env.c \
@@ -61,22 +74,45 @@ SRCS		:=	\
 				builtins/ft_export.c \
 				builtins/ft_pwd.c \
 				builtins/ft_unset.c \
+				executor/executor.c \
+				executor/ast_executor/ast_executor.c \
+				executor/ast_executor/logic_node_handler.c \
+				executor/builtins_executor/builtin_executor.c \
+				executor/command_executor/command_executor.c \
+				executor/command_executor/external_cmd.c \
+				executor/heredoc/heredoc_expander.c \
+				executor/heredoc/heredoc_handler.c \
+				executor/heredoc/heredoc_processor.c \
+				executor/heredoc/heredoc_utils.c \
+				executor/path_resolver/path_resolver.c \
+				executor/path_resolver/path_validator.c \
+				executor/pipe_executor/pipe_child.c \
+				executor/pipe_executor/pipe_executor.c \
+				executor/executor_redirection/input_redirection.c \
+				executor/executor_redirection/output_redirection.c \
+				executor/executor_redirection/redirection_handler.c \
+				executor/executor_utils/error_printer.c \
+				executor/executor_utils/exec_exit_status.c \
 				hashtable/hashtable_collision.c \
+				hashtable/hashtable_create_item.c \
 				hashtable/hashtable_create.c \
 				hashtable/hashtable_destory.c \
 				hashtable/hashtable_env_conversion.c \
-				hashtable/hashtable_get.c \
+				hashtable/hashtable_get_item.c \
+				hashtable/hashtable_free_item.c \
 				hashtable/hashtable_insert.c \
 				hashtable/hashtable_iterate.c \
 				hashtable/hashtable_murmurhash2.c \
 				hashtable/hashtable_remove.c \
+				hashtable/hashtable_replace_value.c \
 				hashtable/hashtable_search.c \
 				hashtable/hashtable_set.c \
 				hashtable/hashtable_size.c \
-				hashtable/hashtable_replace_value.c \
 				memory_collector/memory_collector.c \
 				memory_collector/memory_deleter.c \
-				utils/cleanup_shell.c 
+				utils/cleanup_shell.c \
+				utils/string_utils.c \
+				utils/exit_handler.c
 
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))

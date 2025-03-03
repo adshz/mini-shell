@@ -13,9 +13,7 @@
 
 int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe)
 {
-	int	cmd_exit_status;
-
-	config_execution_signals(void);
+	config_execution_signals();
 	if (!ast_tree)
 		return (ERRNO_EMPTY_COMMAND);
 	if (ast_tree->type == NODE_PIPE)

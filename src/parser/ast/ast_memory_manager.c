@@ -16,7 +16,7 @@
  * This file manages memory for the AST, including cleanup
  */
 // Clean up AST nodes recursively
-void	recursively_ft_cleanup_ast(t_ast_node *node)
+void	recursively_ft_cleanup_ast(t_shell *shell, t_ast_node *node)
 {
 	if (!node)
 		return ;
@@ -25,9 +25,9 @@ void	recursively_ft_cleanup_ast(t_ast_node *node)
 	else
 	{
 		if (node->left)
-			recursively_ft_cleanup_ast(node->left);
+			recursively_ft_cleanup_ast(shell, node->left);
 		if (node->right)
-			recursively_ft_cleanup_ast(node->right);
+			recursively_ft_cleanup_ast(shell, node->right);
 	}
 	free(node);
 }
@@ -35,7 +35,7 @@ void	recursively_ft_cleanup_ast(t_ast_node *node)
 // Clean up entire AST and related resources
 void	ft_cleanup_ast(t_shell *shell, t_ast_node **ast)
 {
-	recursively_ft_cleanup_ast(*ast);
+	recursively_ft_cleanup_ast(shell, *ast);
 	*ast = NULL;
 	clean_token_lst(&shell->tokens);
 }

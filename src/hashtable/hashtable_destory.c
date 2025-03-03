@@ -34,14 +34,14 @@
  * @param item Start of the item chain to free
  * @see hashmao_destory() Main cleanup function that use free_item_chain
  */
-static void	free_item_chain(t_hash_item *current_item)
+static void	free_item_chain(t_shell *shell, t_hash_item *current_item)
 {
 	t_hash_item	*next;
 
 	while (current_item)
 	{
 		next = current_item->next;
-		hashmap_free_item(current_item);
+		hashmap_free_item(shell, &current_item);
 		current_item = next;
 	}
 }
@@ -68,7 +68,7 @@ static void	free_item_chain(t_hash_item *current_item)
  * @note Safe to pass NULL table
  * @see free_item_chain() Frees individual chains regarding the index
  */
-void	hashmap_destroy(t_hashmap *table)
+void	hashmap_destroy(t_shell *shell, t_hashmap *table)
 {
 	size_t	i;
 
@@ -77,7 +77,7 @@ void	hashmap_destroy(t_hashmap *table)
 	i = 0;
 	while (i < table->size)
 	{
-		free_item_chain(table->items[i]);
+		free_item_chain(shell, table->items[i]);
 		i++;
 	}
 	free(table->items);

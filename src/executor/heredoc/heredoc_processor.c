@@ -12,7 +12,7 @@
 #include "executor/executor.h"
 
 
-static bool	should_leave_leaf(t_shell *shell, int fd[2], int *process_info)
+static bool	should_leave_leaf(int fd[2], int *process_info)
 {
 	int	status;
 

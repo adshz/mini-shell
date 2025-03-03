@@ -21,10 +21,10 @@
 # include <readline/history.h>
 # include <termios.h>
 # include "memory_collector/memory_collector.h"
+# include "parser/includes/ast_manager.h"
 
 void	cleanup_minishell(t_shell *shell);
-void	exit_handler(t_shell *shell, char *param, int err, int is_exit);
-bool	is_only_whitespace(const char *str);
+void	exit_handler(int err);
 bool	is_only_whitespace(const char *str);
 
 #endif

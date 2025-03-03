@@ -19,10 +19,10 @@ size_t	ft_mutli_arr_strs_count(char ***strs_arrays)
 
 	i = 0;
 	strs_count = 0;
-	while (strs_arrs[i])
+	while (strs_arrays[i])
 	{
 		j = 0;
-		while (str_arrs[i][j])
+		while (strs_arrays[i][j])
 			j++;
 		strs_count += j;
 		i++;

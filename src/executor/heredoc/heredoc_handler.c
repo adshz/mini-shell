@@ -12,7 +12,7 @@
 #include "executor/executor.h"
 
 static void	process_heredoc_line(t_shell *shell, t_io_node *io, char *line, \
-								int fd)
+								int fd[2])
 {
 	char	*quotes;
 
@@ -54,7 +54,7 @@ void	heredoc_handler(t_shell *shell, t_io_node *io, int fd[2])
 			free(line);
 			break ;
 		}
-		process_heredoc_line(shell, line, io, fd[WRITE_END]);
+		process_heredoc_line(shell, io, line, fd);
 		free(line);
 	}
 	cleanup_minishell(shell);

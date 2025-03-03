@@ -17,8 +17,8 @@ int	execute_and_node(t_shell *shell, t_ast_node *node)
 
 	cmd_exit_status = execute_ast_node(shell, node->left, false);
 	if (cmd_exit_status == ERRNO_NONE)
-		return (execute_ast_node(shell, node->right, false));
-	return (cmd_exit_status);
+		return (cmd_exit_status);
+	return (execute_ast_node(shell, node->right, false));
 }
 
 int	execute_or_node(t_shell *shell, t_ast_node *node)
@@ -27,5 +27,6 @@ int	execute_or_node(t_shell *shell, t_ast_node *node)
 
 	cmd_exit_status = execute_ast_node(shell, node->left, false);
 	if (cmd_exit_status == ERRNO_NONE)
-		return (execute_ast_node(shell, node->right, false));
+		return (cmd_exit_status);
+	return (execute_ast_node(shell, node->right, false));
 }

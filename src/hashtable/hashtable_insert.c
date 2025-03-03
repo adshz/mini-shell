@@ -17,7 +17,7 @@ static void	hashmap_replace_item(t_shell *shell, t_hash_item *current, \
 {
 	char	*new_value;
 
-	new_value = ft_strdup(new_item->value);
+	new_value = ft_strdup(value);
 	if (!new_value)
 		return ;
 	(void)ft_memory_collector(shell, new_value, false);
@@ -30,7 +30,7 @@ static int	hashmap_insert_item(t_shell *shell, t_hashmap *table, \
 {
 	if (table->count == table->size)
 	{
-		exit_handler(NULL, NULL, HASH_FULL, NOT_EXIT);
+		exit_handler(HASH_FULL);
 		hashmap_free_item(shell, &new_item);
 		return (HASH_ERR);
 	}
@@ -80,36 +80,9 @@ t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap_insert_params params)
 	else
 	{
 		if (ft_strncmp(current->key, params.key, ft_strlen(params.key) + 1) == 0)
-			hashmap_replace_item(shell, current, params.value, new_item, params.flag);
+			hashmap_replace_item(shell, current, params.value, new_item);
 		else
 			hashmap_handle_collision(params.table, index, new_item, params.flag);
 	}
 	return (NULL);
 }
-// To put this into libft later on.
-// t_hash_item	*hashmap_insert(t_shell *shell, t_hashmap *table, char *key, char *value, int flag)
-// {
-// 	unsigned long int		index;
-// 	t_hash_item				*new_item;
-// 	t_hash_item				*current;
-
-// 	if (!key)
-// 		return (NULL);
-// 	index = hash_function(key, table->size);
-// 	new_item = ft_memory_collector(shell, \
-// 								hashmap_create_item(key, value, flag), false);
-// 	current = table->items[index];
-// 	if (current == NULL)
-// 	{
-// 		if (!hashmap_insert_item(table, new_item, index))
-// 			return (NULL);
-// 	}
-// 	else
-// 	{
-// 		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-// 			hashmap_replace_item(current, value, new_item, flag);
-// 		else
-// 			hashmap_handle_collision(table, index, new_item, flag);
-// 	}
-// 	return (NULL);
-// }

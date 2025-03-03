@@ -21,7 +21,6 @@ static int	export_error(char *identifier)
 
 static void	export_list(t_shell *shell)
 {
-	t_hash_item	*next;
 	t_hash_item	*current;
 	size_t		i;
 	size_t		j;
@@ -38,7 +37,8 @@ static void	export_list(t_shell *shell)
 				j = 0;
 				while ((current->value)[j])
 				{
-					if  ((current->value)[j] == $ || (current->value[j] == '"'))
+					if  ((current->value)[j] == '$' || \
+						(current->value[j] == '"'))
 						ft_printf("\\%c", (current->value)[j++]);
 					else
 						ft_printf("%c", (current->value)[j++]);
@@ -69,15 +69,14 @@ bool	check_valid_key(char *key)
 
 int	builtin_export(t_shell *shell, char **argv)
 {
-	int	i;
-	int	exit_status;
 	char	*key;
-	bool	has_env_key;
+	int		i;
+	int		exit_status;
 
 	exit_status = 0;
 	i = 1;
 	if (!argv[1])
-		return (export_list(shell));
+		return ((export_list(shell), 0));
 	while (argv[i])
 	{
 		if (!check_valid_key(argv[i]))
@@ -93,6 +92,5 @@ int	builtin_export(t_shell *shell, char **argv)
 			i++;
 		}
 	}
-	
+	return (exit_status);
 }
-

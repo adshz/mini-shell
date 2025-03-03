@@ -17,7 +17,7 @@ void	hashmap_replace_value(t_shell *shell, t_hashmap *table, \
 {
 	t_hash_item	*item;
 
-	if (!table || !key || !value)
+	if (!table || !key)
 		return ;
 	item = hashmap_get_item(table, key);
 	if (!item)

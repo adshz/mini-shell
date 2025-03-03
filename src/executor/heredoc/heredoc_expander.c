@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "executor/executor.h"
 
-int		heredoc_expand_var_to_fd(t_shell *shell, char *str, int fd)
+int		heredoc_expand_var_to_fd(t_shell *shell, char *str, size_t i, int fd)
 {
 	size_t	start;
 	char	*tmp;

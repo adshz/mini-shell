@@ -11,14 +11,14 @@
 /* ************************************************************************** */
 #include "builtins/builtins.h"
 
-static int	change_pwd(shell)
+static int	change_pwd(t_shell *shell)
 {
 	char	*cwd;
 
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 		return (1);
-	return (hashmap_replace_value(shell, shell->env, "PWD", cwd));
+	return ((hashmap_replace_value(shell, shell->env, "PWD", cwd), 0));
 }
 
 static int	cd_home(t_shell *shell)
@@ -32,7 +32,7 @@ static int	cd_home(t_shell *shell)
 	if (!home)
 		return (ft_putstr_fd("minishell: cd: HOME not set\n", 2), 1);
 	if (chdir(home) == ERRNO_NONE)
-		return (hashmap_replace_value(shell, shell->env, "PWD", home));
+		return ((hashmap_replace_value(shell, shell->env, "PWD", home), 0));
 	return (1);
 }
 
@@ -41,6 +41,7 @@ static int	cd_err_msg(char *err_msg)
 	ft_putstr_fd("minishell: cd: '", 2);
 	ft_putstr_fd(err_msg, 2);
 	ft_putstr_fd(": No such file or directory\n", 2);
+	return (1);
 }
 
 int	builtin_cd(t_shell *shell, char *path)

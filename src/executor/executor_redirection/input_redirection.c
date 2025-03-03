@@ -28,10 +28,10 @@ int	ft_handle_input_redirection(t_io_node *io_lst, int *status)
 {
 	int	fd;
 
-	if (!io_lst->expaned_value || io_lst->expaned_value[1])
+	if (!io_lst->expanded_value || io_lst->expanded_value[1])
 	{
-		*status = exec_print_err((t_err){ERRNO_GENERAL, MSGERR_AMBIGUOUS, 
-			\io_lst->value});
+		*status = exec_print_err((t_err){\
+			ERRNO_GENERAL, MSGERR_AMBIGUOUS, io_lst->value});
 		return (*status);
 	}
 	fd = open(io_lst->expanded_value[0], O_RDONLY);

@@ -23,5 +23,5 @@ t_err	check_executable(char *file, bool is_cmd)
 	}
 	if (is_cmd)
 		return ((t_err){ERRNO_NOT_FOUND, MSGERR_CMD_NOT_FOUND, file});
-	return ((t_err){ERRNO_NOT_FOUND, MSGERR_NO_SUCH_FILE, file})
+	return ((t_err){ERRNO_NOT_FOUND, MSGERR_NO_SUCH_FILE, file});
 }

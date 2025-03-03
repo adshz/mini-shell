@@ -29,13 +29,13 @@ bool	ft_process_redirection(t_shell *shell, t_io_node **io_lst)
 		redir_token_type = shell->curr_token->type;
 		ft_get_next_token(shell);
 		if (!shell->curr_token)
-			return (set_parse_err(E_SYNTAX), false);
+			return (set_parse_err(shell, E_SYNTAX), false);
 		if (shell->curr_token->type != TOKEN_IDENTIFIER)
-			return (set_parse_err(E_SYNTAX), false);
+			return (set_parse_err(shell, E_SYNTAX), false);
 		tmp_io_node = ft_create_io_node(redir_token_type, \
 								shell->curr_token->value);
 		if (!tmp_io_node)
-			return (set_parse_err(E_MEM), false);
+			return (set_parse_err(shell, E_MEM), false);
 		append_io_node(io_lst, tmp_io_node);
 		ft_get_next_token(shell);
 	}

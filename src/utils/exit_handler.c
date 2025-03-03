@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "errors.h"
 
-void	exit_handler(t_shell *shell, char *param, int err, int is_exit)
+void	exit_handler(int err)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	if (err == INV_ARGS)
@@ -19,5 +19,4 @@ void	exit_handler(t_shell *shell, char *param, int err, int is_exit)
 	else if (err == HASH_FULL)
 		ft_putstr_fd("Insert error: Hash Table is full", STDERR_FILENO);
 	ft_putstr_fd("\n", STDERR_FILENO);
-		error_print(param, err);
 }

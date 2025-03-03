@@ -9,7 +9,7 @@
 /*   Updated: 2025/02/28 20:34:31 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "./echo.h"
+#include "builtins/builtins.h"
 
 static int	check_option(char *str)
 {

@@ -21,7 +21,7 @@ t_io_node	*ft_create_io_node(t_token_type type, char *value)
 {
 	t_io_node	*new_io_node;
 
-	new_io_node = (t_node *)ft_calloc(1, sizeof(t_io_node));
+	new_io_node = (t_io_node *)ft_calloc(1, sizeof(t_io_node));
 	if (!new_io_node)
 		return (NULL);
 	new_io_node->type = convert_to_io_type(type);

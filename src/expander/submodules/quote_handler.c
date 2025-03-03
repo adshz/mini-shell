@@ -33,7 +33,7 @@ char	*single_quotes_handler(char *str, size_t *i)
 	return (ft_substr(str, start, *i - start));
 }
 
-char	*double_quote_str(t_shell *shell, char *str, size_t *i)
+char	*double_quote_str(char *str, size_t *i)
 {
 	size_t	start;
 
@@ -54,7 +54,7 @@ char	*double_quotes_handler(t_shell *shell, char *str, size_t *i)
 		if (str[*i] == '$')
 			ret = ft_strjoin_free_both(ret, dollar_handler(shell, str, i));
 		else
-			ret = ft_strjoin_free_both(ret, double_quote_str(shell, str, i));
+			ret = ft_strjoin_free_both(ret, double_quote_str(str, i));
 	}
 	(*i)++;
 	return (ft_strjoin_free_both(ret, "\""));

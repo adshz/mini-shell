@@ -40,7 +40,7 @@ char	*dup_value(t_shell *shell,char *env_line)
 			i++;
 			return (ft_memory_collector(shell, \
 			ft_substr(env_line, i, \
-							ft_strlen(env_line) - i), false))
+							ft_strlen(env_line) - i), false));
 		}
 		i++;
 	}

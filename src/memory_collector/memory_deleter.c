@@ -30,7 +30,7 @@ void	*ft_memory_delone(t_shell *shell, void *ptr)
 		if ((*current)->content == ptr)
 		{
 			tmp = *current;
-			*current = *(current)->next;
+			*current = (*current)->next;
 			ft_lstdelone(tmp, ft_delete_mem);
 			return (NULL);
 		}

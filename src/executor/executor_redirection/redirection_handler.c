@@ -19,7 +19,7 @@ void	reset_stds(t_shell *shell, bool is_pipe)
 	dup2(shell->stdout, STDOUT_FILENO);
 }
 
-int	check_redirection(t_shell *shell, t_ast_node *node)
+int	check_redirection(t_ast_node *node)
 {
 	t_io_node	*current_io;
 	int			status;
@@ -38,7 +38,7 @@ int	check_redirection(t_shell *shell, t_ast_node *node)
 			return (status);
 		else if (current_io->type == IO_HEREDOC)
 			(dup2(current_io->here_doc, STDOUT_FILENO), \
-				close(current_io->here_doc))
+				close(current_io->here_doc));
 		current_io = current_io->next;
 	}
 	return (ERRNO_NONE);

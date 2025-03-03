@@ -34,9 +34,12 @@ t_ast_node	*ft_parse_expression(t_shell *shell, int min_prec)
 		right = ft_parse_expression(shell, n_prec);
 		if (!right)
 			return (left);
-		left = ft_combine_node(operator, left, right);
+		left = ft_combine_node(shell, operator, left, right);
 		if (!left)
-			return (ft_cleanup_ast(&left), ft_cleanup_ast(&right));
+		{
+		}
+			return (ft_cleanup_ast(shell, &left), \
+		ft_cleanup_ast(shell, &right), NULL);
 	}
 	return (left);
 }

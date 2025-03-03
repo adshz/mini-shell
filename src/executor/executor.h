@@ -26,8 +26,11 @@
 # include "includes/executor_heredoc.h"
 # include "includes/executor_types.h"
 # include "includes/executor_utils.h"
+# include "includes/builtin_executor.h"
+# include "hashtable/hashtable.h"
 # include "signals/ft_signals.h"
 # include "expander/expander.h"
+# include "builtins/builtins.h"
 # include "utils/utils.h"
 # include "errors.h"
 # include <sys/wait.h>

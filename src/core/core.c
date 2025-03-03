@@ -31,7 +31,7 @@ static bool	is_eof_detected(t_shell *shell)
 	return (false);
 }
 
-static book	is_empty_input(t_shell *shell)
+static bool	is_empty_input(t_shell *shell)
 {
 	if (shell->line[0] == '\0' || is_only_whitespace(shell->line))
 	{

@@ -15,5 +15,5 @@ int	exec_get_exit_status(int status)
 {
 	if (was_signaled(status))
 		return (128 + get_signal_from_status(status));
-	return (get_exit_status(status))
+	return (get_exit_status(status));
 }

@@ -115,7 +115,9 @@ SRCS	:= \
 
 OBJ_DIR			=	./obj
 OBJS = $(patsubst %c,%o,$(SRCS))
-
+# Position Independent Executable for memory layout radnomaness
+CFLAGS		+= -fPIE
+LDFLAGS		+= -pie
 
 all:$(NAME)
 

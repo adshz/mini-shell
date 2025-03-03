@@ -25,11 +25,10 @@ static char	*cmd_inital_expand(t_shell *shell, char *str)
 		else if (str[i] == '"')
 			ret = ft_strjoin_free_both(ret, double_quotes_handler(shell, str, &i));
 		else if (str[i] == '$')
-			ret = ft_strjoin_free_both(ret, dollar_handler(str, &i));
+			ret = ft_strjoin_free_both(ret, dollar_handler(shell, str, &i));
 		else
 			ret = ft_strjoin_free_both(ret, normal_str_handler(str, &i));
 	}
-	(*i)++;
 	return (ft_strjoin_free_both(ret, ft_strdup("\"")));
 }
 
@@ -41,8 +40,8 @@ char	*clean_empty_strs(char *str)
 	char	*ret;
 	size_t	dst_size;
 
-	if ((str[0] == '\'' && str[1] == '\'' str[2] == '\0' && !str[2]) || \ 
-		(str[0] == '"' && str[1] == '"' && str[2] == '\0' && !str[2]))
+	if ((str[0] == '\'' && str[1] == '\'' && !str[2]) || \
+		(str[0] == '"' && str[1] == '"' && !str[2]))
 		return (str);
 	tmp = ft_calloc(ft_strlen(str) + 1, sizeof(char));
 	i = 0;

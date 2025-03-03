@@ -18,5 +18,5 @@ t_ast_node	*parse(t_shell *shell, t_token *tokens_lst);
 void	ft_get_next_token(t_shell *shell);
 // Set parser error state
 void		set_parse_err(t_shell *shell, t_parse_err_type err_type);
-
+void	parse_err_handler(t_shell *shell);
 #endif

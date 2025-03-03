@@ -35,5 +35,5 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 	}
 	waitpid(child_pid, &tmp_status, 0);
 	g_signal_status = SHELL_STATE_NORMAL;
-	return (exec_get_exit_status(tmp_status))
+	return (exec_get_exit_status(tmp_status));
 }

@@ -38,7 +38,7 @@ static void	init_shlvl(t_shell *shell)
 		shlvl = ft_atoi(tmp) + 1;
 	tmp = ft_itoa(shlvl);
 	hashmap_insert(shell, (t_hashmap_insert_params){.table=shell->env, \
-		.key="SHLVL", .value=tmp, .flag=0);
+		.key="SHLVL", .value=tmp, .flag=0});
 	free(tmp);
 }
 
@@ -69,7 +69,7 @@ static void	init_pwd(t_shell *shell)
 	{
 		tmp = getcwd(NULL, 0);
 		hashmap_insert(shell, (t_hashmap_insert_params){.table=shell->env, \
-			.key="PWD", .vaule=tmp, .flag=0});
+			.key="PWD", .value=tmp, .flag=0});
 		free(tmp);
 	}
 }
@@ -155,7 +155,7 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 {
 	ft_memset(shell, 0, sizeof(t_shell));
 	shell->environ = envp;
-	shell->env = env_to_hashtable(envp);
+	shell->env = env_to_hashtable(shell, envp);
 	shell->stdin = dup(STDIN_FILENO);
 	shell->stdout = dup(STDOUT_FILENO);
 	init_env_vars(shell, argv);

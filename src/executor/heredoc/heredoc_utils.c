@@ -31,5 +31,5 @@ bool	is_delimiter(char	*delimiter, char *str)
 	}
 	while (*delimiter == '"' || *delimiter == '\'')
 		delimiter++;
-	return (!*delimiter)
+	return (!*delimiter);
 }

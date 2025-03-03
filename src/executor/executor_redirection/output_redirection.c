@@ -52,7 +52,7 @@ int	ft_handle_append_redirection(t_io_node *io_lst, int *status)
 {
 	int	fd;
 
-	if (!io->lst->expanded_value || io_lst->expanded_value[1])
+	if (!io_lst->expanded_value || io_lst->expanded_value[1])
 	{
 		*status = exec_print_err(\
 						(t_err){ERRNO_GENERAL, MSGERR_AMBIGUOUS, \

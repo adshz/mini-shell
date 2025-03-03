@@ -23,7 +23,7 @@ void	fill_unquoted_str(char *str, size_t *i, char *ret, size_t *j)
 
 size_t	ft_unquoted_strlen(char *str)
 {
-	sizet_t	len;
+	size_t	len;
 	size_t	i;
 	char	quotes;
 

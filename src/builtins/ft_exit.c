@@ -9,16 +9,15 @@
 /*   Updated: 2025/02/28 23:24:21 by szhong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "builtins/builtins.h"
 
 void	skip_spaces_and_get_sign(char *str, int *i, int *sign)
 {
 	while (str[*i] && str[*i] == ' ')
 		(*i)++;
-	if (str[*i] == "+" || s[*i] == '-')
+	if (str[*i] == '+' || str[*i] == '-')
 	{
-		if (s[*i] == '-')
+		if (str[*i] == '-')
 			*sign *= -1;
 		(*i)++;
 	}
@@ -37,7 +36,7 @@ static int	exit_with_num(t_shell *shell, char *str)
 	if (!ft_isnumber(str + i))
 	{
 		exit_status = exec_print_err((t_err){ERRNO_EXEC_255, MSGERR_NUMERIC_REQUI, str});
-		(cleanup_minishell(), exit(exit_status));
+		(cleanup_minishell(shell), exit(exit_status));
 	}
 	result = 0;
 	while (str[i])
@@ -63,7 +62,7 @@ void	builtin_exit(t_shell *shell, char **argv)
 		{
 			exit_status = exec_print_err(
 					(t_err){ERRNO_GENERAL, MSGERR_TOO_MANY_ARGS, NULL});
-			(cleanup_minishell, exit(exit_status));
+			(cleanup_minishell(shell), exit(exit_status));
 		}
 		else
 			exit_status = exit_with_num(shell, argv[1]);
