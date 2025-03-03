@@ -41,13 +41,14 @@ t_path	get_env_path(t_shell *shell, char *path, char *cmd)
 								ft_strjoin_with_char_free_both(\
 									ft_strdup(split_path[i]), ft_strdup(cmd),\
 									'/'), false);
-		err= check_executable(cmd_path, true);
+		err = check_executable(cmd_path, true);
 		if (err.num == ERRNO_NONE)
-			return ((t_path){\
-				(t_err){ERRNO_NONE, 42, cmd}, NULL});
+		{
+			ft_free_2d_array(split_path);
+			return ((t_path){(t_err){ERRNO_NONE, 42, cmd}, cmd_path});
+		}
 		i++;
 	}
 	ft_free_2d_array(split_path);
-	return ((t_path){(t_err){ERRNO_NOT_FOUND, MSGERR_CMD_NOT_FOUND, cmd}, \
-		NULL});
+	return ((t_path){(t_err){ERRNO_NOT_FOUND, MSGERR_CMD_NOT_FOUND, cmd}, NULL});
 }
