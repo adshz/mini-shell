@@ -18,7 +18,6 @@ void	execute_shell_command(t_shell *shell)
 	heredoc_interrupted = traverse_expand_tree(shell, shell->ast);
 	if (heredoc_interrupted || g_signal_status == SHELL_STATE_HEREDOC_INTERRUPTED)
 	{
-		ft_cleanup_ast(shell, &shell->ast);
 		g_signal_status = SHELL_STATE_READLINE;
 		return ;
 	}
