@@ -80,7 +80,7 @@ char	**expand_args(t_shell *shell, char *str)
 	char	**expanded;
 	char	**globbed;
 	size_t	i;
-
+	
 	debug_print(shell, "DEBUG: Initial string to expand: ", str, false);
 	str = cmd_inital_expand(shell, str);
 	if (!str)

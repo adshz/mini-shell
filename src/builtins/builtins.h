@@ -32,6 +32,6 @@ void	builtin_exit(t_shell *shell, char **argv);
 int	builtin_export(t_shell *shell, char **argv);
 int	builtin_pwd(void);
 int	builtin_unset(t_shell *shell, char **argv);
-bool	check_valid_key(char *key);
+int	check_valid_key(char *key);
 
 #endif

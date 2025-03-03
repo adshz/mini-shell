@@ -33,7 +33,7 @@ static void	export_list(t_shell *shell)
 		{
 			if (current->value != NULL && (ft_strcmp(current->key, "_") != 0))
 			{
-				ft_printf("=\"");
+				ft_printf("%s=\"", current->key);
 				j = 0;
 				while ((current->value)[j])
 				{
@@ -45,31 +45,83 @@ static void	export_list(t_shell *shell)
 				}
 				ft_printf("\"\n");
 			}
+			else if (current->value == NULL && (ft_strcmp(current->key, "_") != 0))
+				ft_printf("%s\n", current->key);
 			current = current->next;
 		}
 		i++;
 	}
 }
 
-bool	check_valid_key(char *key)
+static char *get_key_from_arg(char *arg)
 {
-	int	i;
+	char	*equals_pos;
+	char	*key;
 
+	equals_pos = ft_strchr(arg, '=');
+	if (!equals_pos)
+		return (ft_strdup(arg));
+	key = ft_substr(arg, 0, equals_pos - arg);
+	return (key);
+}
+
+int	check_valid_key(char *arg)
+{
+	char	*key;
+	int		i;
+	int		valid;
+
+	key = get_key_from_arg(arg);
+	if (!key)
+		return (0);
+
+	valid = 1;
 	i = 0;
-	if (!ft_isalpha(key[i]) && key[i] != '_')
-		return (false);
-	while (key[i] && key[i] != '=')
+	if (!ft_isalpha(key[0]) && key[0] != '_')
+		valid = 0;
+	else
 	{
-		if (!ft_isalnum(key[i]) && key[i] != '_')
-			return (false);
+		while (key[i] && valid)
+		{
+			if (!ft_isalnum(key[i]) && key[i] != '_')
+				valid = 0;
+			i++;
+		}
+	}
+	free(key);
+	return (valid);
+}
+
+static char *join_value_args(char **argv, int start_idx)
+{
+	char	*value;
+	char	*tmp;
+	int		i;
+
+	if (!argv[start_idx])
+		return (ft_strdup(""));
+	
+	value = ft_strdup(argv[start_idx]);
+	if (!value)
+		return (NULL);
+
+	i = start_idx + 1;
+	while (argv[i])
+	{
+		tmp = value;
+		value = ft_strjoin(value, argv[i]);
+		free(tmp);
+		if (!value)
+			return (NULL);
 		i++;
 	}
-	return (true);
+	return (value);
 }
 
 int	builtin_export(t_shell *shell, char **argv)
 {
 	char	*key;
+	char	*value;
 	int		i;
 	int		exit_status;
 
@@ -77,20 +129,58 @@ int	builtin_export(t_shell *shell, char **argv)
 	i = 1;
 	if (!argv[1])
 		return ((export_list(shell), 0));
+
 	while (argv[i])
 	{
-		if (!check_valid_key(argv[i]))
+		ft_putstr_fd("DEBUG [export]: Processing argument: ", 2);
+		ft_putstr_fd(argv[i], 2);
+		ft_putstr_fd("\n", 2);
+
+		if (ft_strchr(argv[i], '='))
+		{
+			key = get_key_from_arg(argv[i]);
+			if (!check_valid_key(argv[i]))
+			{
+				exit_status = export_error(argv[i]);
+				free(key);
+			}
+			else
+			{
+				value = join_value_args(argv, i + 1);
+				ft_putstr_fd("DEBUG [export]: Key: ", 2);
+				ft_putstr_fd(key, 2);
+				ft_putstr_fd(", Value: ", 2);
+				ft_putstr_fd(value ? value : "(null)", 2);
+				ft_putstr_fd("\n", 2);
+
+				if (hashmap_search(shell->env, key) != NULL)
+					hashmap_replace_value(shell, shell->env, key, value);
+				else
+					hashmap_insert(shell, (t_hashmap_insert_params){
+						.table = shell->env,
+						.key = key,
+						.value = value
+					});
+			}
+			break;  // Stop processing after handling key=value
+		}
+		else if (!check_valid_key(argv[i]))
+		{
 			exit_status = export_error(argv[i]);
+		}
 		else
 		{
-			key = dup_key(shell, argv[i]);
-			if (key)
-				hashmap_replace_value(shell, shell->env, key, dup_value(shell, argv[i]));
-			else
+			key = ft_strdup(argv[i]);
+			if (hashmap_search(shell->env, key) == NULL)
 				hashmap_insert(shell, (t_hashmap_insert_params){
-					.table = shell->env, .key = key, .value = dup_value(shell, argv[i])});
-			i++;
+					.table = shell->env,
+					.key = key,
+					.value = NULL
+				});
+			else
+				free(key);
 		}
+		i++;
 	}
 	return (exit_status);
 }
