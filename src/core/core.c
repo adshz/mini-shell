@@ -61,7 +61,7 @@ void	interactive_loop(t_shell *shell)
 {
 	while (1)
 	{
-		config_main_signals(shell);
+		config_main_signals();
 		shell->line = readline(PROMPT);
 		if (is_eof_detected(shell))
 			break ;

@@ -26,7 +26,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-void	config_main_signals(t_shell *shell);
+void	config_main_signals(void);
 void	config_execution_signals(void);
 int	get_signal_from_status(int status);
 int	exited_normally(int status);

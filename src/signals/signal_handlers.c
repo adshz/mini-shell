@@ -51,14 +51,32 @@ static void	main_sigint_handler(int signum)
 	}
 }
 
-void	config_main_signals(t_shell *shell)
+static void	disable_ctrl_char_echo(void)
 {
 	struct termios	term;
+	struct termios	old_term;
 
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		perror("tcgetattr");
+		return ;
+	}
+	old_term = term;
+	term.c_lflag &= ~(ECHOCTL | ICANON);
+	term.c_cc[VMIN] = 1;
+	term.c_cc[VTIME] = 0;
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+	{
+		perror("tcgetattr");
+		tcsetattr(STDIN_FILENO, TCSANOW, &old_term);
+		return ;
+	}
+}
+
+void	config_main_signals(void)
+{
 	g_signal_status = SHELL_STATE_READLINE;
-	term = shell->original_term;
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	disable_ctrl_char_echo();
 	signal(SIGINT, main_sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 }
