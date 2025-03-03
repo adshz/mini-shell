@@ -25,14 +25,10 @@ static void	debug_external_cmd(const char *msg, const char *extra)
 
 static void	debug_error_num(const char *msg, int num)
 {
-	char	*num_str;
-	char	buffer[32];
-
 	ft_putstr_fd("DEBUG [external]: ", 2);
 	ft_putstr_fd(msg, 2);
 	ft_putstr_fd(": ", 2);
-	ft_itoa_buffer(num, buffer, sizeof(buffer));
-	ft_putstr_fd(buffer, 2);
+	ft_putnbr_fd(num, 2);
 	ft_putstr_fd("\n", 2);
 }
 
