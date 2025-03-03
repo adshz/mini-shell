@@ -85,19 +85,21 @@ void	fill_words(const char *str, char **array, size_t *i, size_t j)
 	size_t	k;
 
 	k = 0;
-	while (str[(*i)] && str[(*i) != ' '])
+	while (str[*i] && str[*i] != ' ')
 	{
-		if (str[(*i)] != '\'' && str[(*i)] != '"')
+		if (str[*i] != '\'' && str[*i] != '"')
 			array[j][k++] = str[(*i)++];
 		else
 		{
 			quotes = str[(*i)++];
 			array[j][k++] = quotes;
-			while (str[(*i)] != quotes)
+			while (str[*i] && str[*i] != quotes)
 				array[j][k++] = str[(*i)++];
-			array[j][k++] = str[(*i)++];
+			if (str[*i])
+				array[j][k++] = str[(*i)++];
 		}
 	}
+	array[j][k] = '\0';
 }
 
 char	**ft_filler(const char *str, char **array)
