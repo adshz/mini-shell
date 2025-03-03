@@ -21,6 +21,7 @@ int	execute_external_cmd(t_shell *shell, t_ast_node *node)
 	child_pid = fork();
 	if (child_pid == 0)
 	{
+		tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 		tmp_status = check_redirection(node);
 		if (tmp_status != ERRNO_NONE)
 			(cleanup_minishell(shell), exit(ERRNO_GENERAL));

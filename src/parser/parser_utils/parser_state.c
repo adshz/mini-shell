@@ -30,7 +30,6 @@ void	set_parse_err(t_shell *shell, t_parse_err_type type)
 void	parse_err_handler(t_shell *shell)
 {
 	t_parse_err_type	err_type;
-	t_token_type		token_type;
 
 	err_type = shell->parse_err.type;
 	if (err_type)
