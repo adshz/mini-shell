@@ -20,6 +20,7 @@ void	execute_shell_command(t_shell *shell)
 	{
 		ft_cleanup_ast(shell, &shell->ast);
 		g_signal_status = SHELL_STATE_READLINE;
+		return ;
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 	shell->exit_status = execute_ast_node(shell, shell->ast, false);
