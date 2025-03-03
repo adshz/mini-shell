@@ -29,7 +29,7 @@ static char	*cmd_inital_expand(t_shell *shell, char *str)
 		else
 			ret = ft_strjoin_free_both(ret, normal_str_handler(str, &i));
 	}
-	return (ft_strjoin_free_both(ret, ft_strdup("\"")));
+	return (ret);
 }
 
 char	*clean_empty_strs(char *str)

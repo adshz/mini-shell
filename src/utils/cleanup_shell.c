@@ -15,8 +15,8 @@ void	cleanup_minishell(t_shell *shell)
 {
 	ft_memory_collector(shell, NULL, true);
 	ft_cleanup_ast(shell, &shell->ast);
-	close(shell->stdin);
-	close(shell->stdout);
+	close(shell->stdin_backup);
+	close(shell->stdout_backup);
 	rl_clear_history();
 	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 }

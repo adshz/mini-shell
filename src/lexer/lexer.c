@@ -86,7 +86,7 @@ t_token	*tokenise(t_shell *shell, const char *input)
 	if (!init_lexer(shell))
 		return (NULL);
 	head = NULL;
-	mutable_input = (char *)input;  // Cast const away as we need to modify the pointer
+	mutable_input = (char *)input;
 	head = process_input_tokens(shell, mutable_input, head);
 	free(shell->line);
 	shell->line = NULL;

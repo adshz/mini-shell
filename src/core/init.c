@@ -156,7 +156,7 @@ void	init_shell(t_shell *shell, char *argv[], char *envp[])
 	ft_memset(shell, 0, sizeof(t_shell));
 	shell->environ = envp;
 	shell->env = env_to_hashtable(shell, envp);
-	shell->stdin = dup(STDIN_FILENO);
-	shell->stdout = dup(STDOUT_FILENO);
+	shell->stdin_backup = dup(STDIN_FILENO);
+	shell->stdout_backup = dup(STDOUT_FILENO);
 	init_env_vars(shell, argv);
 }

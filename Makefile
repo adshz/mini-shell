@@ -29,6 +29,20 @@ INCLUDE		:=	-I./inc \
                 -I./src \
                 -I./test
 
+# OS detection
+UNAME_S := $(shell uname -s)
+
+# Readline paths based on OS
+ifeq ($(UNAME_S),Darwin)
+    # macOS
+    READLINE_DIR := $(shell brew --prefix readline)
+    INCLUDE += -I$(READLINE_DIR)/include
+    LDFLAGS = -L$(READLINE_DIR)/lib -lreadline
+else
+    # Linux
+    LDFLAGS = -lreadline
+endif
+
 SRC_DIR		:=	./src
 OBJ_DIR		:=	./obj
 
@@ -117,7 +131,7 @@ SRCS		:=	\
 
 OBJS		:=	$(addprefix $(OBJ_DIR)/, $(patsubst %.c, %.o, $(SRCS)))
 MKFL		:=	--no-print-directory
-LDFLAGS 	+= -lreadline
+#LDFLAGS 	+= -lreadline
 
 LIBFT_PATH  := ./libft
 LIBFT       := $(LIBFT_PATH)/libft.a

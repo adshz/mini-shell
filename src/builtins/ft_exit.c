@@ -56,16 +56,19 @@ void	builtin_exit(t_shell *shell, char **argv)
 	int	exit_status;
 
 	exit_status = shell->exit_status;
+	ft_putendl_fd("exit", STDOUT_FILENO);
 	if (argv[1])
 	{
 		if (argv[2] && ft_isnumber(argv[1]))
 		{
 			exit_status = exec_print_err(
 					(t_err){ERRNO_GENERAL, MSGERR_TOO_MANY_ARGS, NULL});
+			tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 			(cleanup_minishell(shell), exit(exit_status));
 		}
 		else
 			exit_status = exit_with_num(shell, argv[1]);
 	}
+	tcsetattr(STDIN_FILENO, TCSANOW, &shell->original_term);
 	(cleanup_minishell(shell), exit(exit_status));
 }

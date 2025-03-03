@@ -18,6 +18,7 @@
 # define SHELL_STATE_HEREDOC_INTERRUPTED 43
 # define SHELL_STATE_NORMAL 0
 # include <signal.h>
+# include <stdio.h>
 # include <termios.h>
 # include <unistd.h>
 # include <errno.h>
@@ -25,6 +26,7 @@
 # include "types.h"
 # include <readline/readline.h>
 # include <readline/history.h>
+
 
 void	config_main_signals(void);
 void	config_execution_signals(void);

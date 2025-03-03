@@ -64,8 +64,8 @@ typedef struct s_shell
 	t_ast_node				*ast;
 	t_hashmap				*env;
 	char					**environ;
-	int						stdin;
-	int						stdout;
+	int						stdin_backup;
+	int						stdout_backup;
 	int						exit_status;
 	struct termios			original_term;
 }	t_shell;

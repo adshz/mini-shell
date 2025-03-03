@@ -12,6 +12,7 @@
 
 #ifndef UTILS_H
 # define UTILS_H
+# include <stdio.h>
 # include "types.h"
 # include "errors.h"
 # include "libft.h"
