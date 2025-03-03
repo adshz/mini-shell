@@ -61,7 +61,7 @@ static void	disable_ctrl_char_echo(void)
 		return ;
 	}
 	term.c_lflag &= ~(ECHOCTL | ICANON);
-	term.c_oflag |= OPOST;  // Enable output processing
+	term.c_oflag |= OPOST;
 	term.c_cc[VMIN] = 1;
 	term.c_cc[VTIME] = 0;
 	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
