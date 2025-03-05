@@ -129,13 +129,8 @@ int	builtin_export(t_shell *shell, char **argv)
 	i = 1;
 	if (!argv[1])
 		return ((export_list(shell), 0));
-
 	while (argv[i])
 	{
-		ft_putstr_fd("DEBUG [export]: Processing argument: ", 2);
-		ft_putstr_fd(argv[i], 2);
-		ft_putstr_fd("\n", 2);
-
 		if (ft_strchr(argv[i], '='))
 		{
 			key = get_key_from_arg(argv[i]);
@@ -147,12 +142,6 @@ int	builtin_export(t_shell *shell, char **argv)
 			else
 			{
 				value = join_value_args(argv, i + 1);
-				ft_putstr_fd("DEBUG [export]: Key: ", 2);
-				ft_putstr_fd(key, 2);
-				ft_putstr_fd(", Value: ", 2);
-				ft_putstr_fd(value ? value : "(null)", 2);
-				ft_putstr_fd("\n", 2);
-
 				if (hashmap_search(shell->env, key) != NULL)
 					hashmap_replace_value(shell, shell->env, key, value);
 				else
@@ -162,7 +151,7 @@ int	builtin_export(t_shell *shell, char **argv)
 						.value = value
 					});
 			}
-			break;  // Stop processing after handling key=value
+			break ;
 		}
 		else if (!check_valid_key(argv[i]))
 		{

@@ -85,19 +85,8 @@ t_hashmap	*env_to_hashtable(t_shell *shell, char *envp[])
 	params.flag = 0;
 	while (++i < len)
 	{
-		ft_putstr_fd("DEBUG [env]: Processing env var: ", 2);
-		ft_putstr_fd(envp[i], 2);
-		ft_putstr_fd("\n", 2);
 		params.key = dup_key(shell, envp[i]);
 		params.value = dup_value(shell, envp[i]);
-		ft_putstr_fd("DEBUG [env]: Key: ", 2);
-		ft_putstr_fd(params.key, 2);
-		ft_putstr_fd(", Value: ", 2);
-		if (params.value)
-			ft_putstr_fd(params.value, 2);
-		else
-			ft_putstr_fd("(null)", 2);
-		ft_putstr_fd("\n", 2);
 		(void)hashmap_insert(shell, params);
 		ft_memory_delone(shell, params.key);
 		ft_memory_delone(shell, params.value);

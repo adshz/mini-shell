@@ -112,12 +112,6 @@ void	init_env_vars(t_shell *shell, char *argv[])
 	init_pwd(shell);
 	init_shlvl(shell);
 	path = hashmap_search(shell->env, "PATH");
-	ft_putstr_fd("DEBUG [init]: Current PATH: ", 2);
-	if (path)
-		ft_putstr_fd(path, 2);
-	else
-		ft_putstr_fd("(null)", 2);
-	ft_putstr_fd("\n", 2);
 	if (!path)
 		(void)hashmap_insert(shell, \
 					(t_hashmap_insert_params){.table=shell->env, \
@@ -125,9 +119,6 @@ void	init_env_vars(t_shell *shell, char *argv[])
 					.value="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin", \
 					.flag=0});
 	path = hashmap_search(shell->env, "PATH");
-	ft_putstr_fd("DEBUG [init]: Final PATH: ", 2);
-	ft_putstr_fd(path, 2);
-	ft_putstr_fd("\n", 2);
 	if (!hashmap_search(shell->env, "_"))
 		(void)hashmap_insert(shell, (t_hashmap_insert_params){\
 			.table=shell->env, \

@@ -57,6 +57,5 @@ char	*double_quotes_handler(t_shell *shell, char *str, size_t *i)
 			ret = ft_strjoin_free_both(ret, double_quote_str(str, i));
 	}
 	(*i)++;
-	ft_putstr_fd("finiish\n", 2);
 	return (ft_strjoin_free_both(ret, ft_strdup("\"")));
 }

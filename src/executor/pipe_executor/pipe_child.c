@@ -19,15 +19,18 @@ void	execute_pipe_child(t_shell *shell, t_ast_node *node, \
 	if (role == PIPE_WRITER)
 	{
 		close(pipe_ends[READ_END]);
-		dup2(pipe_ends[WRITE_END], STDOUT_FILENO);
+		if (dup2(pipe_ends[WRITE_END], STDOUT_FILENO) == -1)
+			exit(1);
 		close(pipe_ends[WRITE_END]);
 	}
 	else if (role == PIPE_READER)
 	{
 		close(pipe_ends[WRITE_END]);
-		dup2(pipe_ends[READ_END], STDIN_FILENO);
+		if (dup2(pipe_ends[READ_END], STDIN_FILENO) == -1)
+			exit(1);
 		close(pipe_ends[READ_END]);
 	}
 	child_status = execute_ast_node(shell, node, true);
-	(cleanup_minishell(shell), exit(child_status));
+	cleanup_minishell(shell);
+	exit(child_status);
 }
