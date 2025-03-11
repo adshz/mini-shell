@@ -19,9 +19,6 @@ int	execute_command_node(t_shell *shell, t_ast_node *node, bool is_pipe)
 	{
 		exec_status = check_redirection(node);
 		return (reset_stds(shell, is_pipe), (exec_status && ERRNO_GENERAL));
-		ft_putstr_fd("Hello from execute_command_node: ", 2);
-		ft_putstr_fd(node->expanded_argv[0], 2);
-		ft_putstr_fd("\n", 2);
 	}
 	if (is_builtin((node->expanded_argv)[0]))
 	{
