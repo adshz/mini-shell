@@ -23,5 +23,5 @@ int	execute_ast_node(t_shell *shell, t_ast_node *ast_tree, bool is_pipe)
 	else if (ast_tree->type == NODE_OR)
 		return (execute_or_node(shell, ast_tree));
 	else
-		return (execute_command_node(shell, shell->ast, is_pipe));
+		return (execute_command_node(shell, ast_tree, is_pipe));
 }

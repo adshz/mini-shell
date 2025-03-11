@@ -23,7 +23,7 @@ int	builtin_unset(t_shell *shell, char **argv)
 	err = false;
 	while (argv[i])
 	{
-		if (!check_valid_key(argv[i]) == 0)
+		if (check_valid_key(argv[i]) == 0)
 		{
 			ft_putstr_fd("minishell: unset: '", 2);
 			ft_putstr_fd(argv[i], 2);
