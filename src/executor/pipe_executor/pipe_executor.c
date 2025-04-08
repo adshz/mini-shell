@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 #include "executor/executor.h"
 
+// #TODO to break down the function
 int	execute_pipeline(t_shell *shell, t_ast_node *ast_tree)
 {
 	int		pipe_ends[2];
