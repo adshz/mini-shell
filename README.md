@@ -1,144 +1,119 @@
-# Minishell Development Roadmap
+# Mini-Shell
 
-## Phase 1: Foundation and Basic Structure
-### 1.1 Project Setup (1-2 days)
-- Create project structure and Makefile
-- Set up error handling utilities
-- Implement basic memory management utilities
-- Create initial test framework
+A robust implementation of a Unix-like shell written in C, developed as a collaborative project. This shell demonstrates advanced system programming concepts and provides a feature-rich command-line interface.
 
-### 1.2 Basic Shell Loop (2-3 days)
-- Implement basic readline loop
-- Add command history
-- Set up signal handling skeleton
-- Create simple prompt display
+## 🚀 Features
 
-## Phase 2: Lexical Analysis (4-5 days)
-### 2.1 Basic Tokenizer
-- Implement word splitting
-- Handle basic whitespace
-- Create token structure
+- **Interactive Command Line Interface**
+  - Custom prompt with user and hostname display
+  - Command history support using readline library
+  - Advanced command parsing and execution
 
-### 2.2 Advanced Tokenization
-- Handle quotes (single and double)
-- Implement token categorization (word, operator, etc.)
-- Add basic syntax error detection
+- **Built-in Commands**
+  - `echo` - Display text and variables
+  - `cd` - Change directory
+  - `pwd` - Print working directory
+  - `export` - Set environment variables
+  - `unset` - Remove environment variables
+  - `env` - Display environment variables
+  - `exit` - Exit the shell
 
-## Phase 3: Parsing (5-6 days)
-### 3.1 Basic Command Parsing
-- Create command structure
-- Parse simple commands
-- Handle arguments
+- **Advanced Shell Features**
+  - Environment variable expansion
+  - Signal handling (SIGINT, SIGQUIT)
+  - Pipe implementation
+  - Redirection support (`>`, `>>`, `<`, `<<`)
+  - Command chaining with `&&` and `||`
+  - Heredoc support (`<<`)
 
-### 3.2 Advanced Parsing
-- Implement redirection parsing
-- Add pipe parsing
-- Handle syntax validation
+- **Robust Error Handling**
+  - Comprehensive error messages
+  - Graceful error recovery
+  - Memory leak prevention
 
-## Phase 4: Execution Foundation (4-5 days)
-### 4.1 Simple Command Execution
-- Implement PATH resolution
-- Basic execve() handling
-- Set up exit status management
+## 🏗️ Project Structure
 
-### 4.2 Built-in Commands
-- Implement echo
-- Add cd and pwd
-- Create env, export, unset
-- Add exit command
+The project is organized into several key components:
 
-## Phase 5: Redirection and Pipes (5-6 days)
-### 5.1 Redirection
-- Implement input redirection (<)
-- Add output redirection (>)
-- Handle append mode (>>)
-- Implement here-document (<<)
+- `src/`
+  - `builtins/` - Implementation of built-in shell commands
+  - `core/` - Core shell functionality
+  - `executor/` - Command execution logic
+  - `expander/` - Environment variable expansion
+  - `hashtable/` - Environment variable storage
+  - `lexer/` - Command line tokenization
+  - `parser/` - Command parsing and AST generation
+  - `signals/` - Signal handling
+  - `utils/` - Utility functions
+  - `memory_collector/` - Memory management
 
-### 5.2 Pipe Handling
-- Create pipe mechanism
-- Handle multiple pipes
-- Manage file descriptors
+- `inc/` - Header files
+- `libft/` - Custom C library functions
+- `test/` - Test suite
 
-## Phase 6: Environment and Expansion (3-4 days)
-### 6.1 Environment
-- Implement environment variable storage
-- Handle environment variable updates
-- Create environment variable utilities
+## 🛠️ Technical Challenges
 
-### 6.2 Expansion
-- Implement $ expansion
-- Handle $? expansion
-- Add quote-aware expansion
+This project presented numerous technical challenges that were successfully overcome:
 
-## Phase 7: Signal Handling and Terminal (2-3 days)
-- Implement CTRL+C
-- Handle CTRL+D
-- Manage CTRL+\
-- Terminal attribute management
+1. **Complex Command Parsing**
+   - Implementation of a robust lexer and parser
+   - Handling of complex command chains and operators
+   - Support for nested command structures
 
-## Phase 8: Edge Cases and Robustness (4-5 days)
-- Handle error cases
-- Implement proper memory cleanup
-- Add comprehensive error messages
-- Ensure no memory leaks
+2. **Memory Management**
+   - Custom memory tracking system
+   - Prevention of memory leaks
+   - Efficient resource cleanup
 
-## Phase 9: Testing and Debugging (Ongoing)
-### 9.1 Testing Framework
-- Unit tests for each component
-- Integration tests
-- Edge case testing
+3. **Process Management**
+   - Proper handling of child processes
+   - Signal propagation
+   - Process group management
 
-### 9.2 Debugging and Optimization
-- Memory leak checks
-- Performance optimization
-- Error handling verification
+4. **Environment Management**
+   - Efficient environment variable storage using hashtables
+   - Variable expansion and substitution
+   - Proper environment inheritance
 
-## Testing Strategy for Each Phase
+## 🏆 Project Success
 
-### Component Testing
-For each phase, create test cases that verify:
-- Normal operation
-- Edge cases
-- Error conditions
-- Memory management
+This project represents a significant achievement in system programming, demonstrating:
 
-### Integration Testing
-After completing each phase:
-1. Test interaction with previous components
-2. Verify memory management
-3. Check error propagation
-4. Test with shell scripts
+- Advanced understanding of Unix/Linux system calls
+- Complex software architecture and design
+- Robust error handling and debugging
+- Efficient memory management
+- Clean and maintainable code structure
 
-### Suggested Test Commands
+## 👥 Collaboration
+
+This project was developed as a collaborative effort, requiring:
+- Clear communication and coordination
+- Code review and quality assurance
+- Division of responsibilities
+- Consistent coding standards
+
+## 🚀 Getting Started
+
+### Prerequisites
+- GCC compiler
+- Make
+- Readline library
+
+### Building
 ```bash
-# Basic Commands
-echo test
-ls -la
-pwd
-
-# Redirections
-echo hello > file
-cat < file
-ls >> file
-cat << EOF
-
-# Pipes
-ls | grep a
-cat file | grep test | wc -l
-
-# Environment Variables
-echo $PATH
-echo $?
-export TEST=123
-env
-
-# Quotes
-echo "test"
-echo 'test'
-echo "$HOME"
-echo '$HOME'
-
-# Complex Cases
-ls -la | grep "test" > output && cat output
-echo $HOME | cat -e > test < input
+make
 ```
+
+### Running
+```bash
+./minishell
+```
+
+## 📝 License
+
+This project is part of the 42 school curriculum and follows its guidelines and standards.
+
+## 🙏 Acknowledgments
+
+Special thanks to my collaborator for their invaluable contributions to this project. The complexity and scope of this project made it a challenging but rewarding experience in system programming and software development.
